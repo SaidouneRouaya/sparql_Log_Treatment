@@ -1,14 +1,15 @@
 package MDfromLogQueries.SPARQLSyntaxicValidation;
+
 import org.apache.jena.query.Query;
 import org.apache.jena.query.QueryFactory;
-import MDfromLogQueries.*;
-import MDfromLogQueries.Declarations.*;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.sql.SQLOutput;
 import java.util.Scanner;
+
+import static MDfromLogQueries.Declarations.Declarations.cleanedQueriesFile;
 
 public class SyntaxicValidation {
     private static void test2(String queryStr) {
@@ -24,7 +25,7 @@ public class SyntaxicValidation {
             System.out.println("C'est une erreur");
             //e.printStackTrace();
         }
-       //System.out.println(query.toString());
+        //System.out.println(query.toString());
 
 
     }
@@ -32,10 +33,10 @@ public class SyntaxicValidation {
 
         try {
 
-            File logFile = new File(Declarations.cleanedQueriesFile);
+            File logFile = new File(cleanedQueriesFile);
             Scanner scanner = new Scanner(logFile);
             scanner.useDelimiter("####");
-           // BufferedReader br = new BufferedReader(new FileReader(logFile));
+            // BufferedReader br = new BufferedReader(new FileReader(logFile));
             String line;
             while (scanner.hasNext()) {
                 line = scanner.next();
@@ -49,4 +50,3 @@ public class SyntaxicValidation {
         }
     }
 }
-

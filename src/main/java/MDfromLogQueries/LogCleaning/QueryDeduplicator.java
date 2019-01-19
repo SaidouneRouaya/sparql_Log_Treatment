@@ -6,13 +6,15 @@ import java.util.Scanner;
 import java.util.Set;
 import MDfromLogQueries.Declarations.*;
 
+import static MDfromLogQueries.Declarations.Declarations.cleanedQueriesFile;
+
 public class QueryDeduplicator {
 
     public static void main(String[] args){
 
         try {
             Set<String> querySet = new HashSet<>();
-            File logFile = new File(Declarations.cleanedQueriesFile);
+            File logFile = new File(cleanedQueriesFile);
             Scanner scanner = new Scanner(logFile);
             scanner.useDelimiter("####");
             int nb_line=0;

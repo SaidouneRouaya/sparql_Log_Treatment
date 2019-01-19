@@ -1,4 +1,5 @@
 package MDfromLogQueries.LogCleaning;
+import MDfromLogQueries.Declarations.Declarations;
 import com.google.common.base.Stopwatch;
 import MDfromLogQueries.*;
 
@@ -13,11 +14,11 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import MDfromLogQueries.Declarations.*;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import static MDfromLogQueries.Declarations.Declarations.writingFilePath;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 
@@ -72,7 +73,7 @@ public class LogCleaningParallel implements Runnable{
         }
 
 
-        File fichier_log_Nettoye =new File(Declarations.writingFilePath);
+        File fichier_log_Nettoye =new File(writingFilePath);
         BufferedWriter bw = null;
         try {
             if (!fichier_log_Nettoye.isFile()) fichier_log_Nettoye.createNewFile();

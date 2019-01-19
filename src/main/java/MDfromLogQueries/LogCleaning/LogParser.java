@@ -15,6 +15,9 @@ import org.apache.http.client.utils.URLEncodedUtils;
 import java.util.List;
 import java.util.stream.Collectors;
 import MDfromLogQueries.Declarations.*;
+
+import static MDfromLogQueries.Declarations.Declarations.CleanedFile1;
+import static MDfromLogQueries.Declarations.Declarations.LogDirectory;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 public class LogParser {
@@ -31,7 +34,7 @@ public class LogParser {
             try {
                 /** Directory of logs parsing **/
 
-                List<Path> filesInFolder =  Files.walk(Paths.get(Declarations.LogDirectory))
+                List<Path> filesInFolder =  Files.walk(Paths.get(LogDirectory))
                         .filter(Files::isRegularFile)
                         .collect(Collectors.toList());
                 // String chemin = "C:\\Users\\pc\\Desktop\\PFE\\DataLog\\dbp351logs\\access.log-20100502";
@@ -59,7 +62,7 @@ public class LogParser {
                         /** ecriture dans un fichier **/
                         nb_rqst_notnull++;
                        // File fichier_log_Nettoye =new File("C:\\Users\\pc\\Desktop\\PFE\\Fichier_log_Nettoye.txt");
-                        File fichier_log_Nettoye =new File(Declarations.CleanedFile1);
+                        File fichier_log_Nettoye =new File(CleanedFile1);
 
                         try {
                             // Creation du fichier

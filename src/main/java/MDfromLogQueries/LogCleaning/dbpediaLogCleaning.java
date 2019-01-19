@@ -17,8 +17,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import MDfromLogQueries.Declarations.*;
-
+import static MDfromLogQueries.Declarations.Declarations.LogDirectory;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 
@@ -38,7 +37,7 @@ public class dbpediaLogCleaning {
             /** Directory of logs parsing **/
 
 
-              List<Path> filesInFolder =  Files.walk(Paths.get(Declarations.LogDirectory))
+              List<Path> filesInFolder =  Files.walk(Paths.get(LogDirectory))
                     .filter(Files::isRegularFile)
                     .collect(Collectors.toList());
 
