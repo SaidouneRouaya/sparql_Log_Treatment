@@ -14,7 +14,6 @@ import org.apache.http.client.utils.URLEncodedUtils;
 
 import java.util.List;
 import java.util.stream.Collectors;
-import MDfromLogQueries.Declarations.*;
 
 import static MDfromLogQueries.Declarations.Declarations.CleanedFile1;
 import static MDfromLogQueries.Declarations.Declarations.LogDirectory;
