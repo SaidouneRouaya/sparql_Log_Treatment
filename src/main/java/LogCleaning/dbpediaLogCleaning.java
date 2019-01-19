@@ -1,9 +1,13 @@
 package LogCleaning;
 
+import com.google.common.base.Stopwatch;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URLEncodedUtils;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -11,16 +15,9 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import java.io.*;
-import java.nio.charset.StandardCharsets;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.utils.URLEncodedUtils;
-
-import java.util.List;
 import java.util.stream.Collectors;
+
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 
 public class dbpediaLogCleaning {
@@ -30,22 +27,25 @@ public class dbpediaLogCleaning {
     private static final Pattern PATTERN = Pattern.compile("[^\"]*\"(?:GET )?/sparql/?\\?([^\"\\s\\n]*)[^\"]*\".*");
 
     public static void main(String[] args) {
+
+        Stopwatch stopwatch = Stopwatch.createStarted();
         final String LogDirectory = "C:\\Users\\pc\\Desktop\\PFE\\DataLog\\dbp351logs\\";
 
 
         try {
             /** Directory of logs parsing **/
 
-            List<Path> filesInFolder =  Files.walk(Paths.get(LogDirectory))
+
+              List<Path> filesInFolder =  Files.walk(Paths.get(LogDirectory))
                     .filter(Files::isRegularFile)
                     .collect(Collectors.toList());
 
 
+            /** for each log file in the specified directory **/
+            for (Path p : filesInFolder) {
+                String chemin = p.toString();
 
-            // String chemin = "C:\\Users\\pc\\Desktop\\PFE\\DataLog\\dbp351logs\\access.log-20100502";
-            String chemin = "C:\\Users\\pc\\Desktop\\PFE\\DataLog\\dbp351logs\\test - Copie\\accessCopie.log-20100502";
-
-            System.out.println("Vous avez saisi l'url: " + chemin);
+                System.out.println("Vous avez saisi l'url: " + chemin);
             File logFile = new File(chemin);
             BufferedReader br = new BufferedReader(new FileReader(logFile));
             String line ="";
@@ -66,10 +66,12 @@ public class dbpediaLogCleaning {
                 System.out.println( "Nombre de requetes non null dans le fichiers \t"+nb_rqst_notnull);
 
 
-            }
+            }}
         } catch (IOException e) {
             e.printStackTrace();
         }
+        stopwatch.stop();
+        System.out.println("Time elapsed for the program is "+ stopwatch.elapsed(MILLISECONDS));
 
     }
 

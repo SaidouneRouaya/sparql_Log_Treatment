@@ -8,11 +8,15 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import com.google.common.base.Stopwatch;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URLEncodedUtils;
 
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 public class LogParser {
 
@@ -22,8 +26,8 @@ public class LogParser {
 
 
         public static void main(String[] args) {
+            Stopwatch stopwatch = Stopwatch.createStarted();
             final String LogDirectory = "C:\\Users\\pc\\Desktop\\PFE\\DataLog\\dbp351logs\\";
-
 
             try {
                 /** Directory of logs parsing **/
@@ -56,7 +60,7 @@ public class LogParser {
                         /** ecriture dans un fichier **/
                         nb_rqst_notnull++;
                        // File fichier_log_Nettoye =new File("C:\\Users\\pc\\Desktop\\PFE\\Fichier_log_Nettoye.txt");
-                        File fichier_log_Nettoye =new File("C:\\Users\\pc\\Desktop\\PFE\\Fichier_log_Nettoye (accessCopie_log-20100502.txt");
+                        File fichier_log_Nettoye =new File("C:\\Users\\pc\\Desktop\\PFE\\Fichier_log_Nettoye_Complet.txt");
 
                         try {
                             // Creation du fichier
@@ -83,6 +87,9 @@ public class LogParser {
                 e.printStackTrace();
             }
 
+            stopwatch.stop();
+            System.out.println("Time elapsed for the program is "+ stopwatch.elapsed(MILLISECONDS));
+
         }
 
 
@@ -102,7 +109,7 @@ public class LogParser {
 
             for (NameValuePair pair : pairs) {
                 if ("query".equals(pair.getName())) {
-                    System.out.println("URL Unicode Utils   "+pair.getValue());
+                 //   System.out.println("URL Unicode Utils   "+pair.getValue());
                     return pair.getValue();
                 }
             }
