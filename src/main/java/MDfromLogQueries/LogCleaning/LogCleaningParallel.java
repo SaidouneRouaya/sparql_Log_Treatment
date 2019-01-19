@@ -1,6 +1,9 @@
-package LogCleaning;
+package MDfromLogQueries.LogCleaning;
+import MDfromLogQueries.Declarations.Declarations;
 import com.google.common.base.Stopwatch;
+import MDfromLogQueries.*;
 
+import javax.lang.model.type.DeclaredType;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -15,12 +18,11 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import static MDfromLogQueries.Declarations.Declarations.writingFilePath;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 
 public class LogCleaningParallel implements Runnable{
-    static final String directoryPath = "C:\\Users\\KamilaB\\Desktop\\3CS\\Data log\\dbp351logs\\logs";
-    static final String writingFilePath ="C:\\Users\\KamilaB\\Desktop\\3CS\\Data log\\dbp351logs\\Fichier_log_Nettoye_Complet_Parallel.txt";
 
     private CopyOnWriteArrayList synchronizedList;
     private String logfile;
@@ -42,7 +44,6 @@ public class LogCleaningParallel implements Runnable{
                 //  System.out.println("dans le fichier");
                 nb_line++;
                 String requestStr = new LogParser().queryFromLogLine(line);
-                System.out.println("ligne numero : "+nb_line);
                 if (requestStr!=null)
                 {nb_rqst_notnull++;
                     synchronizedList.add(requestStr);
@@ -62,8 +63,8 @@ public class LogCleaningParallel implements Runnable{
         Stopwatch stopwatch = Stopwatch.createStarted();
 
         CopyOnWriteArrayList<String> list = new CopyOnWriteArrayList<>();
-        String dir = directoryPath;
-        ExecutorService executor = Executors.newFixedThreadPool(4);
+        String dir = Declarations.directoryPath;
+        ExecutorService executor = Executors.newFixedThreadPool(8);
         crawlDirectoryAndProcessFiles(dir,executor,list);
         executor.shutdown();
         try {

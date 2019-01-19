@@ -1,4 +1,4 @@
-package LogCleaning;
+package MDfromLogQueries.LogCleaning;
 
 public class DuplicationEliminator {
 

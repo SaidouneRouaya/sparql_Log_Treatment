@@ -1,4 +1,4 @@
-package LogCleaning;
+package MDfromLogQueries.LogCleaning;
 
 import com.google.common.base.Stopwatch;
 import org.apache.http.NameValuePair;
@@ -17,6 +17,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import static MDfromLogQueries.Declarations.Declarations.LogDirectory;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 
@@ -29,7 +30,7 @@ public class dbpediaLogCleaning {
     public static void main(String[] args) {
 
         Stopwatch stopwatch = Stopwatch.createStarted();
-        final String LogDirectory = "C:\\Users\\pc\\Desktop\\PFE\\DataLog\\dbp351logs\\";
+
 
 
         try {
