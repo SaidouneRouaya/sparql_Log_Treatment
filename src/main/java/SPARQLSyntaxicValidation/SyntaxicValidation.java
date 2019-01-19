@@ -38,7 +38,7 @@ public class SyntaxicValidation {
             String line;
             while (scanner.hasNext()) {
                 line = scanner.next();
-                System.out.println(line);
+                //System.out.println(line);
                 test2(line);
             }
         }
