@@ -3,11 +3,11 @@ package SPARQLSyntaxicValidation;
 import org.apache.jena.query.Query;
 import org.apache.jena.query.QueryFactory;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
+import java.io.*;
 import java.sql.SQLOutput;
 import java.util.Scanner;
+
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 public class SyntaxicValidation {
     private static void test2(String queryStr) {
@@ -46,6 +46,27 @@ public class SyntaxicValidation {
         {
             e.printStackTrace();
         }
+
+        File log_file_valid_syntax =new File(writingFilePath);
+        BufferedWriter bw = null;
+        try {
+            if (!log_file_valid_syntax.isFile()) log_file_valid_syntax.createNewFile();
+            bw = new BufferedWriter(new FileWriter(log_file_valid_syntax, true));
+
+            for (int i=0; i<list.size();i++ ) {
+
+                bw.write(list.get(i) +"####");
+
+                bw.flush();
+            }
+        }        catch (IOException e) {
+            System.out.println("Impossible de creer le fichier");
+        }finally {
+            System.out.println("je suis dans le finally");
+            bw.close();}
+        stopwatch.stop();
+        System.out.println("Time elapsed for the program is "+ stopwatch.elapsed(MILLISECONDS));
+
     }
 }
 

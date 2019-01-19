@@ -19,8 +19,8 @@ import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 
 public class LogCleaningParallel implements Runnable{
-    static final String directoryPath = "C:\\Users\\pc\\Desktop\\PFE\\DataLog\\OnlyLogs";
-    static final String writingFilePath ="C:\\Users\\pc\\Desktop\\PFE\\Fichier_log_Nettoye_Complet_Parallel.txt";
+    static final String directoryPath = "C:\\Users\\KamilaB\\Desktop\\3CS\\Data log\\dbp351logs\\logs";
+    static final String writingFilePath ="C:\\Users\\KamilaB\\Desktop\\3CS\\Data log\\dbp351logs\\Fichier_log_Nettoye_Complet_Parallel.txt";
 
     private CopyOnWriteArrayList synchronizedList;
     private String logfile;
@@ -42,6 +42,7 @@ public class LogCleaningParallel implements Runnable{
                 //  System.out.println("dans le fichier");
                 nb_line++;
                 String requestStr = new LogParser().queryFromLogLine(line);
+                System.out.println("ligne numero : "+nb_line);
                 if (requestStr!=null)
                 {nb_rqst_notnull++;
                     synchronizedList.add(requestStr);
@@ -62,7 +63,7 @@ public class LogCleaningParallel implements Runnable{
 
         CopyOnWriteArrayList<String> list = new CopyOnWriteArrayList<>();
         String dir = directoryPath;
-        ExecutorService executor = Executors.newFixedThreadPool(8);
+        ExecutorService executor = Executors.newFixedThreadPool(4);
         crawlDirectoryAndProcessFiles(dir,executor,list);
         executor.shutdown();
         try {
