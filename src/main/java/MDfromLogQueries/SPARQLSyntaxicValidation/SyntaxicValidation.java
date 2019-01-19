@@ -1,7 +1,8 @@
-package SPARQLSyntaxicValidation;
-
+package MDfromLogQueries.SPARQLSyntaxicValidation;
 import org.apache.jena.query.Query;
 import org.apache.jena.query.QueryFactory;
+import MDfromLogQueries.*;
+import MDfromLogQueries.Declarations.*;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -31,7 +32,7 @@ public class SyntaxicValidation {
 
         try {
 
-            File logFile = new File("C:\\Users\\KamilaB\\Desktop\\3CS\\Prototypage\\Step 1\\Fichier_log_Nettoye.txt");
+            File logFile = new File(Declarations.cleanedQueriesFile);
             Scanner scanner = new Scanner(logFile);
             scanner.useDelimiter("####");
            // BufferedReader br = new BufferedReader(new FileReader(logFile));

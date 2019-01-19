@@ -1,6 +1,8 @@
-package LogCleaning;
+package MDfromLogQueries.LogCleaning;
 import com.google.common.base.Stopwatch;
+import MDfromLogQueries.*;
 
+import javax.lang.model.type.DeclaredType;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -11,6 +13,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import MDfromLogQueries.Declarations.*;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -19,8 +22,6 @@ import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 
 public class LogCleaningParallel implements Runnable{
-    static final String directoryPath = "C:\\Users\\pc\\Desktop\\PFE\\DataLog\\OnlyLogs";
-    static final String writingFilePath ="C:\\Users\\pc\\Desktop\\PFE\\Fichier_log_Nettoye_Complet_Parallel.txt";
 
     private CopyOnWriteArrayList synchronizedList;
     private String logfile;
@@ -61,7 +62,7 @@ public class LogCleaningParallel implements Runnable{
         Stopwatch stopwatch = Stopwatch.createStarted();
 
         CopyOnWriteArrayList<String> list = new CopyOnWriteArrayList<>();
-        String dir = directoryPath;
+        String dir = Declarations.directoryPath;
         ExecutorService executor = Executors.newFixedThreadPool(8);
         crawlDirectoryAndProcessFiles(dir,executor,list);
         executor.shutdown();
@@ -71,7 +72,7 @@ public class LogCleaningParallel implements Runnable{
         }
 
 
-        File fichier_log_Nettoye =new File(writingFilePath);
+        File fichier_log_Nettoye =new File(Declarations.writingFilePath);
         BufferedWriter bw = null;
         try {
             if (!fichier_log_Nettoye.isFile()) fichier_log_Nettoye.createNewFile();

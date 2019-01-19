@@ -1,4 +1,4 @@
-package SPARQLSyntaxicValidation;
+package MDfromLogQueries.SPARQLSyntaxicValidation;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.jena.iri.impl.Main;

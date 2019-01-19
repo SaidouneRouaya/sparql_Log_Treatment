@@ -1,4 +1,4 @@
-package SPARQLSyntaxicValidation;
+package MDfromLogQueries.SPARQLSyntaxicValidation;
 
 
 import org.yaml.snakeyaml.Yaml;
