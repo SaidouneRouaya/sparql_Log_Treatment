@@ -36,7 +36,8 @@ public class SyntaxicValidation {
             scanner.useDelimiter("####");
            // BufferedReader br = new BufferedReader(new FileReader(logFile));
             String line;
-            while ((line = scanner.next()) != null) {
+            while (scanner.hasNext()) {
+                line = scanner.next();
                 System.out.println(line);
                 test2(line);
             }

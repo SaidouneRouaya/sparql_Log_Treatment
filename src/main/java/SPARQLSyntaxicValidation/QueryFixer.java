@@ -48,10 +48,10 @@ public class QueryFixer {
     }
 
     public QueryFixer() {
-        //this(loadMap());
+        this(loadMap());
     }
 
-   /* private static Map<String, String> loadMap() {
+    private static Map<String, String> loadMap() {
         try (InputStream inputStream = Resources.getResourceAsStream("ns_map.yaml")) {
             Yaml yaml = new Yaml();
             Object object = yaml.load(inputStream);
@@ -64,13 +64,12 @@ public class QueryFixer {
         } catch (IOException ignored) {
         }
         return new HashMap<>();
-    }*/
+    }
 
 
     public String fix(String queryStr) {
         queryStr = fixSelectWithCommas(queryStr);
         Set<String> undeclared = findUndeclared(queryStr);
-        System.out.println(undeclared);
         if (undeclared.isEmpty()) {
             return queryStr;
         } else {
