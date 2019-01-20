@@ -18,7 +18,7 @@ public class SyntaxicValidation {
         Query maybeQuery = null;
         try {
             maybeQuery = QueryFactory.create(queryStr2);
-            System.out.println(maybeQuery.toString());
+           // System.out.println(maybeQuery.toString());
         }
         catch (Exception e)
         {
