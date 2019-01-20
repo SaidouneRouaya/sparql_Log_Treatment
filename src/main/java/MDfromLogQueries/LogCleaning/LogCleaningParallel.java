@@ -1,7 +1,7 @@
 package MDfromLogQueries.LogCleaning;
 import MDfromLogQueries.Declarations.Declarations;
 import com.google.common.base.Stopwatch;
-
+import MDfromLogQueries.*;
 
 import javax.lang.model.type.DeclaredType;
 import java.nio.file.Files;

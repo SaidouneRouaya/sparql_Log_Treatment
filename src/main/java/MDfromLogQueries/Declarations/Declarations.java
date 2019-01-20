@@ -9,6 +9,7 @@ public class Declarations {
     public static String directoryPath = "C:\\Users\\pc\\Desktop\\PFE\\DataLog\\OnlyLogs";
     public static  String writingFilePath ="C:\\Users\\pc\\Desktop\\PFE\\Fichier_log_Nettoye_Complet_Parallel.txt";
 
+    public static  String syntaxValidFile ="C:\\Users\\KamilaB\\Desktop\\3CS\\Prototypage\\Step 1\\Fichier_Syntaxe_Valide.txt";
 
 
 }
