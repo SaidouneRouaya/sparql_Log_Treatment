@@ -60,6 +60,7 @@ public class SyntaxicValidation {
 
         File log_file_valid_syntax =new File(syntaxValidFile);
         BufferedWriter bw = null;
+        /********************** à mettre dans une fonction ***************/
         try {
             if (!log_file_valid_syntax.isFile()) log_file_valid_syntax.createNewFile();
             bw = new BufferedWriter(new FileWriter(log_file_valid_syntax, true));
