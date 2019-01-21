@@ -13,5 +13,5 @@ public class Declarations {
 
     public static  String syntaxValidFile ="C:\\Users\\KamilaB\\Desktop\\3CS\\Prototypage\\Step 1\\Fichier_Syntaxe_Valide.txt";
 
-
+    public static String writingDedupFilePath = "C:\\Users\\pc\\Desktop\\PFE\\Fichier_log_dedup_Nettoye.txt";
 }
