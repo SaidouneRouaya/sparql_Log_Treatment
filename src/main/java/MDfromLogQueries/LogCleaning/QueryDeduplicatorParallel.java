@@ -1,9 +1,9 @@
 package MDfromLogQueries.LogCleaning;
 
+import MDfromLogQueries.Util.FileOperation;
 import com.google.common.base.Stopwatch;
-import java.io.BufferedWriter;
+
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Scanner;
 import java.util.concurrent.*;
@@ -16,6 +16,7 @@ import static java.util.concurrent.TimeUnit.MILLISECONDS;
 public class QueryDeduplicatorParallel implements Runnable{
     private CopyOnWriteArraySet querySet;
     private String line;
+    private int nb_line;
 
     public QueryDeduplicatorParallel(CopyOnWriteArraySet<String> set, String line){
         this.querySet = set;
@@ -23,12 +24,12 @@ public class QueryDeduplicatorParallel implements Runnable{
     }
     @Override
     public void run() {
-
         if (!querySet.contains(line))
         {
             querySet.add(line);
+            nb_line++;
+            System.out.println("ligne numero "+nb_line);
         }
-
     }
     public static void main(String[] args) throws IOException{
 
@@ -43,26 +44,12 @@ public class QueryDeduplicatorParallel implements Runnable{
         } catch (InterruptedException e) {
         }
         System.out.println("nombre de ligne dans le set :"+set.size());
-        File fichier_log_Nettoye =new File(writingDedupFilePath);
-        BufferedWriter bw = null;
-        try {
-            if (!fichier_log_Nettoye.isFile()) fichier_log_Nettoye.createNewFile();
-            bw = new BufferedWriter(new FileWriter(fichier_log_Nettoye, true));
-            for (String s : set)
-            {
-                bw.write(s+"####");
-                bw.flush();
-            }
-        }
-        catch (IOException e) {
-            System.out.println("Impossible de creer le fichier");
-        }finally {
-            System.out.println("je suis dans le finally");
-            bw.close();}
+
+        FileOperation.WriteInFile(writingDedupFilePath, set);
         stopwatch.stop();
         System.out.println("Time elapsed for the program is "+ stopwatch.elapsed(MILLISECONDS));
     }
-    public static  void crawlFileNProcessLines(Executor executor, CopyOnWriteArraySet<String> set ) {
+    public static  void crawlFileNProcessLines(Executor executor, CopyOnWriteArraySet<String> set) {
 
         try {
             File logFile = new File(cleanedQueriesFile);
@@ -72,7 +59,6 @@ public class QueryDeduplicatorParallel implements Runnable{
             while (scanner.hasNext()) {
                 //System.out.println(line);
                 executor.execute(new QueryDeduplicatorParallel(set,scanner.next()));
-
             }
         } catch (IOException e) {
             e.printStackTrace();
