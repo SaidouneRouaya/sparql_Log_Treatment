@@ -2,6 +2,7 @@ package MDfromLogQueries.SPARQLSyntaxicValidation;
 
 
 import org.yaml.snakeyaml.Yaml;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
