@@ -40,24 +40,15 @@ public class LogCleaningParallel implements Runnable{
             System.out.println("Vous avez saisi l'url: " + logfile);
             Collection<String> list = FileOperation.ReadFile(logfile);
           String requestStr="";
-          int numberOfQueriesFile=0;
-
-
              for (String line : list)
             {
                 requestStr = new LogParser().queryFromLogLine( line );
-                if (requestStr!=null) {
-                    synchronizedList.add(requestStr);
-                numberOfQueriesFile++;
-                }
-
+                if (requestStr!=null) synchronizedList.add(requestStr);
             }
-            FileOperation.nbQueriesTotalLines+= numberOfQueriesFile;
         }
          catch (Exception e) {
             e.printStackTrace();
         }
-
     }
 
 
@@ -77,9 +68,7 @@ public class LogCleaningParallel implements Runnable{
 
         FileOperation.WriteInFile(writingFilePath, list);
         stopwatch.stop();
-        System.out.println("Nombre total de lignes dans les fichiers :  "+FileOperation.nbTotalLines);
-        System.out.println("Nombre total de requetes extraites :  "+FileOperation.nbQueriesTotalLines);
-        System.out.println("\nTime elapsed for the program is "+ stopwatch.elapsed(MILLISECONDS));
+        System.out.println("Time elapsed for the program is "+ stopwatch.elapsed(MILLISECONDS));
 
 
     }

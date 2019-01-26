@@ -1,11 +1,10 @@
 package MDfromLogQueries.LogCleaning;
 
+import MDfromLogQueries.Util.FileOperation;
 import com.google.common.base.Stopwatch;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+
+import java.io.*;
 import java.util.HashSet;
 import java.util.Scanner;
 import java.util.Set;
@@ -37,25 +36,8 @@ public class QueryDeduplicator {
                 nb_line++;
             }
             System.out.println("nombre de ligne dans le set :"+querySet.size()+" "+nb_line);
-            File fichier_log_Nettoye =new File(writingDedupFilePath);
-            BufferedWriter bw = null;
-            try {
-                if (!fichier_log_Nettoye.isFile()) fichier_log_Nettoye.createNewFile();
-                bw = new BufferedWriter(new FileWriter(fichier_log_Nettoye, true));
-                for (String s : querySet)
-                {
-                    bw.write(s+"####");
-                    bw.flush();
-                }
+            FileOperation.WriteInFile(writingDedupFilePath,querySet);
             }
-            catch (IOException e) {
-                System.out.println("Impossible de creer le fichier");
-            }finally {
-                System.out.println("je suis dans le finally");
-                bw.close();}
-            stopwatch.stop();
-            System.out.println("Time elapsed for the program is "+ stopwatch.elapsed(MILLISECONDS));
-        }
         catch (Exception e)
         {
             e.printStackTrace();
