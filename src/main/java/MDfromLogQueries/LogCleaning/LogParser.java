@@ -97,6 +97,7 @@ public class LogParser {
             Matcher matcher = PATTERN.matcher(line);
             if (matcher.find()) {
                 String requestStr = matcher.group(1);
+
                 String queryStr = queryFromRequest(requestStr);
                 return queryStr != null ? queryStr : requestStr;
             } else {
