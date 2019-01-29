@@ -28,7 +28,7 @@ public class QueryPatternExtraction {
         Element element=null;
         try {
             element = query.getQueryPattern();
-            element.visit();
+
         }
         catch (Exception e)
         {
