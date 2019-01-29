@@ -81,7 +81,7 @@ public class FileOperation {
 
             for (String query : collection) {
 
-                bw.write(query+"\n");
+                bw.write(query.replaceAll("[\n\r]","\t")+"\n");
 
                 bw.flush();
             }
