@@ -81,7 +81,7 @@ public class FileOperation {
 
             for (String query : collection) {
 
-                bw.write(query+"####");
+                bw.write(query+"\n");
 
                 bw.flush();
             }
