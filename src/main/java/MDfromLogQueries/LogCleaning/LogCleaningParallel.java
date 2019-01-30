@@ -1,11 +1,14 @@
 package MDfromLogQueries.LogCleaning;
 import MDfromLogQueries.Declarations.Declarations;
+import MDfromLogQueries.Util.FileOperation;
 import com.google.common.base.Stopwatch;
 
 
+import javax.lang.model.type.DeclaredType;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.*;
 import java.util.stream.Collectors;
@@ -35,29 +38,21 @@ public class LogCleaningParallel implements Runnable{
     public void run() {
         try {
             System.out.println("Vous avez saisi l'url: " + logfile);
-            BufferedReader br = new BufferedReader(new FileReader(new File(logfile)));
-            String line ="";
-            int nb_line=0;
-            int nb_rqst_notnull = 0;
-            while ((line = br.readLine()) != null) {
-                //  System.out.println("dans le fichier");
-                nb_line++;
-                String requestStr = new LogParser().queryFromLogLine(line);
-                if (requestStr!=null)
-                {nb_rqst_notnull++;
-                    synchronizedList.add(requestStr);
-                }
-                   }
-            System.out.println( "Nombre de lignes dans le fichiers \t"+nb_line);
-           // list.forEach(e -> System.out.println(e));
-            System.out.println( "Nombre de requetes non null dans le fichiers \t"+nb_rqst_notnull);
-        } catch (IOException e) {
+            Collection<String> list = FileOperation.ReadFile(logfile);
+          String requestStr="";
+             for (String line : list)
+            {
+                requestStr = new LogParser().queryFromLogLine( line );
+                if (requestStr!=null) synchronizedList.add(requestStr);
+            }
+        }
+         catch (Exception e) {
             e.printStackTrace();
         }
     }
 
 
-    public static void main(String art[]) throws IOException {
+    public static void main(String art[])  {
 
         Stopwatch stopwatch = Stopwatch.createStarted();
 
@@ -71,24 +66,7 @@ public class LogCleaningParallel implements Runnable{
         } catch (InterruptedException e) {
         }
 
-
-        File fichier_log_Nettoye =new File(writingFilePath);
-        BufferedWriter bw = null;
-        try {
-            if (!fichier_log_Nettoye.isFile()) fichier_log_Nettoye.createNewFile();
-            bw = new BufferedWriter(new FileWriter(fichier_log_Nettoye, true));
-
-            for (int i=0; i<list.size();i++ ) {
-
-                bw.write(list.get(i) +"####");
-
-                bw.flush();
-            }
-        }        catch (IOException e) {
-            System.out.println("Impossible de creer le fichier");
-        }finally {
-            System.out.println("je suis dans le finally");
-            bw.close();}
+        FileOperation.WriteInFile(writingFilePath, list);
         stopwatch.stop();
         System.out.println("Time elapsed for the program is "+ stopwatch.elapsed(MILLISECONDS));
 

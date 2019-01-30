@@ -10,12 +10,16 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 public class FileOperation {
 
+
+    public static int nbTotalLines =0;
+    public static int nbQueriesTotalLines =0;
     public static Collection<String> ReadFile(String readingFilePath) {
 
         File file = new File(readingFilePath);
         String line = "";
        ArrayList<String> collection = new ArrayList<>();
         BufferedReader br = null;
+        int linesNumbers =0;
         try {
             if (!file.isFile()) file.createNewFile();
 
@@ -23,16 +27,20 @@ public class FileOperation {
 
             while ((line = br.readLine()) != null) {
                 collection.add(line);
+                linesNumbers++;
             }
         } catch (IOException e) {
             e.printStackTrace();
         }finally {
             try {
                 br.close();
+
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
+        nbTotalLines+=linesNumbers;
+        System.out.println("nombre de ligne dans le fichier est :   "+linesNumbers );
         return collection;
     }
    /* public static CopyOnWriteArrayList ReadFileParallel (String readingFilePath) {
@@ -73,7 +81,7 @@ public class FileOperation {
 
             for (String query : collection) {
 
-                bw.write(query+"####");
+                bw.write(query.replaceAll("[\n\r]","\t")+"\n");
 
                 bw.flush();
             }

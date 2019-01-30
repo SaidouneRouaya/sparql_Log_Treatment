@@ -40,7 +40,7 @@ public class LogParser {
                // String chemin = "C:\\Users\\pc\\Desktop\\PFE\\DataLog\\dbp351logs\\test - Copie\\accessCopie.log-20100502";
 
 
-                /** for each log file in the specified directory **/
+                /** ignore cette partie c un fichier ancien **/
                 for (Path p : filesInFolder) {
                     String chemin = p.toString();
 
@@ -70,8 +70,7 @@ public class LogParser {
                             BufferedWriter bw = new BufferedWriter(new FileWriter(fichier_log_Nettoye, true));
 
                             try {
-                                bw.write("\n"+requestStr+"\n\n"+"*************************************************" +
-                                        "********************************************************************************************************"+"\n");
+                               bw.write(requestStr+"####");
                                 bw.flush();
                             } finally {
                                 bw.close();
@@ -94,10 +93,11 @@ public class LogParser {
         }
 
 
-        public  String queryFromLogLine(String line) {
+        public static String queryFromLogLine(String line) {
             Matcher matcher = PATTERN.matcher(line);
             if (matcher.find()) {
                 String requestStr = matcher.group(1);
+
                 String queryStr = queryFromRequest(requestStr);
                 return queryStr != null ? queryStr : requestStr;
             } else {
@@ -105,7 +105,7 @@ public class LogParser {
             }
         }
 
-        public String queryFromRequest(String requestStr) {
+        public static String queryFromRequest(String requestStr) {
             List<NameValuePair> pairs = URLEncodedUtils.parse(requestStr, StandardCharsets.UTF_8);
 
             for (NameValuePair pair : pairs) {
@@ -116,9 +116,6 @@ public class LogParser {
             }
             return null;
         }
-
-
-
 
     }
 
