@@ -1,22 +1,19 @@
 package MDPatternDetection;
 
-import MDfromLogQueries.Declarations.Declarations;
 import MDfromLogQueries.Util.FileOperation;
 import com.google.common.base.Stopwatch;
+import org.apache.jena.datatypes.RDFDatatype;
+import org.apache.jena.datatypes.TypeMapper;
 import org.apache.jena.query.Query;
 import org.apache.jena.query.QueryFactory;
-import org.apache.jena.sparql.engine.optimizer.Pattern;
+import org.apache.jena.rdf.model.Property;
 import org.apache.jena.sparql.syntax.Element;
 
-
-import javax.sound.midi.Soundbank;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
+import org.apache.jena.datatypes.RDFDatatype;
+import org.apache.jena.datatypes.TypeMapper;
 import java.util.ArrayList;
 
 import static MDfromLogQueries.Declarations.Declarations.syntaxValidFile;
-import static MDfromLogQueries.Declarations.Declarations.writingDedupFilePath;
 import static java.util.concurrent.TimeUnit.SECONDS;
 
 public class QueryPatternExtraction {
@@ -38,6 +35,7 @@ public class QueryPatternExtraction {
         return element ;
 
     }
+
 
 
     public static void main(String[] args)  {
@@ -83,6 +81,14 @@ public class QueryPatternExtraction {
         {
             e.printStackTrace();
         }
+
+
+
+
+
+
+
+
         stopwatch.stop();
         System.out.println("\n Time elapsed for the program is "+ stopwatch.elapsed(SECONDS));
 
