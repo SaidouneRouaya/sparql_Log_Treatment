@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static MDfromLogQueries.Declarations.Declarations.syntaxValidFile;
+import static MDfromLogQueries.Declarations.Declarations.syntaxValidFileTest;
 import static java.util.concurrent.TimeUnit.SECONDS;
 
 public class QueryPatternExtraction {
@@ -62,7 +63,7 @@ public class QueryPatternExtraction {
            int nb_GP=0;
            int nb_nullGP=0;
            BasicPattern bp;
-            lines = (ArrayList<String>) FileOperation.ReadFile(/*syntaxValidFile*/"C:\\Users\\KamilaB\\Desktop\\3CS\\Prototypage\\Step_1\\Fichiers_Resultat\\Fichier_Syntaxe_Valide_test.txt");
+            lines = (ArrayList<String>) FileOperation.ReadFile(syntaxValidFileTest);
             QueryPatternExtraction QPE= new QueryPatternExtraction();
             for (String line : lines){
                 nb_line++;
