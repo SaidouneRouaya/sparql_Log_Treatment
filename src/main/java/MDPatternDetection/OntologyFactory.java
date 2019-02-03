@@ -1,20 +1,12 @@
 package MDPatternDetection;
 
 import org.apache.jena.ontology.OntModel;
-import org.apache.jena.ontology.OntModelSpec;
-import org.apache.jena.ontology.impl.OntModelImpl;
 import org.apache.jena.query.*;
-import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
-import org.apache.jena.rdf.model.RDFNode;
-
-
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+
 
 public class OntologyFactory {
 
@@ -35,7 +27,6 @@ public class OntologyFactory {
         // create OntModel
         OntModel ontologie = ModelFactory.createOntologyModel();
         OntologyFactory.readOntology("C:\\Users\\KamilaB\\Desktop\\3CS\\Prototypage\\Step_1\\dbpedia_2014.owl\\dbpedia_2014.owl",ontologie);
-        List<String> roots = new ArrayList<String>();
 
         // find all owl:Class entities and filter these which do not have a parent
         /*String getRootsQuery =
@@ -60,11 +51,6 @@ public class OntologyFactory {
                 //QuerySolution soln = results.nextSolution();
                 i++;
                 System.out.println(results.next() +" " + i);
-                //RDFNode sub = soln.get("s");
-
-                //if( !sub.isURIResource() ) continue;
-
-                //roots.add( sub.toString() );
             }
         }
 
