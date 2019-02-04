@@ -15,14 +15,16 @@ public class QueryFixer {
     private final static String TEST_QUERY_STR1 = "PREFIX a: <http://a/>\n" +
             "\n" +
             "# 12:34\n" +
-            "SELECT ?x ?y WHERE {\n" +
+            "SELECT ?x ?x ?x ?y WHERE {\n" +
             "?x a:a ?y.\n" +
+            "?x b:b ?y.\n" +
+            "?x b:b ?y.\n" +
             "?x b:b ?y.\n" +
             "?x c-x:c-x ?y.\n" +
             "}";
 
 
-
+//TODO ajouter une fonction pour dédupliquer les graph patterns dans une requête
 
     public static void main(String[] args) {
         String fixedQueryStr = new QueryFixer().fix(TEST_QUERY_STR1);

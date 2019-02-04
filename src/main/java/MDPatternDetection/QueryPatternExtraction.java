@@ -4,13 +4,18 @@ package MDPatternDetection;
 import MDfromLogQueries.Util.FileOperation;
 import com.google.common.base.Stopwatch;
 import org.apache.jena.datatypes.TypeMapper;
-import org.apache.jena.graph.Node;
-import org.apache.jena.graph.Triple;
+import org.apache.jena.graph.*;
+import org.apache.jena.graph.impl.CollectionGraph;
 import org.apache.jena.ontology.DatatypeProperty;
 import org.apache.jena.query.Query;
 import org.apache.jena.query.QueryFactory;
+import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Property;
+import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
+import org.apache.jena.rdf.model.impl.ModelCom;
+import org.apache.jena.rdf.model.impl.PropertyImpl;
+import org.apache.jena.rdfxml.xmloutput.impl.Basic;
 import org.apache.jena.sparql.algebra.Algebra;
 import org.apache.jena.sparql.algebra.Op;
 import org.apache.jena.sparql.algebra.OpVisitorBase;
@@ -22,6 +27,7 @@ import org.apache.jena.sparql.expr.ExprList;
 import org.apache.jena.sparql.syntax.Element;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import static MDfromLogQueries.Declarations.Declarations.syntaxValidFile;
@@ -117,34 +123,64 @@ public class QueryPatternExtraction {
         public BasicPattern getBgp() {
             return bgp;
         }
+    }
 
         /** Fix the basic graph pattern to create an ontology to test with the dataset ontology **/
         private BasicPattern modifyBasicPattern(BasicPattern bpat)
         {
             List<Triple> triples = bpat.getList();
-            BasicPattern bpModifie = new BasicPattern();
-            Node subject = null;
+            // Represents the where Basic Pattern is the construct query after adding new triples
+            BasicPattern bpModified = bpat ;
+            BasicPattern bpConstruct = new BasicPattern();
+            Property rdfTypeProp = new PropertyImpl("http://www.w3.org/1999/02/22-rdf-syntax-ns#type");
+            Resource subject = null;
             Node object =  null;
             Property predicate = null;
+            /*Triple newTriple = null;
             for (Triple triple : triples)
             {
                 subject = triple.getSubject();
                 object = triple.getObject();
                 predicate = (Property) triple.getPredicate();
-                if (!predicate.getNameSpace().matches("rdf|rdfs|owl"))
-                {
-                    if (!object.isLiteral()) {
-                        bpModifie.add(triple);
-                    }
-                    else if(predicate instanceof DatatypeProperty)
-                    {
 
-                    }
+            }*/
+            Graph graph = constructGraph(triples);
+            Model queryModel = new ModelCom(graph);
+            Iterator nodeIterator = queryModel.listSubjects();
+            while (nodeIterator.hasNext())
+            {
+                //  model.getRDFNode(nodeIterator.next().getSubject().asNode());
+                Node subjecRDFTypeValue = null;
+                int i = 1;
+                subject = (Resource) nodeIterator.next();
+                if (!subject.hasProperty(rdfTypeProp))
+                {
+                    subjecRDFTypeValue = new Node_Variable("sub"+i);
+                    bpModified.add(new Triple(subject.asNode(),rdfTypeProp.asNode(),subjecRDFTypeValue));
+                    i++;
                 }
+                else{
+                    subjecRDFTypeValue = subject.getProperty(rdfTypeProp).getObject().asNode();
+                }
+                //TODO Faire une fonction pour parcourir les propriétés et les objets
+                Iterator propertyIterator = subject.listProperties();
+                while (propertyIterator.hasNext())
+                {
+
+                }
+//TODO Ajouter le subjectRDFTypeValue dans la clause de construct
 
             }
-            return  bpModifie;
+            return  bpModified;
         }
-    }
+        public Graph constructGraph(List<Triple> triples)
+        {
+            Graph graph = new CollectionGraph();
+            for (Triple t: triples ) {
+                graph.add(t);
+            }
+            return graph;
+        }
+
 
 }
