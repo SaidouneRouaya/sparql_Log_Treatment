@@ -2,6 +2,7 @@ package MDfromLogQueries.SPARQLSyntaxicValidation;
 
 
 import org.yaml.snakeyaml.Yaml;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
@@ -57,7 +58,7 @@ public class QueryFixer {
             System.out.println("je passe par load map");
 
             if (object instanceof Map) {
-
+                System.out.println(((Map) object).get("rdf").toString());
                 return (Map<String, String>) object;
             }
         } catch (IOException ignored) {
