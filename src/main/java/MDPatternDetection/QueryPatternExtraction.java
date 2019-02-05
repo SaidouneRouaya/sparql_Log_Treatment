@@ -23,7 +23,8 @@ import java.util.List;
 import static java.util.concurrent.TimeUnit.SECONDS;
 
 public class QueryPatternExtraction {
-
+    BasicPattern graphPattern = null;
+    BasicPattern graphOptionalPattern = null;
 
     public QueryPatternExtraction() {
     }
@@ -58,19 +59,19 @@ public class QueryPatternExtraction {
                 }
 
             }*/
-            query = QueryFactory.create("PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> SELECT ?s where { ?s ?p ?o Optional { ?s rdf:type ?o}}");
+            query = QueryFactory.create("PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> SELECT ?s where { ?s ?p ?o }");
             //System.out.println( "ligne \t"+query);
 
             try {
-                bp = QPE.extractGP(query);
+                QPE.extractGP(query);
                 QueryConstruction qc = new QueryConstruction();
-                qc.modifyBasicPattern(bp);
+                qc.completePatterns(QPE.graphPattern,QPE.graphOptionalPattern);
                 query.setQueryConstructType();
                 query.setConstructTemplate(new Template(qc.getBpConstruct()));
-                query.setQueryPattern(new ElementTriplesBlock(bp));
+                query.setQueryPattern(new ElementTriplesBlock(QPE.graphPattern));
               //  query.;
-                System.out.println(bp.toString() + "\n" + nb_GP);
-                PatternList.add(bp);
+                System.out.println(QPE.graphPattern.toString() + "\n" + nb_GP);
+                PatternList.add(QPE.graphPattern);
                 nb_GP++;
             } catch (Exception e) {
                 nb_nullGP++;
@@ -90,12 +91,20 @@ public class QueryPatternExtraction {
 
     }
 
-    public BasicPattern extractGP(Query query) {
-        BasicPattern graphPattern = null;
+    public void extractGP(Query query) {
         OpBGPVisitor opBGPVisitor = new OpBGPVisitor();
         try {
             opBGPVisitor.OpBGPVisitorWalker(Algebra.compile(query));
-            graphPattern = opBGPVisitor.getBgp();
+            if(opBGPVisitor.getBgpopt()!=null)
+            {
+                graphPattern = opBGPVisitor.getBgp();
+                graphOptionalPattern = opBGPVisitor.getBgpopt();
+            }
+            else{
+                graphPattern = opBGPVisitor.getTemp();
+                graphOptionalPattern = new BasicPattern();
+            }
+
             System.out.println("*******"+graphPattern);
             System.out.println("*********"+opBGPVisitor.getBgpopt());
 
@@ -103,7 +112,6 @@ public class QueryPatternExtraction {
             System.out.println("C'est une erreur");
             e.printStackTrace();
         }
-        return graphPattern;
 
     }
 
@@ -112,6 +120,10 @@ public class QueryPatternExtraction {
         BasicPattern temp;
         BasicPattern bgpopt;
         ExprList expList;
+
+        public BasicPattern getTemp() {
+            return temp;
+        }
 
         public void OpBGPVisitorWalker(Op op) {
             OpWalker.walk(op, this);

@@ -20,6 +20,8 @@ import java.util.List;
 public class QueryConstruction {
     Constants constants = new Constants();
     private BasicPattern bpModified; // QueryPattern after modification to build a construct query
+    private BasicPattern bpWhere = new BasicPattern();
+    private BasicPattern bpWhereOptional = new BasicPattern();
     private BasicPattern bpConstruct = new BasicPattern();
     private Property rdfTypeProp = new PropertyImpl("http://www.w3.org/1999/02/22-rdf-syntax-ns#type");
 
@@ -27,12 +29,27 @@ public class QueryConstruction {
         return bpConstruct;
     }
 
+    public BasicPattern getBpWhere() {
+        return bpWhere;
+    }
+
+    public BasicPattern getBpWhereOptional() {
+        return bpWhereOptional;
+    }
+
     /**
      * Fix the basic graph pattern to create an ontology to test with the dataset ontology
      **/
 
-    public void modifyBasicPattern(BasicPattern bpat) {
+    public void completePatterns(BasicPattern e_bpwhere, BasicPattern e_bpWhereOptional)
+    {
+       this.bpWhere=  modifyBasicPattern(e_bpwhere);
+       this.bpWhereOptional = modifyBasicPattern(e_bpWhereOptional);
+        afficher();
+    }
+    public BasicPattern modifyBasicPattern(BasicPattern bpat) {
         List<Triple> triples = bpat.getList();
+        bpModified= new BasicPattern();
         // Represents the where Basic Pattern is the construct query after adding new triples
         bpModified = bpat;
         Resource subject;
@@ -47,7 +64,7 @@ public class QueryConstruction {
             // La ligne en dessous risque de duplication des graph pattern mais c'est le seul moyen pour la réutilisation de la fonction
             propertyIterate(subject, subjectRDFTypeValue);
         }
-        afficher();
+        return bpModified;
     }
 
     public Graph constructGraph(List<Triple> triples) {
@@ -105,13 +122,19 @@ public class QueryConstruction {
     }
 
     private void afficher() {
-        List<Triple> triplebbcp = bpModified.getList();
+        List<Triple> triplebbcp = this.bpWhere.getList();
         System.out.println("BP WHERE : ");
         for (Triple t : triplebbcp) {
             System.out.println(t.toString());
         }
         System.out.println("Fin BP WHERE : ");
-        List<Triple> triplebbgcp = bpConstruct.getList();
+        List<Triple> triplebfbcp = this.bpWhereOptional.getList();
+        System.out.println("BP WHERE Optional : ");
+        for (Triple t : triplebfbcp) {
+            System.out.println(t.toString());
+        }
+        System.out.println("Fin BP WHERE : ");
+        List<Triple> triplebbgcp = this.bpConstruct.getList();
         System.out.println("BP Construct : ");
         for (Triple t : triplebbgcp) {
             System.out.println(t.toString());
