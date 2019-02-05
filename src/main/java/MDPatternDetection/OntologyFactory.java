@@ -3,6 +3,7 @@ package MDPatternDetection;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.*;
 import org.apache.jena.rdf.model.ModelFactory;
+
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -41,7 +42,7 @@ public class OntologyFactory {
                 "PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>" +
                 "SELECT ?var ?type WHERE {?var rdf:type rdf:Property. ?var rdfs:range ?type} LIMIT 10";
 */
-        String getRootsQuery =         "PREFIX  rdfs: <http://www.w3.org/2000/01/rdf-schema#>" +
+        String getRootsQuery = "PREFIX  rdfs: <http://www.w3.org/2000/01/rdf-schema#>" +
                 "PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>" +
                 "SELECT ?prop ?range WHERE {?prop rdf:type rdf:Property. " +
                 "?prop rdfs:range ?range. " +

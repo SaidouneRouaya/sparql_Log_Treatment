@@ -6,7 +6,6 @@ import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.*;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Property;
-import org.apache.jena.rdf.model.RDFNode;
 
 import java.util.HashSet;
 
@@ -14,87 +13,76 @@ import java.util.HashSet;
 public class Constants {
     public HashSet<String> datatypeProperties;
     public HashSet<String> objectProperties;
-    public Constants()
-    {
+
+    public Constants() {
         initObjectProperties();
         initDatatypeProperties();
     }
-    private void initDatatypeProperties()
-    {
+
+    private void initDatatypeProperties() {
         OntModel ontologie = ModelFactory.createOntologyModel();
-        OntologyFactory.readOntology("C:\\Users\\KamilaB\\Desktop\\3CS\\Prototypage\\Step_1\\dbpedia_2014.owl\\dbpedia_2014.owl",ontologie);
+        OntologyFactory.readOntology("C:\\Users\\KamilaB\\Desktop\\3CS\\Prototypage\\Step_1\\dbpedia_2014.owl\\dbpedia_2014.owl", ontologie);
         HashSet<String> datatypePropertySet = new HashSet<>();
 
         String datatypeQuery = "PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> " +
                 "PREFIX  owl:  <http://www.w3.org/2002/07/owl#>" +
                 "select ?prop where { ?prop rdf:type owl:DatatypeProperty}";
-        Query query = QueryFactory.create( datatypeQuery );
+        Query query = QueryFactory.create(datatypeQuery);
 
-        try ( QueryExecution qexec = QueryExecutionFactory.create( query, ontologie ) )
-        {
+        try (QueryExecution qexec = QueryExecutionFactory.create(query, ontologie)) {
             ResultSet results = qexec.execSelect();
             int i = 0;
-            while( results.hasNext() )
-            {
+            while (results.hasNext()) {
                 datatypePropertySet.add(results.next().toString());
                 i++;
             }
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         this.datatypeProperties = datatypePropertySet;
     }
-    private void initObjectProperties()
-    {
+
+    private void initObjectProperties() {
         OntModel ontologie = ModelFactory.createOntologyModel();
-        OntologyFactory.readOntology("C:\\Users\\KamilaB\\Desktop\\3CS\\Prototypage\\Step_1\\dbpedia_2014.owl\\dbpedia_2014.owl",ontologie);
+        OntologyFactory.readOntology("C:\\Users\\KamilaB\\Desktop\\3CS\\Prototypage\\Step_1\\dbpedia_2014.owl\\dbpedia_2014.owl", ontologie);
         HashSet<String> objectPropertySet = new HashSet<>();
 
         String datatypeQuery = "PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> " +
                 "PREFIX  owl:  <http://www.w3.org/2002/07/owl#>" +
                 "select ?prop where { ?prop rdf:type owl:ObjectProperty}";
-        Query query = QueryFactory.create( datatypeQuery );
+        Query query = QueryFactory.create(datatypeQuery);
 
-        try ( QueryExecution qexec = QueryExecutionFactory.create( query, ontologie ) )
-        {
+        try (QueryExecution qexec = QueryExecutionFactory.create(query, ontologie)) {
             ResultSet results = qexec.execSelect();
             int i = 0;
-            while( results.hasNext() )
-            {
+            while (results.hasNext()) {
                 objectPropertySet.add(results.next().toString());
                 i++;
             }
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         this.objectProperties = objectPropertySet;
     }
-    public HashSet<String> getDatatypeProperties()
-    {
-        if(datatypeProperties.size()<1)
-        {
+
+    public HashSet<String> getDatatypeProperties() {
+        if (datatypeProperties.size() < 1) {
             initDatatypeProperties();
         }
         return datatypeProperties;
     }
-    public HashSet<String> getObjectProperties()
-    {
-        if(objectProperties.size()<1)
-        {
+
+    public HashSet<String> getObjectProperties() {
+        if (objectProperties.size() < 1) {
             initObjectProperties();
         }
         return objectProperties;
     }
 
     //à changer probablement en créant un nouveau type contenant la datatypeProperty et son ou ses range
-    public HashSet<Node> getRangeofProperty(Property property)
-    {
+    public HashSet<Node> getRangeofProperty(Property property) {
         OntModel ontologie = ModelFactory.createOntologyModel();
-        OntologyFactory.readOntology("C:\\Users\\KamilaB\\Desktop\\3CS\\Prototypage\\Step_1\\dbpedia_2014.owl\\dbpedia_2014.owl",ontologie);
+        OntologyFactory.readOntology("C:\\Users\\KamilaB\\Desktop\\3CS\\Prototypage\\Step_1\\dbpedia_2014.owl\\dbpedia_2014.owl", ontologie);
         HashSet<Node> rangeSet = new HashSet<>();
 
         String datatypeQuery = "PREFIX  rdfs: <http://www.w3.org/2000/01/rdf-schema#>" +
@@ -102,20 +90,16 @@ public class Constants {
                 "SELECT ?prop ?range WHERE {?prop rdf:type rdf:Property. " +
                 "?prop rdfs:range ?type. " +
                 " FILTER (?prop = <http://dbpedia.org/ontology/playerStatus>) }  ";
-        Query query = QueryFactory.create( datatypeQuery );
+        Query query = QueryFactory.create(datatypeQuery);
 
-        try ( QueryExecution qexec = QueryExecutionFactory.create( query, ontologie ) )
-        {
+        try (QueryExecution qexec = QueryExecutionFactory.create(query, ontologie)) {
             ResultSet results = qexec.execSelect();
             int i = 0;
-            while( results.hasNext() )
-            {
+            while (results.hasNext()) {
                 rangeSet.add(results.next().get("range").asNode());
                 i++;
             }
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return rangeSet;
