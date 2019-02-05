@@ -1,9 +1,15 @@
 package MDfromLogQueries.SPARQLSyntaxicValidation;
 
+import MDfromLogQueries.Util.FileOperation;
 import com.google.common.base.Stopwatch;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.util.ArrayList;
 
+import static MDfromLogQueries.Declarations.Declarations.syntaxValidFile;
+import static MDfromLogQueries.Declarations.Declarations.writingDedupFilePath;
 import static java.util.concurrent.TimeUnit.SECONDS;
 
 public class SyntaxicValidation {
@@ -18,6 +24,10 @@ public class SyntaxicValidation {
     public static void main(String[] args) {
         Stopwatch stopwatch = Stopwatch.createStarted();
         ArrayList<String> validQueryList = new ArrayList<>();
+        String query;
+        ArrayList<String> queryList;
+
+
         test2("PREFIX a: <http://a/>\n" +
                 "\n" +
                 "# 12:34\n" +
@@ -28,7 +38,7 @@ public class SyntaxicValidation {
                 "?x b:b ?y.\n" +
                 "?x c-x:c-x ?y.\n" +
                 "}");
-        /*try {
+        try {
             File dedupFile = new File(writingDedupFilePath );
             BufferedReader br = new BufferedReader(new FileReader(dedupFile));
             //String line ="";
@@ -53,7 +63,7 @@ public class SyntaxicValidation {
 
         System.out.println("taille de la validQueryList : "+validQueryList.size());
         FileOperation.WriteInFile(syntaxValidFile,validQueryList);
-        */
+
         stopwatch.stop();
         System.out.println("Time elapsed for the program is "+ stopwatch.elapsed(SECONDS));
 
