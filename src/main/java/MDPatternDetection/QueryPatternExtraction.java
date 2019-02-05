@@ -87,6 +87,8 @@ public class QueryPatternExtraction {
         try {
             opBGPVisitor.OpBGPVisitorWalker(Algebra.compile(query));
             graphPattern = opBGPVisitor.getBgp();
+            System.out.println("Je suis dans Extract GP");
+            System.out.println(graphPattern.toString());
 
         } catch (Exception e) {
             System.out.println("C'est une erreur");

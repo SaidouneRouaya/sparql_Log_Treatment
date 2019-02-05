@@ -26,6 +26,7 @@ public class QueryFixer {
             "?x b:b ?y.\n" +
             "?x b:b ?y.\n" +
             "?x c-x:c-x ?y.\n" +
+            "OPTIONAL { ?x d:d ?y }" +
             "}";
 
 
@@ -157,15 +158,30 @@ public class QueryFixer {
 
         BasicPattern BP = new QueryPatternExtraction().extractGP(query);
 
-        Iterator<Triple> iterator = BP.iterator();
+
+        List<Triple> iterator = BP.getList();
+        // Iterator<Triple> iterator =BP.getList() .iterator();
         ElementTriplesBlock newTriples = new ElementTriplesBlock();
         HashSet<Triple> uniqueTriples = new HashSet<>();
 
-        while (iterator.hasNext()) {
-            uniqueTriples.add(iterator.next());
+        Triple triple;
+        System.out.println("Je suis dans le while");
+       /* while (iterator.hasNext()) {
+
+            triple=iterator.next();
+            uniqueTriples.add(triple);
+            System.out.println(triple.toString());
+        }*/
+        for (Triple trip : iterator) {
+
+            uniqueTriples.add(trip);
+            System.out.println(trip.toString());
         }
+
         // Make a new BGP
+        System.out.println("je suis dans le for ");
         for (Triple t : uniqueTriples) {
+            System.out.println(t.toString());
             newTriples.addTriple(t);
         }
 
