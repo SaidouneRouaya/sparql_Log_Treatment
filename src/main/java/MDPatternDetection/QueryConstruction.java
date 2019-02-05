@@ -9,6 +9,7 @@ import org.apache.jena.graph.impl.CollectionGraph;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.rdf.model.impl.ModelCom;
 import org.apache.jena.rdf.model.impl.PropertyImpl;
 import org.apache.jena.sparql.core.BasicPattern;
@@ -22,9 +23,14 @@ public class QueryConstruction {
     private BasicPattern bpConstruct = new BasicPattern();
     private Property rdfTypeProp = new PropertyImpl("http://www.w3.org/1999/02/22-rdf-syntax-ns#type");
 
+    public BasicPattern getBpConstruct() {
+        return bpConstruct;
+    }
+
     /**
      * Fix the basic graph pattern to create an ontology to test with the dataset ontology
      **/
+
     public void modifyBasicPattern(BasicPattern bpat) {
         List<Triple> triples = bpat.getList();
         // Represents the where Basic Pattern is the construct query after adding new triples
@@ -64,7 +70,10 @@ public class QueryConstruction {
     }
 
     private boolean isDatatypeProperty(Property property) {
+        if(!property.asNode().isVariable())
         return constants.getDatatypeProperties().contains(property.getNameSpace());
+        else
+            return false;
     }
 
     private boolean isObjectProperty(Property property) {
@@ -78,8 +87,7 @@ public class QueryConstruction {
         Triple newTriple;
         while (propertyIterator.hasNext()) {
             Node objectRDFTypeValue;
-            property = (Property) propertyIterator.next();
-
+            property = ((Statement) propertyIterator.next()).getPredicate();
             if (isDatatypeProperty(property)) {
                 Iterator rangeIterator = constants.getRangeofProperty(property).iterator();
                 while (rangeIterator.hasNext()) {
@@ -98,12 +106,16 @@ public class QueryConstruction {
 
     private void afficher() {
         List<Triple> triplebbcp = bpModified.getList();
+        System.out.println("BP WHERE : ");
         for (Triple t : triplebbcp) {
             System.out.println(t.toString());
         }
+        System.out.println("Fin BP WHERE : ");
         List<Triple> triplebbgcp = bpConstruct.getList();
+        System.out.println("BP Construct : ");
         for (Triple t : triplebbgcp) {
             System.out.println(t.toString());
         }
+        System.out.println("Fin BP Construct");
     }
 }
