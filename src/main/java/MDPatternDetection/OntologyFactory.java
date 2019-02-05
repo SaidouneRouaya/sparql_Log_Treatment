@@ -37,9 +37,15 @@ public class OntologyFactory {
                         + "  OPTIONAL { ?s <http://www.w3.org/2000/01/rdf-schema#subClassOf> ?super . "
                         + "  FILTER ( ?super != <http://www.w3.org/2002/07/owl#Thing> && ?super != ?s ) } . "
                         + "}";
+                        "PREFIX  rdfs: <http://www.w3.org/2000/01/rdf-schema#>" +
+                "PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>" +
+                "SELECT ?var ?type WHERE {?var rdf:type rdf:Property. ?var rdfs:range ?type} LIMIT 10";
 */
-        String getRootsQuery = "PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>" +
-                "SELECT ?var WHERE {?var rdf:type rdf:Property} LIMIT 10";
+        String getRootsQuery =         "PREFIX  rdfs: <http://www.w3.org/2000/01/rdf-schema#>" +
+                "PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>" +
+                "SELECT ?prop ?range WHERE {?prop rdf:type rdf:Property. " +
+                "?prop rdfs:range ?range. " +
+                " FILTER (?prop = <http://dbpedia.org/ontology/playerStatus>) }  ";
         Query query = QueryFactory.create( getRootsQuery );
 
         try ( QueryExecution qexec = QueryExecutionFactory.create( query, ontologie ) )
