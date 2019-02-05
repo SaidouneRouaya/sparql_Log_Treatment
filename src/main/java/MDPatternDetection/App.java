@@ -31,13 +31,16 @@ public class App {
                 "PREFIX skos: <http://www.w3.org/2004/02/skos/core#>" +
                 "SELECT ?title WHERE {" +
                 "     ?game a dbo:Game  ." +
+                "     ?game a dbo:Game  ." +
+                "     ?game a dbo:Game  ." +
                 "     ?game foaf:name ?title ." +
                 "} ORDER by ?title limit 10";
 
         Query query = QueryFactory.create(queryStr);
+        System.out.println("*************" + query.toString());
         Op op = Algebra.compile(query);
         System.out.println(op.toString());
-        System.out.println(movb.executeQuery(queryStr).getResourceModel().size());
+        //System.out.println(movb.executeQuery(queryStr).getResourceModel().size());
         movb.myOpVisitorWalker(op);
         movb.contructGraph();
     }

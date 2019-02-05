@@ -3,19 +3,18 @@ package MDPatternDetection;
 
 import MDfromLogQueries.Util.FileOperation;
 import com.google.common.base.Stopwatch;
-import org.apache.jena.datatypes.TypeMapper;
-import org.apache.jena.graph.*;
+import org.apache.jena.graph.Graph;
+import org.apache.jena.graph.Node;
+import org.apache.jena.graph.Node_Variable;
+import org.apache.jena.graph.Triple;
 import org.apache.jena.graph.impl.CollectionGraph;
-import org.apache.jena.ontology.DatatypeProperty;
 import org.apache.jena.query.Query;
 import org.apache.jena.query.QueryFactory;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.rdf.model.impl.ModelCom;
 import org.apache.jena.rdf.model.impl.PropertyImpl;
-import org.apache.jena.rdfxml.xmloutput.impl.Basic;
 import org.apache.jena.sparql.algebra.Algebra;
 import org.apache.jena.sparql.algebra.Op;
 import org.apache.jena.sparql.algebra.OpVisitorBase;
@@ -24,13 +23,11 @@ import org.apache.jena.sparql.algebra.op.OpBGP;
 import org.apache.jena.sparql.algebra.op.OpFilter;
 import org.apache.jena.sparql.core.BasicPattern;
 import org.apache.jena.sparql.expr.ExprList;
-import org.apache.jena.sparql.syntax.Element;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import static MDfromLogQueries.Declarations.Declarations.syntaxValidFile;
 import static MDfromLogQueries.Declarations.Declarations.syntaxValidFileTest;
 import static java.util.concurrent.TimeUnit.SECONDS;
 
@@ -39,29 +36,11 @@ public class QueryPatternExtraction {
     public QueryPatternExtraction() {
     }
 
-    public BasicPattern extractGP (Query query){
-        BasicPattern graphPattern =null;
-        OpBGPVisitor opBGPVisitor = new OpBGPVisitor();
-        try {
-            opBGPVisitor.OpBGPVisitorWalker(Algebra.compile(query));
-            graphPattern = opBGPVisitor.getBgp();
-
-        }
-        catch (Exception e)
-        {
-            System.out.println("C'est une erreur");
-            e.printStackTrace();
-        }
-        return graphPattern ;
-
-    }
-
-
     public static void main(String[] args)  {
         Stopwatch stopwatch = Stopwatch.createStarted();
-        ArrayList<String> lines = new ArrayList<>();
+        ArrayList<String> lines;
         ArrayList<BasicPattern> PatternList = new ArrayList<>();
-        Query query = null;
+        Query query;
         try {
 
            /** Graph pattern extraction **/
@@ -99,6 +78,21 @@ public class QueryPatternExtraction {
         stopwatch.stop();
         System.out.println("\n Time elapsed for the program is "+ stopwatch.elapsed(SECONDS));
 
+    }
+
+    public BasicPattern extractGP(Query query) {
+
+        OpBGPVisitor opBGPVisitor = new OpBGPVisitor();
+        try {
+            opBGPVisitor.OpBGPVisitorWalker(Algebra.compile(query));
+
+            return opBGPVisitor.getBgp();
+
+        } catch (Exception e) {
+            System.out.println("C'est une erreur");
+            e.printStackTrace();
+            return null;
+        }
     }
 
     private class OpBGPVisitor extends OpVisitorBase {
