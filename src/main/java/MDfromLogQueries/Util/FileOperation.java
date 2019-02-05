@@ -1,7 +1,5 @@
 package MDfromLogQueries.Util;
 
-import MDfromLogQueries.LogCleaning.LogParser;
-
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -12,7 +10,6 @@ public class FileOperation {
 
 
     public static int nbTotalLines =0;
-    public static int nbQueriesTotalLines =0;
     public static Collection<String> ReadFile(String readingFilePath) {
 
         File file = new File(readingFilePath);

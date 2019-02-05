@@ -52,7 +52,7 @@ public class dbpediaLogCleaning {
             String line ="";
             int nb_line=0;
             int nb_rqst_notnull = 0;
-            while ((line = br.readLine()) != null) {
+          /*  while ((line = br.readLine()) != null) {
                 nb_line++;
                 String requestStr = new LogParser().queryFromLogLine(line);
 
@@ -67,7 +67,7 @@ public class dbpediaLogCleaning {
                 System.out.println( "Nombre de requetes non null dans le fichiers \t"+nb_rqst_notnull);
 
 
-            }}
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }

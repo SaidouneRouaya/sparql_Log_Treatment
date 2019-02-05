@@ -1,12 +1,15 @@
 package MDfromLogQueries.LogCleaning
 
 import java.io.{File, PrintWriter}
+import java.nio.charset.StandardCharsets
 import java.util.regex.Pattern
 
 import MDfromLogQueries.Declarations.Declarations
+import MDfromLogQueries.Util.FileOperation
 import org.apache.http.client.utils.URLEncodedUtils
 
-import scala.io.Source
+import scala.collection.JavaConversions._
+import scala.collection.JavaConverters
 
 //class LogCleaning{
 object Main extends App {
@@ -17,40 +20,37 @@ object Main extends App {
 println("je suis dans log cleaner")
 
   // directory contenant les ficheir a lire
+  //val dirPath = Declarations.directoryPath
   val dirPath = Declarations.directoryPath
   //fichier ou ecrire
-  val filePath = Declarations.cleanedQueriesFile
+  val filePath = Declarations.cleanedQueriesFileCopie
   //taille buffer pour paralleliser
-  val chunkSize = 128 * 1024
+
   private val PATTERN = Pattern.compile("[^\"]*\"(?:GET )?/sparql/?\\?([^\"\\s\\n]*)[^\"]*\".*")
 var nb_queries=0
+  val duration = System.currentTimeMillis() - t1
 
-
-  def writeFiles(directoryPath : String, filePath : String)  = {
+  def writeFiles(directoryPath: String, destinationfilePath: String) = {
     val dir = new File(directoryPath)
-    val logs = dir.listFiles().toList.par.flatMap(x => extractLog(x))
+    val logs = dir.listFiles().toList.par.flatMap(x => extractQueries(x))
 
-    val writer = new PrintWriter(new File(filePath))
+    val writer = new PrintWriter(new File(destinationfilePath))
     logs.foreach(x => if(x != null) writer.write(x.replaceAll("[\n\r]","\t")+"\n"))
     writer.close()
   }
 
+  /** Read lines of log file passed as parameter and return queries **/
 
+  def extractQueries(file: File) = {
 
-
-  def extractLog(file : File)  = {
-    println (file.toString)
-    val iterator = Source.fromFile(file).getLines.grouped(chunkSize)
-    iterator.flatMap { lines =>
-      lines.par.map { line =>
-        {
-          nb_queries+= 1
-          queryFromLogLine(line)
-        } }
+    val iterable = JavaConverters.collectionAsScalaIterable(FileOperation.ReadFile(file.toString))
+    iterable.par.map {
+      line => {
+        nb_queries += 1
+        queryFromLogLine(line)
+      }
     }
-
   }
-
 
   def queryFromLogLine(line: String) = {
     val matcher = PATTERN.matcher(line)
@@ -58,17 +58,21 @@ var nb_queries=0
     if (matcher.find) {
       val requestStr = matcher.group(1)
       val queryStr = queryFromRequest(requestStr)
-      if (queryStr != null) queryStr
+      if (queryStr != null) {
+        //println(queryStr)
+        queryStr
+      }
       else requestStr
     }
     else null
   }
 
-  import java.nio.charset.StandardCharsets
+  writeFiles(dirPath, filePath)
+  println(s"nb queries $nb_queries")
 
   def queryFromRequest(requestStr: String): String = {
     val pairs = URLEncodedUtils.parse(requestStr, StandardCharsets.UTF_8)
-    import scala.collection.JavaConversions._
+
     for (pair <- pairs) {
       if ("query" == pair.getName) {
         return pair.getValue
@@ -77,9 +81,6 @@ var nb_queries=0
     null
   }
 
-  writeFiles(dirPath, filePath)
-  println(s"nb queries $nb_queries")
-  val duration = (System.currentTimeMillis() - t1)
   println(duration)
 }
 //}
