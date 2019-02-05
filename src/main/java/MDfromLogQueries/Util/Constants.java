@@ -11,15 +11,15 @@ import java.util.HashSet;
 
 // Cette classe est à initialiser au niveau de l'appel de toutes les requêtes et pas seulement d'une seule
 public class Constants {
-    public HashSet<String> datatypeProperties;
-    public HashSet<String> objectProperties;
+    private static HashSet<String> datatypeProperties;
+    private static HashSet<String> objectProperties;
 
     public Constants() {
         initObjectProperties();
         initDatatypeProperties();
     }
 
-    private void initDatatypeProperties() {
+    private static void initDatatypeProperties() {
         OntModel ontologie = ModelFactory.createOntologyModel();
         OntologyFactory.readOntology("C:\\Users\\KamilaB\\Desktop\\3CS\\Prototypage\\Step_1\\dbpedia_2014.owl\\dbpedia_2014.owl", ontologie);
         HashSet<String> datatypePropertySet = new HashSet<>();
@@ -39,10 +39,10 @@ public class Constants {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        this.datatypeProperties = datatypePropertySet;
+        datatypeProperties = datatypePropertySet;
     }
 
-    private void initObjectProperties() {
+    private static void initObjectProperties() {
         OntModel ontologie = ModelFactory.createOntologyModel();
         OntologyFactory.readOntology("C:\\Users\\KamilaB\\Desktop\\3CS\\Prototypage\\Step_1\\dbpedia_2014.owl\\dbpedia_2014.owl", ontologie);
         HashSet<String> objectPropertySet = new HashSet<>();
@@ -62,10 +62,10 @@ public class Constants {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        this.objectProperties = objectPropertySet;
+        objectProperties = objectPropertySet;
     }
 
-    public HashSet<String> getDatatypeProperties() {
+    public static HashSet<String> getDatatypeProperties() {
         if (datatypeProperties.size() < 1) {
             initDatatypeProperties();
         }

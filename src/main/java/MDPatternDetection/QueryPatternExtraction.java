@@ -29,6 +29,7 @@ public class QueryPatternExtraction {
     public QueryPatternExtraction() {
     }
 
+    //TODO à enlever et mettre une classe plus globale cella est valable pour une seule query (ajouter l'initialisation des Constants dans la classe globale)
     public static void main(String[] args)  {
         Stopwatch stopwatch = Stopwatch.createStarted();
         ArrayList<String> lines = new ArrayList<>();
@@ -91,6 +92,7 @@ public class QueryPatternExtraction {
 
     }
 
+    /** Extracts the graph pattern of a query (where graph pattern, and optional graph pattern) **/
     public void extractGP(Query query) {
         OpBGPVisitor opBGPVisitor = new OpBGPVisitor();
         try {
@@ -115,6 +117,7 @@ public class QueryPatternExtraction {
 
     }
 
+    /** Visitor of the op (which is the query en morceaux) **/
     private class OpBGPVisitor extends OpVisitorBase {
         BasicPattern bgp;
         BasicPattern temp;
@@ -125,11 +128,13 @@ public class QueryPatternExtraction {
             return temp;
         }
 
+
         public void OpBGPVisitorWalker(Op op) {
             OpWalker.walk(op, this);
             System.out.println("Fait");
         }
 
+        /* Visits the basic graph pattern */
         @Override
         public void visit(final OpBGP opBGP) {
             this.temp = opBGP.getPattern();
@@ -141,14 +146,16 @@ public class QueryPatternExtraction {
 
         }
 
+        /* Visits the optional basic graph pattern */
         @Override
         public void visit(final OpLeftJoin opLeftJoin) {
-            OpBGPVisitorWalker(opLeftJoin.getLeft());
+            OpBGPVisitorWalker(opLeftJoin.getLeft()); //Optional pattern
             this.bgp = temp;
-            OpBGPVisitorWalker(opLeftJoin.getRight());
+            OpBGPVisitorWalker(opLeftJoin.getRight()); // Not optional pattern
             this.bgpopt = temp;
         }
 
+        /* Visits the filter clause (not yet used) */
         @Override
         public void visit(OpFilter opFilter) {
             expList = opFilter.getExprs();
