@@ -40,20 +40,22 @@ public class QueryConstruction {
      * Fix the basic graph pattern to create an ontology to test with the dataset ontology
      **/
 
-    /** Takes e_bpwhere the basic pattern of the query before modification and returns bpwhere the basic pattern of the query after modification
+    /**
+     * Takes e_bpwhere the basic pattern of the query before modification and returns bpwhere the basic pattern of the query after modification
      * Same for optional
      **/
-    public void completePatterns(BasicPattern e_bpwhere, BasicPattern e_bpWhereOptional)
-    {
-       this.bpWhere=  modifyBasicPattern(e_bpwhere);
-       this.bpWhereOptional = modifyBasicPattern(e_bpWhereOptional);
+    public void completePatterns(BasicPattern e_bpwhere, BasicPattern e_bpWhereOptional) {
+        this.bpWhere = modifyBasicPattern(e_bpwhere);
+        this.bpWhereOptional = modifyBasicPattern(e_bpWhereOptional);
         afficher();
     }
 
-    /** Takes a basic pattern and returns the basic pattern + every variable rdf:type ?type **/
+    /**
+     * Takes a basic pattern and returns the basic pattern + every variable rdf:type ?type
+     **/
     public BasicPattern modifyBasicPattern(BasicPattern bpat) {
         List<Triple> triples = bpat.getList();
-        bpModified= new BasicPattern();
+        bpModified = new BasicPattern();
         bpModified = bpat;
         Resource subject;
         Graph graph = constructGraph(triples);
@@ -92,8 +94,11 @@ public class QueryConstruction {
 
 
     private boolean isDatatypeProperty(Property property) {
-        if(!property.asNode().isVariable())
-        return Constants.getDatatypeProperties().contains(property.getNameSpace());
+
+        if (!property.asNode().isVariable())
+            return Constants.getDatatypeProperties().contains(property.getNameSpace());
+        if (!property.asNode().isVariable())
+            return Constants.getDatatypeProperties().contains(property.getNameSpace());
         else
             return false;
     }
@@ -149,4 +154,6 @@ public class QueryConstruction {
         }
         System.out.println("Fin BP Construct");
     }
+
+
 }
