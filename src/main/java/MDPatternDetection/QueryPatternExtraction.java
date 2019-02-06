@@ -2,6 +2,7 @@ package MDPatternDetection;
 
 
 import com.google.common.base.Stopwatch;
+import org.apache.jena.graph.Triple;
 import org.apache.jena.query.Query;
 import org.apache.jena.query.QueryFactory;
 import org.apache.jena.sparql.algebra.Algebra;
@@ -10,115 +11,109 @@ import org.apache.jena.sparql.algebra.OpVisitorBase;
 import org.apache.jena.sparql.algebra.OpWalker;
 import org.apache.jena.sparql.algebra.op.OpBGP;
 import org.apache.jena.sparql.algebra.op.OpFilter;
+import org.apache.jena.sparql.algebra.op.OpLeftJoin;
 import org.apache.jena.sparql.core.BasicPattern;
 import org.apache.jena.sparql.expr.ExprList;
+import org.apache.jena.sparql.syntax.ElementTriplesBlock;
+import org.apache.jena.sparql.syntax.Template;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 
 public class QueryPatternExtraction {
-
+    private BasicPattern graphPattern = null;
+    private BasicPattern graphOptionalPattern = null;
 
     public QueryPatternExtraction() {
     }
 
-    public static void main(String[] args)  {
-        Stopwatch stopwatch = Stopwatch.createStarted();
-        ArrayList<String> lines = new ArrayList<>();
-        ArrayList<BasicPattern> PatternList = new ArrayList<>();
-        Query query = null;
-        try {
+    //TODO à enlever et mettre une classe plus globale cella est valable pour une seule query (ajouter l'initialisation des Constants dans la classe globale)
 
-           /** Graph pattern extraction **/
-           int nb_line=0;
-           int nb_GP=0;
-           int nb_nullGP=0;
-           BasicPattern bp;
-            //lines = (ArrayList<String>) FileOperation.ReadFile(/*syntaxValidFile*/"C:\\Users\\KamilaB\\Desktop\\3CS\\Prototypage\\Step_1\\Fichiers_Resultat\\Fichier_Syntaxe_Valide_test.txt");
-            QueryPatternExtraction QPE= new QueryPatternExtraction();
-           /* for (String line : lines){
-                nb_line++;
-                query = QueryFactory.create(line);
-                //System.out.println( "ligne \t"+query);
 
-                try {
-                    bp =QPE.extractGP(query);
-                    System.out.println( bp.toString()+"\n"+nb_GP);
-                    PatternList.add(bp);
-                    nb_GP++;
-                } catch (Exception e){
-                    nb_nullGP++;
-                    e.printStackTrace();
-                }
-
-            }*/
-            query = QueryFactory.create("SELECT ?s where { ?s ?p ?o}");
-            //System.out.println( "ligne \t"+query);
-
-            try {
-                bp = QPE.extractGP(query);
-                QueryConstruction qc = new QueryConstruction();
-                qc.modifyBasicPattern(bp);
-                System.out.println(bp.toString() + "\n" + nb_GP);
-                PatternList.add(bp);
-                nb_GP++;
-            } catch (Exception e) {
-                nb_nullGP++;
-                e.printStackTrace();
-            }
-
-            System.out.println(" nombre de requetes : "+nb_line+"\t nombre de GP : "+nb_GP+"\t nombre de null GP "+nb_nullGP);
-            System.out.println("taille liste "+PatternList.size());
-
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-        }
-        stopwatch.stop();
-        System.out.println("\n Time elapsed for the program is "+ stopwatch.elapsed(SECONDS));
-
+    public BasicPattern getGraphOptionalPattern() {
+        return graphOptionalPattern;
     }
 
-    public BasicPattern extractGP(Query query) {
-        BasicPattern graphPattern = null;
-        OpBGPVisitor opBGPVisitor = new OpBGPVisitor();
+    public BasicPattern getGraphPattern() {
+        return graphPattern;
+    }
+
+    /** Extracts the graph pattern of a query (where graph pattern, and optional graph pattern) **/
+    public void extractGP(Query query) {
+        OpBPVisitor opBPVisitor = new OpBPVisitor();
         try {
-            opBGPVisitor.OpBGPVisitorWalker(Algebra.compile(query));
-            graphPattern = opBGPVisitor.getBgp();
+            opBPVisitor.OpBPVisitorWalker(Algebra.compile(query));
+            if(opBPVisitor.getBgpopt()!=null)
+            {
+                graphPattern = opBPVisitor.getBgp();
+                graphOptionalPattern = opBPVisitor.getBgpopt();
+            }
+            else{
+                graphPattern = opBPVisitor.getTemp();
+                graphOptionalPattern = new BasicPattern();
+            }
+            //TODO to delete when everything works fine
+            System.out.println("*******"+graphPattern);
+            System.out.println("*********"+opBPVisitor.getBgpopt());
 
         } catch (Exception e) {
             System.out.println("C'est une erreur");
             e.printStackTrace();
         }
-        return graphPattern;
 
     }
 
-    private class OpBGPVisitor extends OpVisitorBase {
+    /** Visitor of the op (which is the query en morceaux) **/
+    private class OpBPVisitor extends OpVisitorBase {
         BasicPattern bgp;
+        BasicPattern temp;
+        BasicPattern bgpopt;
         ExprList expList;
 
-        public void OpBGPVisitorWalker(Op op) {
+        public BasicPattern getTemp() {
+            return temp;
+        }
+
+
+        public void OpBPVisitorWalker(Op op) {
             OpWalker.walk(op, this);
             System.out.println("Fait");
         }
 
+        /* Visits the basic graph pattern */
         @Override
         public void visit(final OpBGP opBGP) {
-            this.bgp = opBGP.getPattern();
+            this.temp = opBGP.getPattern();
+            List<Triple> triples =this.temp.getList();
+            for (Triple tr : triples)
+            {
+                System.out.println("Triplle :" + tr);
+            }
 
         }
 
+        /* Visits the optional basic graph pattern */
+        @Override
+        public void visit(final OpLeftJoin opLeftJoin) {
+            OpBPVisitorWalker(opLeftJoin.getLeft()); // Not Optional pattern
+            this.bgp = temp;
+            OpBPVisitorWalker(opLeftJoin.getRight()); // optional pattern
+            this.bgpopt = temp;
+        }
+
+        /* Visits the filter clause (not yet used) */
         @Override
         public void visit(OpFilter opFilter) {
             expList = opFilter.getExprs();
         }
 
-
         public BasicPattern getBgp() {
             return bgp;
+        }
+        public BasicPattern getBgpopt() {
+            return bgpopt;
         }
     }
 
