@@ -33,8 +33,8 @@ public class QueryFixer {
 
     public static void main(String[] args) {
         String fixedQueryStr = new QueryFixer().fix(TEST_QUERY_STR1);
-        Query finalQuery = new QueryFixer().deduplicateGP(QueryFixer.toQuery(fixedQueryStr));
-        System.out.println(finalQuery.toString());
+        //Query finalQuery = new QueryFixer().deduplicateGP(QueryFixer.toQuery(fixedQueryStr));
+      //  System.out.println(finalQuery.toString());
     }
 
     private static final QueryFixer INSTANCE = new QueryFixer();
@@ -154,7 +154,7 @@ public class QueryFixer {
         return maybeQuery;
     }
 
-    public Query deduplicateGP(Query query) {
+    /*public Query deduplicateGP(Query query) {
 
         BasicPattern BP = new QueryPatternExtraction().extractGP(query);
 
@@ -171,7 +171,7 @@ public class QueryFixer {
             triple=iterator.next();
             uniqueTriples.add(triple);
             System.out.println(triple.toString());
-        }*/
+        }
         for (Triple trip : iterator) {
 
             uniqueTriples.add(trip);
@@ -189,5 +189,5 @@ public class QueryFixer {
         body.addElement(newTriples);
         query.setQueryPattern(body);                               // Set the body of the query to our group
         return query;
-    }
+    }*/
 }

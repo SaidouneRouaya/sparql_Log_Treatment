@@ -18,7 +18,6 @@ import java.util.Iterator;
 import java.util.List;
 
 public class QueryConstruction {
-    Constants constants = new Constants();
     private BasicPattern bpModified; // QueryPattern after modification to build a construct query
     private BasicPattern bpWhere = new BasicPattern(); //Query pattern of the WHERE clause after adding rdf:type triples
     private BasicPattern bpWhereOptional = new BasicPattern();//Query pattern of the WHERE OPTIONAL clause after adding rdf:type triples
@@ -94,13 +93,13 @@ public class QueryConstruction {
 
     private boolean isDatatypeProperty(Property property) {
         if(!property.asNode().isVariable())
-        return constants.getDatatypeProperties().contains(property.getNameSpace());
+        return Constants.getDatatypeProperties().contains(property.getNameSpace());
         else
             return false;
     }
 
     private boolean isObjectProperty(Property property) {
-        return constants.getObjectProperties().contains(property.getNameSpace());
+        return Constants.getObjectProperties().contains(property.getNameSpace());
     }
 
     /** Parses every property of a subject **/
@@ -113,7 +112,7 @@ public class QueryConstruction {
             Node objectRDFTypeValue;
             property = ((Statement) propertyIterator.next()).getPredicate();
             if (isDatatypeProperty(property)) {
-                Iterator rangeIterator = constants.getRangeofProperty(property).iterator();
+                Iterator rangeIterator = Constants.getRangeofProperty(property).iterator();
                 while (rangeIterator.hasNext()) {
                     objectRDFTypeValue = (Node) rangeIterator.next();
                     newTriple = new Triple(subjectRDFTypeValue, property.asNode(), objectRDFTypeValue);

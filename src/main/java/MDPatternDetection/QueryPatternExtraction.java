@@ -23,92 +23,40 @@ import java.util.List;
 import static java.util.concurrent.TimeUnit.SECONDS;
 
 public class QueryPatternExtraction {
-    BasicPattern graphPattern = null;
-    BasicPattern graphOptionalPattern = null;
+    private BasicPattern graphPattern = null;
+    private BasicPattern graphOptionalPattern = null;
 
     public QueryPatternExtraction() {
     }
 
     //TODO à enlever et mettre une classe plus globale cella est valable pour une seule query (ajouter l'initialisation des Constants dans la classe globale)
-    public static void main(String[] args)  {
-        Stopwatch stopwatch = Stopwatch.createStarted();
-        ArrayList<String> lines = new ArrayList<>();
-        ArrayList<BasicPattern> PatternList = new ArrayList<>();
-        Query query = null;
-        try {
 
-           /** Graph pattern extraction **/
-           int nb_line=0;
-           int nb_GP=0;
-           int nb_nullGP=0;
-           BasicPattern bp;
-            //lines = (ArrayList<String>) FileOperation.ReadFile(/*syntaxValidFile*/"C:\\Users\\KamilaB\\Desktop\\3CS\\Prototypage\\Step_1\\Fichiers_Resultat\\Fichier_Syntaxe_Valide_test.txt");
-            QueryPatternExtraction QPE= new QueryPatternExtraction();
-           /* for (String line : lines){
-                nb_line++;
-                query = QueryFactory.create(line);
-                //System.out.println( "ligne \t"+query);
 
-                try {
-                    bp =QPE.extractGP(query);
-                    System.out.println( bp.toString()+"\n"+nb_GP);
-                    PatternList.add(bp);
-                    nb_GP++;
-                } catch (Exception e){
-                    nb_nullGP++;
-                    e.printStackTrace();
-                }
+    public BasicPattern getGraphOptionalPattern() {
+        return graphOptionalPattern;
+    }
 
-            }*/
-            query = QueryFactory.create("PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> SELECT ?s where { ?s ?p ?o }");
-            //System.out.println( "ligne \t"+query);
-
-            try {
-                QPE.extractGP(query);
-                QueryConstruction qc = new QueryConstruction();
-                qc.completePatterns(QPE.graphPattern,QPE.graphOptionalPattern);
-                query.setQueryConstructType();
-                query.setConstructTemplate(new Template(qc.getBpConstruct()));
-                query.setQueryPattern(new ElementTriplesBlock(QPE.graphPattern));
-              //  query.;
-                System.out.println(QPE.graphPattern.toString() + "\n" + nb_GP);
-                PatternList.add(QPE.graphPattern);
-                nb_GP++;
-            } catch (Exception e) {
-                nb_nullGP++;
-                e.printStackTrace();
-            }
-
-            System.out.println(" nombre de requetes : "+nb_line+"\t nombre de GP : "+nb_GP+"\t nombre de null GP "+nb_nullGP);
-            System.out.println("taille liste "+PatternList.size());
-
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-        }
-        stopwatch.stop();
-        System.out.println("\n Time elapsed for the program is "+ stopwatch.elapsed(SECONDS));
-
+    public BasicPattern getGraphPattern() {
+        return graphPattern;
     }
 
     /** Extracts the graph pattern of a query (where graph pattern, and optional graph pattern) **/
     public void extractGP(Query query) {
-        OpBGPVisitor opBGPVisitor = new OpBGPVisitor();
+        OpBPVisitor opBPVisitor = new OpBPVisitor();
         try {
-            opBGPVisitor.OpBGPVisitorWalker(Algebra.compile(query));
-            if(opBGPVisitor.getBgpopt()!=null)
+            opBPVisitor.OpBPVisitorWalker(Algebra.compile(query));
+            if(opBPVisitor.getBgpopt()!=null)
             {
-                graphPattern = opBGPVisitor.getBgp();
-                graphOptionalPattern = opBGPVisitor.getBgpopt();
+                graphPattern = opBPVisitor.getBgp();
+                graphOptionalPattern = opBPVisitor.getBgpopt();
             }
             else{
-                graphPattern = opBGPVisitor.getTemp();
+                graphPattern = opBPVisitor.getTemp();
                 graphOptionalPattern = new BasicPattern();
             }
-
+            //TODO to delete when everything works fine
             System.out.println("*******"+graphPattern);
-            System.out.println("*********"+opBGPVisitor.getBgpopt());
+            System.out.println("*********"+opBPVisitor.getBgpopt());
 
         } catch (Exception e) {
             System.out.println("C'est une erreur");
@@ -118,7 +66,7 @@ public class QueryPatternExtraction {
     }
 
     /** Visitor of the op (which is the query en morceaux) **/
-    private class OpBGPVisitor extends OpVisitorBase {
+    private class OpBPVisitor extends OpVisitorBase {
         BasicPattern bgp;
         BasicPattern temp;
         BasicPattern bgpopt;
@@ -129,7 +77,7 @@ public class QueryPatternExtraction {
         }
 
 
-        public void OpBGPVisitorWalker(Op op) {
+        public void OpBPVisitorWalker(Op op) {
             OpWalker.walk(op, this);
             System.out.println("Fait");
         }
@@ -149,9 +97,9 @@ public class QueryPatternExtraction {
         /* Visits the optional basic graph pattern */
         @Override
         public void visit(final OpLeftJoin opLeftJoin) {
-            OpBGPVisitorWalker(opLeftJoin.getLeft()); //Optional pattern
+            OpBPVisitorWalker(opLeftJoin.getLeft()); // Not Optional pattern
             this.bgp = temp;
-            OpBGPVisitorWalker(opLeftJoin.getRight()); // Not optional pattern
+            OpBPVisitorWalker(opLeftJoin.getRight()); // optional pattern
             this.bgpopt = temp;
         }
 
