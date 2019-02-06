@@ -70,8 +70,8 @@ public class QueryConstruction {
     }
 
     private boolean isDatatypeProperty(Property property) {
-        if(!property.asNode().isVariable())
-        return constants.getDatatypeProperties().contains(property.getNameSpace());
+        if (!property.asNode().isVariable())
+            return constants.getDatatypeProperties().contains(property.getNameSpace());
         else
             return false;
     }
@@ -118,4 +118,6 @@ public class QueryConstruction {
         }
         System.out.println("Fin BP Construct");
     }
+
+
 }
