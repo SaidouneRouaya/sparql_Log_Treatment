@@ -1,10 +1,7 @@
 package MDPatternDetection;
 
 import MDfromLogQueries.Util.Constants;
-import org.apache.jena.graph.Graph;
-import org.apache.jena.graph.Node;
-import org.apache.jena.graph.Node_Variable;
-import org.apache.jena.graph.Triple;
+import org.apache.jena.graph.*;
 import org.apache.jena.graph.impl.CollectionGraph;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Property;
@@ -23,6 +20,8 @@ public class QueryConstruction {
     private BasicPattern bpWhereOptional = new BasicPattern();//Query pattern of the WHERE OPTIONAL clause after adding rdf:type triples
     private BasicPattern bpConstruct = new BasicPattern();//Query pattern of the CONSTRUCT clause to generate the graph automaticly
     private Property rdfTypeProp = new PropertyImpl("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"); // Variable containing rdfType property
+    private int i = 1; //Number of subject variables
+    private int j = 1; // Number of predicate variables
 
     public BasicPattern getBpConstruct() {
         return bpConstruct;
@@ -45,8 +44,9 @@ public class QueryConstruction {
      **/
     public void completePatterns(BasicPattern e_bpwhere, BasicPattern e_bpWhereOptional)
     {
-       this.bpWhere=  modifyBasicPattern(e_bpwhere);
-       this.bpWhereOptional = modifyBasicPattern(e_bpWhereOptional);
+        this.bpWhere=  modifyBasicPattern(e_bpwhere);
+        System.out.println(bpWhere.toString());
+        this.bpWhereOptional = modifyBasicPattern(e_bpWhereOptional);
         afficher();
     }
 
@@ -62,7 +62,6 @@ public class QueryConstruction {
         while (nodeIterator.hasNext()) { // for every subject we verify wether it has an rdf:type property in the origin basic pattern
             Node subjectRDFTypeValue;
             //TODO voir si on ne doit pas le déplacer dans le haut de la classe
-            int i = 1; //Number of subject variables
             subject = (Resource) nodeIterator.next();
             subjectRDFTypeValue = verifyRDFTypeProperty(subject, i, rdfTypeProp, "sub"); //verifies wether the subject had an rdf:type triple
             propertyIterate(subject, subjectRDFTypeValue); // parses the properties of the subject
@@ -78,12 +77,31 @@ public class QueryConstruction {
         return graph;
     }
 
-    /** Verifies for every Node of type Resource wether it has a rdf:type triple in the basic pattern **/
+    /** Verifies whether the triple already  exists in the Where clause**/
+    private boolean tripleExists(Triple theTriple)
+    {
+        List<Triple> triples = bpWhere.getList();
+        int i =0;
+        boolean exist = false;
+        while (i<triples.size() && !exist)
+        {
+            if (triples.get(i).getSubject().matches(theTriple.getSubject()) && triples.get(i).getPredicate().matches(theTriple.getPredicate()))
+                 exist =true;
+            i++;
+        }
+        return exist;
+
+    }
+
+    /** Verifies for every Node of type Resource whether it has a rdf:type triple in the basic pattern **/
     public Node verifyRDFTypeProperty(Resource subject, int i, Property rdfTypeProp, String subobj) {
         Node subjectRDFTypeValue;
+        Triple newTriple;
         if (!subject.hasProperty(rdfTypeProp)) {
             subjectRDFTypeValue = new Node_Variable(subobj + i);
-            bpModified.add(new Triple(subject.asNode(), rdfTypeProp.asNode(), subjectRDFTypeValue));
+            newTriple = new Triple(subject.asNode(), rdfTypeProp.asNode(), subjectRDFTypeValue);
+            if (!tripleExists(newTriple))
+            bpModified.add(newTriple);
         } else {
             subjectRDFTypeValue = subject.getProperty(rdfTypeProp).getObject().asNode();
         }
@@ -93,7 +111,7 @@ public class QueryConstruction {
 
     private boolean isDatatypeProperty(Property property) {
         if(!property.asNode().isVariable())
-        return Constants.getDatatypeProperties().contains(property.getNameSpace());
+            return Constants.getDatatypeProperties().contains(property.getNameSpace());
         else
             return false;
     }
@@ -106,7 +124,6 @@ public class QueryConstruction {
     public void propertyIterate(Resource subject, Node subjectRDFTypeValue) {
         Property property;
         Iterator propertyIterator = subject.listProperties();
-        int j = 1;
         Triple newTriple;
         while (propertyIterator.hasNext()) {
             Node objectRDFTypeValue;

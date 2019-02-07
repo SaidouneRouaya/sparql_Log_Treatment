@@ -34,6 +34,7 @@ public class Queries2Graphes {
             BasicPattern bp;
             //lines = (ArrayList<String>) FileOperation.ReadFile(/*syntaxValidFile*/"C:\\Users\\KamilaB\\Desktop\\3CS\\Prototypage\\Step_1\\Fichiers_Resultat\\Fichier_Syntaxe_Valide_test.txt");
             QueryPatternExtraction QPE= new QueryPatternExtraction();
+            Queries2Graphes queries2Graphes = new Queries2Graphes();
            /* for (String line : lines){
                 nb_line++;
                 query = QueryFactory.create(line);
@@ -50,7 +51,8 @@ public class Queries2Graphes {
                 }
 
             }*/
-            query = QueryFactory.create("PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> SELECT ?s where { ?s ?p ?o }");
+           // query = QueryFactory.create("PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> SELECT ?s where { ?s ?p ?o }");
+            query = QueryFactory.create("PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> SELECT ?s where { ?s ?p ?o Optional {?s ?pr ?var FILTER ( ! bound(?s) )}}");
             //System.out.println( "ligne \t"+query);
 
             try {

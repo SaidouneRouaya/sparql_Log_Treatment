@@ -14,6 +14,6 @@ public class Declarations {
 
     public static  String syntaxValidFile ="C:\\Users\\pc\\Desktop\\PFE\\Files\\Fichier_Syntaxe_Valide.txt";
     public static  String syntaxValidFileTest ="C:\\Users\\pc\\Desktop\\PFE\\Files\\Fichier_Syntaxe_Valide_Test.txt";
-
+    public static  String dbPediaOntologyPath = "C:\\Users\\KamilaB\\Desktop\\3CS\\Prototypage\\Step_1\\dbpedia_2014.owl\\dbpedia_2014.owl";
 
 }
