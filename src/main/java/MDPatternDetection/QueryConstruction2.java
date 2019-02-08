@@ -1,10 +1,7 @@
 package MDPatternDetection;
 
 import MDfromLogQueries.Util.Constants;
-import org.apache.jena.graph.Graph;
-import org.apache.jena.graph.Node;
-import org.apache.jena.graph.Node_Variable;
-import org.apache.jena.graph.Triple;
+import org.apache.jena.graph.*;
 import org.apache.jena.graph.impl.CollectionGraph;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Property;
@@ -17,9 +14,10 @@ import org.apache.jena.sparql.core.BasicPattern;
 import java.util.Iterator;
 import java.util.List;
 
-public class QueryConstruction {
+public class QueryConstruction2 {
     private BasicPattern bpModified; // QueryPattern after modification to build a construct query
     private BasicPattern bpWhere = new BasicPattern(); //Query pattern of the WHERE clause after adding rdf:type triples
+    private BasicPattern bpWhereOptional = new BasicPattern();//Query pattern of the WHERE OPTIONAL clause after adding rdf:type triples
     private BasicPattern bpConstruct = new BasicPattern();//Query pattern of the CONSTRUCT clause to generate the graph automaticly
     private Property rdfTypeProp = new PropertyImpl("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"); // Variable containing rdfType property
     private int i = 1; //Number of subject variables
@@ -33,6 +31,9 @@ public class QueryConstruction {
         return bpWhere;
     }
 
+    public BasicPattern getBpWhereOptional() {
+        return bpWhereOptional;
+    }
 
     /**
      * Fix the basic graph pattern to create an ontology to test with the dataset ontology
@@ -41,10 +42,11 @@ public class QueryConstruction {
     /** Takes e_bpwhere the basic pattern of the query before modification and returns bpwhere the basic pattern of the query after modification
      * Same for optional
      **/
-    public void completePattern(BasicPattern e_bpwhere)
+    public void completePatterns(BasicPattern e_bpwhere, BasicPattern e_bpWhereOptional)
     {
         this.bpWhere=  modifyBasicPattern(e_bpwhere);
         System.out.println(bpWhere.toString());
+        this.bpWhereOptional = modifyBasicPattern(e_bpWhereOptional);
         afficher();
     }
 
@@ -52,7 +54,7 @@ public class QueryConstruction {
     public BasicPattern modifyBasicPattern(BasicPattern bpat) {
         List<Triple> triples = bpat.getList();
         bpModified= new BasicPattern();
-        //bpModified = bpat;
+        bpModified = bpat;
         Resource subject;
         Graph graph = constructGraph(triples);
         Model queryModel = new ModelCom(graph); // We use a model to parse the graph by its subject -> properties -> objects
@@ -126,27 +128,20 @@ public class QueryConstruction {
         while (propertyIterator.hasNext()) {
             Node objectRDFTypeValue;
             property = ((Statement) propertyIterator.next()).getPredicate();
-            if (!property.getNameSpace().matches(rdfTypeProp.getNameSpace())) {
-                if (isDatatypeProperty(property)) {
-                    Iterator rangeIterator = Constants.getRangeofProperty(property).iterator();
-                    while (rangeIterator.hasNext()) {
-                        objectRDFTypeValue = (Node) rangeIterator.next();
-                        newTriple = new Triple(subjectRDFTypeValue, property.asNode(), objectRDFTypeValue);
-                        bpConstruct.add(newTriple); // if it's a datatype property it searches for its range (type of object) and sets
-                        // the triple of the construct with it
-                    }
-                } else {
-                    objectRDFTypeValue = verifyRDFTypeProperty(subject.getProperty(property).getObject().asResource(), j, rdfTypeProp, "ob");
+            if (isDatatypeProperty(property)) {
+                Iterator rangeIterator = Constants.getRangeofProperty(property).iterator();
+                while (rangeIterator.hasNext()) {
+                    objectRDFTypeValue = (Node) rangeIterator.next();
                     newTriple = new Triple(subjectRDFTypeValue, property.asNode(), objectRDFTypeValue);
-                    bpConstruct.add(newTriple); // if it's an object property, it treats it as a subject
-                    j++;
+                    bpConstruct.add(newTriple); // if it's a datatype property it searches for its range (type of object) and sets
+                    // the triple of the construct with it
                 }
+            } else {
+                objectRDFTypeValue = verifyRDFTypeProperty(subject.getProperty(property).getObject().asResource(), j, rdfTypeProp, "ob");
+                newTriple = new Triple(subjectRDFTypeValue, property.asNode(), objectRDFTypeValue);
+                bpConstruct.add(newTriple); // if it's an object property, it treats it as a subject
+                j++;
             }
-            /*else
-            {
-                newTriple = new Triple(subjectRDFTypeValue, property.asNode(), subject.getProperty(property).getObject().asNode());
-                bpConstruct.add(newTriple);
-            }*/
         }
     }
 
@@ -155,6 +150,12 @@ public class QueryConstruction {
         List<Triple> triplebbcp = this.bpWhere.getList();
         System.out.println("BP WHERE : ");
         for (Triple t : triplebbcp) {
+            System.out.println(t.toString());
+        }
+        System.out.println("Fin BP WHERE : ");
+        List<Triple> triplebfbcp = this.bpWhereOptional.getList();
+        System.out.println("BP WHERE Optional : ");
+        for (Triple t : triplebfbcp) {
             System.out.println(t.toString());
         }
         System.out.println("Fin BP WHERE : ");

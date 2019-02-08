@@ -1,6 +1,8 @@
 package MDPatternDetection;
 
 
+import MDfromLogQueries.Declarations.Declarations;
+import MDfromLogQueries.Util.Constants;
 import org.apache.jena.graph.Node_Variable;
 import org.apache.jena.graph.Triple;
 import org.apache.jena.query.Query;
@@ -8,18 +10,16 @@ import org.apache.jena.query.QueryFactory;
 import org.apache.jena.sparql.core.BasicPattern;
 
 public class QueryUpdate {
-
+    private static QueryConstruction queryConstruction = new QueryConstruction();
     public static void main(String[] args) {
-
+        new Constants(Declarations.dbPediaOntologyPath); // init the constants tu use it next
         final String queryString = "PREFIX owl: <http://www.w3.org/2002/07/owl#>" +
                 "PREFIX foaf: <http://xmlns.com/foaf/0.1/>" +
                 "PREFIX dbo: <http://dbpedia.org/ontology/>" +
                 "SELECT ?title WHERE {" +
                 "     ?game a dbo:Game  ." +
-                "     ?game a dbo:Game  ." +
-                "     ?game a dbo:Game  ." +
+                "?game foaf:friend ?op" +
                 "    OPTIONAL { ?game foaf:name ?title }." +
-                " OPTIONAL { ?game foaf:name ?title } " +
                 "} ORDER by ?title limit 10";
 
 
@@ -36,9 +36,6 @@ public class QueryUpdate {
                 "PREFIX skos: <http://www.w3.org/2004/02/skos/core#>" +
                 "SELECT ?title WHERE {" +
                 "     ?game a dbo:Game  ." +
-                "     ?game a dbo:Game  ." +
-                "     ?game a dbo:Game  ." +
-                "    OPTIONAL { ?game foaf:name ?title }." +
                 " OPTIONAL { ?game foaf:name ?title } " +
                 "} ORDER by ?title limit 10";
 
@@ -68,11 +65,14 @@ public class QueryUpdate {
         addGP2Query(query, bp);
 
         System.out.println("\n\n\n== after ==\n" + query);
+        System.out.println(" query construct : "+ queryConstruction.getBpConstruct().toString());
     }
 
     public static Query addGP2Query(Query query, final BasicPattern BP) {
+        QueryModifyElementVisitor qmev = new QueryModifyElementVisitor();
+        qmev.walker(query.getQueryPattern(),queryConstruction);
 
-        QueryElementWalker qew = new QueryElementWalker();
+        /*QueryElementWalker qew = new QueryElementWalker();
         BasicPattern basicPattern = new BasicPattern();
         basicPattern.add(new Triple(new Node_Variable("SubjOptional"), new Node_Variable("PredOptional"), new Node_Variable("ObjOptional")));
 

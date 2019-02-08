@@ -57,7 +57,7 @@ public class Queries2Graphes {
 
             try {
                 QPE.extractGP(query);
-                QueryConstruction qc = new QueryConstruction();
+                QueryConstruction2 qc = new QueryConstruction2();
                 qc.completePatterns(QPE.getGraphPattern(),QPE.getGraphOptionalPattern());
                 query.setQueryConstructType();
                 query.setConstructTemplate(new Template(qc.getBpConstruct()));

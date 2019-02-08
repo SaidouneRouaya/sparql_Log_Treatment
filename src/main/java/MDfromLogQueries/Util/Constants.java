@@ -15,8 +15,8 @@ public class Constants {
     private static HashSet<String> objectProperties;
     private static String ontologyPath;
 
-    public Constants(String ontologyPath) {
-        Constants.ontologyPath = ontologyPath;
+    public Constants(String path) {
+        ontologyPath = path;
         initObjectProperties();
         initDatatypeProperties();
     }
@@ -28,7 +28,7 @@ public class Constants {
                 "PREFIX  owl:  <http://www.w3.org/2002/07/owl#>" +
                 "select ?prop where { ?prop rdf:type owl:DatatypeProperty}";
         Query query = QueryFactory.create(datatypeQuery);
-        datatypeProperties = simpleExecution(query, ontologie);
+        datatypeProperties = simpleExecution(query,ontologie);
     }
 
     private static void initObjectProperties() {
@@ -38,7 +38,7 @@ public class Constants {
                 "PREFIX  owl:  <http://www.w3.org/2002/07/owl#>" +
                 "select ?prop where { ?prop rdf:type owl:ObjectProperty}";
         Query query = QueryFactory.create(datatypeQuery);
-        objectProperties = simpleExecution(query, ontologie);
+        objectProperties = simpleExecution(query,ontologie);
     }
 
     public static HashSet<String> getDatatypeProperties() {
@@ -56,7 +56,8 @@ public class Constants {
     }
 
     /* Execute a query into an ontology*/
-    private static HashSet<String> simpleExecution(Query query, OntModel ontologie) {
+    private static HashSet<String> simpleExecution(Query query, OntModel ontologie)
+    {
         HashSet<String> propertySet = new HashSet<>();
         try (QueryExecution qexec = QueryExecutionFactory.create(query, ontologie)) {
             ResultSet results = qexec.execSelect();
