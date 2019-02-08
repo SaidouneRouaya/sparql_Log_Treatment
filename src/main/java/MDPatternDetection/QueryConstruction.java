@@ -14,14 +14,17 @@ import org.apache.jena.rdf.model.impl.ModelCom;
 import org.apache.jena.rdf.model.impl.PropertyImpl;
 import org.apache.jena.sparql.core.BasicPattern;
 
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 public class QueryConstruction {
     private BasicPattern bpModified; // QueryPattern after modification to build a construct query
     private BasicPattern bpWhere = new BasicPattern(); //Query pattern of the WHERE clause after adding rdf:type triples
     private BasicPattern bpConstruct = new BasicPattern();//Query pattern of the CONSTRUCT clause to generate the graph automaticly
     private Property rdfTypeProp = new PropertyImpl("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"); // Variable containing rdfType property
+    private Set<Triple> existingTriples = new HashSet<>();
     private int i = 1; //Number of subject variables
     private int j = 1; // Number of predicate variables
 
@@ -43,6 +46,7 @@ public class QueryConstruction {
      **/
     public void completePattern(BasicPattern e_bpwhere)
     {
+        existingTriples.addAll(e_bpwhere.getList());
         this.bpWhere=  modifyBasicPattern(e_bpwhere);
         System.out.println(bpWhere.toString());
         afficher();
@@ -76,30 +80,41 @@ public class QueryConstruction {
     }
 
     /** Verifies whether the triple already  exists in the Where clause**/
-    private boolean tripleExists(Triple theTriple)
+    private Triple tripleExists(Triple theTriple)
     {
-        List<Triple> triples = bpWhere.getList();
-        int i =0;
+        Iterator<Triple> iterator = existingTriples.iterator();
         boolean exist = false;
-        while (i<triples.size() && !exist)
+        Triple  triple= null;
+        while (iterator.hasNext() && !exist)
         {
-            if (triples.get(i).getSubject().matches(theTriple.getSubject()) && triples.get(i).getPredicate().matches(theTriple.getPredicate()))
+            triple = iterator.next();
+            if (triple.getSubject().matches(theTriple.getSubject()) && triple.getPredicate().matches(theTriple.getPredicate()))
                  exist =true;
             i++;
         }
-        return exist;
-
+        if (exist)
+        return triple;
+        else
+            return null;
     }
 
     /** Verifies for every Node of type Resource whether it has a rdf:type triple in the basic pattern **/
     public Node verifyRDFTypeProperty(Resource subject, int i, Property rdfTypeProp, String subobj) {
         Node subjectRDFTypeValue;
         Triple newTriple;
+        Triple exists;
         if (!subject.hasProperty(rdfTypeProp)) {
             subjectRDFTypeValue = new Node_Variable(subobj + i);
             newTriple = new Triple(subject.asNode(), rdfTypeProp.asNode(), subjectRDFTypeValue);
-            if (!tripleExists(newTriple))
-            bpModified.add(newTriple);
+            exists = tripleExists(newTriple);
+            if (exists==null) {
+                bpModified.add(newTriple);
+                existingTriples.add(newTriple);
+            }
+            else
+            {
+                subjectRDFTypeValue = exists.getObject();
+            }
         } else {
             subjectRDFTypeValue = subject.getProperty(rdfTypeProp).getObject().asNode();
         }

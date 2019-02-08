@@ -11,6 +11,7 @@ import org.apache.jena.sparql.syntax.ElementWalker;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 public class QueryModifyElementVisitor extends ElementVisitorBase {
 
@@ -47,6 +48,5 @@ public class QueryModifyElementVisitor extends ElementVisitorBase {
         }
         return basicPattern;
     }
-
 
 }
