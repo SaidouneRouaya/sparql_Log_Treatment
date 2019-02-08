@@ -15,6 +15,11 @@ import org.apache.jena.sparql.algebra.Op;
 import org.apache.jena.sparql.algebra.OpVisitorBase;
 import org.apache.jena.sparql.algebra.OpWalker;
 import org.apache.jena.sparql.algebra.op.OpBGP;
+import org.apache.jena.sparql.algebra.op.OpLeftJoin;
+import org.apache.jena.sparql.core.BasicPattern;
+import org.apache.jena.sparql.core.TriplePath;
+import org.apache.jena.sparql.syntax.Element;
+import org.apache.jena.sparql.syntax.ElementPathBlock;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -27,24 +32,46 @@ public class MyOpVisitorBase extends OpVisitorBase {
     private List<Triple> triples = new ArrayList<>();
     private Graph graph;
     private Model model;
+    private BasicPattern bp = new BasicPattern();
+    private BasicPattern basicPattern = new BasicPattern();
 
-    public void myOpVisitorWalker(Op op) {
+    private ElementPathBlock e;
+
+    public Element myOpVisitorWalker(Op op, BasicPattern BP) {
+
+        bp = BP;
         OpWalker.walk(op, this);
+
+
+        return e;
+
+    }
+    public void myOpVisitorWalker(Op op) {
+
+        OpWalker.walk(op, this);
+
     }
 
     @Override
     public void visit(final OpBGP opBGP) {
-        final List<Triple> triples = opBGP.getPattern().getList();
+        Iterator<Triple> BP_iterator = basicPattern.getList().iterator();
+        while (BP_iterator.hasNext()) {
+            Triple t = BP_iterator.next();
 
-        for (final Triple triple : triples) {
-            System.out.println("Triple: " + triple.toString());
-            subject = triple.getSubject();
-
-            predicate = triple.getPredicate();
-            object = triple.getObject();
-            this.triples.add(triple);
+            opBGP.getPattern().add(t);
+            e.addTriplePath(new TriplePath(t));
         }
     }
+
+
+    @Override
+    public void visit(final OpLeftJoin opLeftJoin) {
+        basicPattern = bp;
+        System.out.println("je sus dans left join");
+        myOpVisitorWalker(opLeftJoin.getLeft()); // Not Optional pattern
+    }
+
+
 
     public void contructGraph() {
         graph = new CollectionGraph();

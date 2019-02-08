@@ -1,0 +1,53 @@
+// find the triples with the same subject
+
+private  void formatSameSubject(Node subject, List<Triple> triples)
+    {
+        if ( triples == null || triples.size() == 0 )
+            return ;
+
+        // Do the first triple.
+        Iterator<Triple> iter = triples.iterator() ;
+        Triple t1 = iter.next() ;
+
+//        int indent = TRIPLES_SUBJECT_COLUMN+TRIPLES_COLUMN_GAP ;
+//        // Long subject => same line.  Works for single triple as well.
+//        int s1_len = printSubject(t1.getSubject()) ;
+//        //int x = out.getCol() ;
+
+        int indent = subjectWidth + TRIPLES_COLUMN_GAP ;
+        int s1_len = printSubject(t1.getSubject()) ;
+
+        if ( s1_len > TRIPLES_SUBJECT_LONG )
+        {
+            // Too long - start a new line.
+            out.incIndent(indent) ;
+            out.println() ;
+        }
+        else
+        {
+            printGap() ;
+            out.incIndent(indent) ;
+        }
+
+        // Remained of first triple
+        printProperty(t1.getPredicate()) ;
+        printGap() ;
+        printObject(t1.getObject()) ;
+
+        // Do the rest
+
+        for (  ; iter.hasNext() ; )
+        {
+            Triple t = iter.next() ;
+            out.println(" ;") ;
+            printProperty(t.getPredicate()) ;
+            printGap() ;
+            printObject(t.getObject()) ;
+            continue ;
+            // print property list
+        }
+
+        // Finish off the block.
+        out.decIndent(indent) ;
+        out.print(" .") ;
+    }

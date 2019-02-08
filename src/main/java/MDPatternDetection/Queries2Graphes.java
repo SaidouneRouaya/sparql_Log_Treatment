@@ -1,7 +1,5 @@
 package MDPatternDetection;
 
-import MDfromLogQueries.Declarations.Declarations;
-import MDfromLogQueries.Util.Constants;
 import com.google.common.base.Stopwatch;
 import org.apache.jena.query.Query;
 import org.apache.jena.query.QueryFactory;
@@ -18,7 +16,7 @@ public class Queries2Graphes {
 
     public Queries2Graphes() {
         //TODO change the path in case of using another query logs
-        new Constants(Declarations.dbPediaOntologyPath); // init the constants tu use it next
+        // new Constants(Declarations.dbPediaOntologyPath); // init the constants tu use it next
     }
 
     public static void main(String[] args) {

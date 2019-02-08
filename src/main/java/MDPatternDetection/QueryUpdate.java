@@ -10,7 +10,20 @@ import org.apache.jena.sparql.core.BasicPattern;
 public class QueryUpdate {
 
     public static void main(String[] args) {
+
         final String queryString = "PREFIX owl: <http://www.w3.org/2002/07/owl#>" +
+                "PREFIX foaf: <http://xmlns.com/foaf/0.1/>" +
+                "PREFIX dbo: <http://dbpedia.org/ontology/>" +
+                "SELECT ?title WHERE {" +
+                "     ?game a dbo:Game  ." +
+                "     ?game a dbo:Game  ." +
+                "     ?game a dbo:Game  ." +
+                "    OPTIONAL { ?game foaf:name ?title }." +
+                " OPTIONAL { ?game foaf:name ?title } " +
+                "} ORDER by ?title limit 10";
+
+
+        final String queryString3 = "PREFIX owl: <http://www.w3.org/2002/07/owl#>" +
                 "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>" +
                 "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>" +
                 "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>" +
@@ -69,13 +82,35 @@ public class QueryUpdate {
                             }
                         }
                     });*/
-        System.out.println("== after ==\n" + query);
+        System.out.println("\n\n\n== after ==\n" + query);
     }
 
     public static Query addGP2Query(Query query, final BasicPattern BP) {
 
         QueryElementWalker qew = new QueryElementWalker();
-        qew.walker(query.getQueryPattern(), BP);
+        BasicPattern basicPattern = new BasicPattern();
+        basicPattern.add(new Triple(new Node_Variable("SubjOptional"), new Node_Variable("PredOptional"), new Node_Variable("ObjOptional")));
+
+        //    qew.walker(query.getQueryPattern(), BP, basicPattern);
+        //qew.walker(query.getQueryPattern(), BP);
+        qew.walkerOpt(query.getQueryPattern(), basicPattern);
+
+
+
+      /*MyOpVisitorBase opV = new MyOpVisitorBase();
+        opV.myOpVisitorWalker(Algebra.compile(query), BP);
+
+
+            query.setQueryPattern();
+
+        /**Test avec model **/
+        //  Model model = ModelFactory.createDefaultModel();
+        // .asTriple()
+
+        //Statement st =null;
+
+
+        //model.add(st);
 
         return query;
     }

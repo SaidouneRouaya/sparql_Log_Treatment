@@ -42,6 +42,7 @@ public class QueryPatternExtraction {
             opBPVisitor.OpBPVisitorWalker(Algebra.compile(query));
             if (opBPVisitor.getBgpopt() != null) {
                 graphPattern = opBPVisitor.getBgp();
+
                 graphOptionalPattern = opBPVisitor.getBgpopt();
             } else {
                 graphPattern = opBPVisitor.getTemp();

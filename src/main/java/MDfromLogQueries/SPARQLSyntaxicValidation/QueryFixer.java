@@ -1,18 +1,16 @@
 package MDfromLogQueries.SPARQLSyntaxicValidation;
 
 
-import MDPatternDetection.QueryPatternExtraction;
-import org.apache.jena.graph.Triple;
 import org.apache.jena.query.Query;
 import org.apache.jena.query.QueryFactory;
-import org.apache.jena.sparql.core.BasicPattern;
-import org.apache.jena.sparql.syntax.ElementGroup;
-import org.apache.jena.sparql.syntax.ElementTriplesBlock;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.*;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -33,8 +31,8 @@ public class QueryFixer {
 
     public static void main(String[] args) {
         String fixedQueryStr = new QueryFixer().fix(TEST_QUERY_STR1);
-        Query finalQuery = new QueryFixer().deduplicateGP(QueryFixer.toQuery(fixedQueryStr));
-        System.out.println(finalQuery.toString());
+        //       Query finalQuery = new QueryFixer().deduplicateGP(QueryFixer.toQuery(fixedQueryStr));
+        //    System.out.println(finalQuery.toString());
     }
 
     private static final QueryFixer INSTANCE = new QueryFixer();
@@ -153,7 +151,7 @@ public class QueryFixer {
         }
         return maybeQuery;
     }
-
+/*
     public Query deduplicateGP(Query query) {
 
         BasicPattern BP = new QueryPatternExtraction().extractGP(query);
@@ -176,7 +174,7 @@ public class QueryFixer {
 
             uniqueTriples.add(trip);
             System.out.println(trip.toString());
-        }*/
+        }
 
         // Make a new BGP
         System.out.println("je suis dans le for ");
@@ -189,5 +187,5 @@ public class QueryFixer {
         body.addElement(newTriples);
         query.setQueryPattern(body);                               // Set the body of the query to our group
         return query;
-    }
+    }*/
 }
