@@ -67,21 +67,6 @@ public class QueryUpdate {
         bp.add(triple3);
         addGP2Query(query, bp);
 
-          /*  ElementWalker.walk( query.getQueryPattern(),
-                    new ElementVisitorBase() {
-                        @Override
-                        public void visit(ElementPathBlock el) {
-                            ListIterator<TriplePath> it = el.getPattern().iterator();
-                            while ( it.hasNext() ) {
-                                final TriplePath tp = it.next();
-                                System.out.println("Triple Pattern"+tp.toString());
-                                final Var d = Var.alloc( "d" );
-                                if ( tp.getSubject().equals( d )) {
-                                    it.add( new TriplePath( new Triple( d, d, d )));
-                                }
-                            }
-                        }
-                    });*/
         System.out.println("\n\n\n== after ==\n" + query);
     }
 
@@ -92,7 +77,7 @@ public class QueryUpdate {
         basicPattern.add(new Triple(new Node_Variable("SubjOptional"), new Node_Variable("PredOptional"), new Node_Variable("ObjOptional")));
 
         //    qew.walker(query.getQueryPattern(), BP, basicPattern);
-        //qew.walker(query.getQueryPattern(), BP);
+        // qew.walker(query.getQueryPattern(), BP);
         qew.walkerOpt(query.getQueryPattern(), basicPattern);
 
 
