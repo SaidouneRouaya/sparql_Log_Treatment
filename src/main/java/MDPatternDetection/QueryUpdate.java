@@ -18,7 +18,8 @@ public class QueryUpdate {
                 "PREFIX dbo: <http://dbpedia.org/ontology/>" +
                 "SELECT ?title WHERE {" +
                 "     ?game a dbo:Game  ." +
-                "?game foaf:friend ?op" +
+                "?game foaf:friend ?op ." +
+                "Filter (?game = \"gg\")" +
                 "    OPTIONAL { ?game foaf:name ?title }." +
                 "} ORDER by ?title limit 10";
 
