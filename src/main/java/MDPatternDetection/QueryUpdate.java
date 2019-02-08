@@ -8,6 +8,7 @@ import org.apache.jena.graph.Triple;
 import org.apache.jena.query.Query;
 import org.apache.jena.query.QueryFactory;
 import org.apache.jena.sparql.core.BasicPattern;
+import org.apache.jena.sparql.syntax.Template;
 
 public class QueryUpdate {
     private static QueryConstruction queryConstruction = new QueryConstruction();
@@ -52,7 +53,7 @@ public class QueryUpdate {
                 "}";
 
 
-        final Query query = QueryFactory.create(queryString);
+         Query query = QueryFactory.create(queryString);
         System.out.println("== before ==\n" + query);
 
         BasicPattern bp = new BasicPattern();
@@ -67,8 +68,16 @@ public class QueryUpdate {
 
         System.out.println("\n\n\n== after ==\n" + query);
         System.out.println(" query construct : "+ queryConstruction.getBpConstruct().toString());
+        query = toConstruct(query,new Template(queryConstruction.getBpConstruct()));
+        System.out.println("nouvelle query : "+query);
     }
 
+    private static Query toConstruct(Query query, Template constructTemplate)
+    {
+        query.setQueryConstructType();
+        query.setConstructTemplate(constructTemplate);
+        return query;
+    }
     public static Query addGP2Query(Query query, final BasicPattern BP) {
         QueryModifyElementVisitor qmev = new QueryModifyElementVisitor();
         qmev.walker(query.getQueryPattern(),queryConstruction);
