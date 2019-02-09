@@ -12,6 +12,18 @@ import org.apache.jena.sparql.syntax.Template;
 
 public class QueryUpdate {
     private static QueryConstruction queryConstruction = new QueryConstruction();
+    private Query theQuery;
+    public QueryUpdate(Query query)
+    {
+        //theQuery = query;
+        addGP2Query(query);
+        theQuery = toConstruct(query,new Template(queryConstruction.getBpConstruct()));
+    }
+
+    public Query getTheQuery() {
+        return theQuery;
+    }
+
     public static void main(String[] args) {
         new Constants(Declarations.dbPediaOntologyPath); // init the constants tu use it next
         final String queryString = "PREFIX owl: <http://www.w3.org/2002/07/owl#>" +
@@ -64,7 +76,7 @@ public class QueryUpdate {
         bp.add(triple);
         bp.add(triple2);
         bp.add(triple3);
-        addGP2Query(query, bp);
+        addGP2Query(query);
 
         System.out.println("\n\n\n== after ==\n" + query);
         System.out.println(" query construct : "+ queryConstruction.getBpConstruct().toString());
@@ -78,35 +90,9 @@ public class QueryUpdate {
         query.setConstructTemplate(constructTemplate);
         return query;
     }
-    public static Query addGP2Query(Query query, final BasicPattern BP) {
+    public static Query addGP2Query(Query query) {
         QueryModifyElementVisitor qmev = new QueryModifyElementVisitor();
         qmev.walker(query.getQueryPattern(),queryConstruction);
-
-        /*QueryElementWalker qew = new QueryElementWalker();
-        BasicPattern basicPattern = new BasicPattern();
-        basicPattern.add(new Triple(new Node_Variable("SubjOptional"), new Node_Variable("PredOptional"), new Node_Variable("ObjOptional")));
-
-        //    qew.walker(query.getQueryPattern(), BP, basicPattern);
-        // qew.walker(query.getQueryPattern(), BP);
-        qew.walkerOpt(query.getQueryPattern(), basicPattern);
-
-
-
-      /*MyOpVisitorBase opV = new MyOpVisitorBase();
-        opV.myOpVisitorWalker(Algebra.compile(query), BP);
-
-
-            query.setQueryPattern();
-
-        /**Test avec model **/
-        //  Model model = ModelFactory.createDefaultModel();
-        // .asTriple()
-
-        //Statement st =null;
-
-
-        //model.add(st);
-
         return query;
     }
 

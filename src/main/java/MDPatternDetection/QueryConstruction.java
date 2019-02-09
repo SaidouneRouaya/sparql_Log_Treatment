@@ -6,6 +6,7 @@ import org.apache.jena.graph.Node;
 import org.apache.jena.graph.Node_Variable;
 import org.apache.jena.graph.Triple;
 import org.apache.jena.graph.impl.CollectionGraph;
+import org.apache.jena.ontology.OntProperty;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.Resource;
@@ -49,7 +50,7 @@ public class QueryConstruction {
         existingTriples.addAll(e_bpwhere.getList());
         this.bpWhere=  modifyBasicPattern(e_bpwhere);
         System.out.println(bpWhere.toString());
-        afficher();
+        //afficher();
     }
 
     /** Takes a basic pattern and returns the basic pattern + every variable rdf:type ?type **/
@@ -63,9 +64,9 @@ public class QueryConstruction {
         Iterator nodeIterator = queryModel.listSubjects();
         while (nodeIterator.hasNext()) { // for every subject we verify wether it has an rdf:type property in the origin basic pattern
             Node subjectRDFTypeValue;
-            //TODO voir si on ne doit pas le déplacer dans le haut de la classe
             subject = (Resource) nodeIterator.next();
             subjectRDFTypeValue = verifyRDFTypeProperty(subject, i, rdfTypeProp, "sub"); //verifies wether the subject had an rdf:type triple
+            i++;
             propertyIterate(subject, subjectRDFTypeValue); // parses the properties of the subject
         }
         return bpModified;
@@ -90,7 +91,6 @@ public class QueryConstruction {
             triple = iterator.next();
             if (triple.getSubject().matches(theTriple.getSubject()) && triple.getPredicate().matches(theTriple.getPredicate()))
                  exist =true;
-            i++;
         }
         if (exist)
         return triple;
@@ -123,10 +123,26 @@ public class QueryConstruction {
 
 
     private boolean isDatatypeProperty(Property property) {
-        if(!property.asNode().isVariable())
-            return Constants.getDatatypeProperties().contains(property.getNameSpace());
+        boolean returnValue= false;
+        if(!property.asNode().isVariable()) {
+           System.out.println("format  : "+property.getURI());
+            if (Constants.getDatatypeProperties().contains(property.getURI()))
+                returnValue = true;
+            else
+            {
+                try {
+                    System.out.println("Je suis rentré dans le datatype peroepty ");
+                    returnValue = ((OntProperty) property).isDatatypeProperty();
+                }
+                catch (Exception e)
+                {
+
+                }
+            }
+        }
         else
-            return false;
+             returnValue = false;
+        return returnValue;
     }
 
     private boolean isObjectProperty(Property property) {
@@ -141,7 +157,7 @@ public class QueryConstruction {
         while (propertyIterator.hasNext()) {
             Node objectRDFTypeValue;
             property = ((Statement) propertyIterator.next()).getPredicate();
-            if (!property.getNameSpace().matches(rdfTypeProp.getNameSpace())) {
+            if (property.asNode().isVariable() || !property.getNameSpace().matches(rdfTypeProp.getNameSpace())) {
                 if (isDatatypeProperty(property)) {
                     Iterator rangeIterator = Constants.getRangeofProperty(property).iterator();
                     while (rangeIterator.hasNext()) {

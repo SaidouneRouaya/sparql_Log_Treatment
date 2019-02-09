@@ -2,6 +2,7 @@ package MDPatternDetection;
 
 import MDfromLogQueries.Declarations.Declarations;
 import MDfromLogQueries.Util.Constants;
+import MDfromLogQueries.Util.FileOperation;
 import com.google.common.base.Stopwatch;
 import org.apache.jena.query.Query;
 import org.apache.jena.query.QueryFactory;
@@ -26,36 +27,31 @@ public class Queries2Graphes {
         ArrayList<String> lines = new ArrayList<>();
         ArrayList<BasicPattern> PatternList = new ArrayList<>();
         Query query = null;
+        QueryUpdate queryUpdate;
+        Query constructQuery;
         try {
             /** Graph pattern extraction **/
             int nb_line=0;
             int nb_GP=0;
             int nb_nullGP=0;
             BasicPattern bp;
-            //lines = (ArrayList<String>) FileOperation.ReadFile(/*syntaxValidFile*/"C:\\Users\\KamilaB\\Desktop\\3CS\\Prototypage\\Step_1\\Fichiers_Resultat\\Fichier_Syntaxe_Valide_test.txt");
+            lines = (ArrayList<String>) FileOperation.ReadFile(/*syntaxValidFile*/"C:\\Users\\KamilaB\\Desktop\\3CS\\Prototypage\\Step_1\\Fichiers_Resultat\\Fichier_Syntaxe_Valide_test.txt");
             QueryPatternExtraction QPE= new QueryPatternExtraction();
             Queries2Graphes queries2Graphes = new Queries2Graphes();
-           /* for (String line : lines){
+            for (String line : lines){
                 nb_line++;
                 query = QueryFactory.create(line);
-                //System.out.println( "ligne \t"+query);
+                System.out.println("== before ==\n" + query);
+                queryUpdate = new QueryUpdate(query);
+                constructQuery = queryUpdate.getTheQuery();
+                System.out.println( "== after == \n"+constructQuery);
 
-                try {
-                    bp =QPE.extractGP(query);
-                    System.out.println( bp.toString()+"\n"+nb_GP);
-                    PatternList.add(bp);
-                    nb_GP++;
-                } catch (Exception e){
-                    nb_nullGP++;
-                    e.printStackTrace();
-                }
-
-            }*/
+            }
            // query = QueryFactory.create("PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> SELECT ?s where { ?s ?p ?o }");
-            query = QueryFactory.create("PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> SELECT ?s where { ?s ?p ?o Optional {?s ?pr ?var FILTER ( ! bound(?s) )}}");
+            //query = QueryFactory.create("PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> SELECT ?s where { ?s ?p ?o Optional {?s ?pr ?var FILTER ( ! bound(?s) )}}");
             //System.out.println( "ligne \t"+query);
 
-            try {
+           /* try {
                 QPE.extractGP(query);
                 QueryConstruction2 qc = new QueryConstruction2();
                 qc.completePatterns(QPE.getGraphPattern(),QPE.getGraphOptionalPattern());
@@ -70,7 +66,7 @@ public class Queries2Graphes {
                 nb_nullGP++;
                 e.printStackTrace();
             }
-
+*/
             System.out.println(" nombre de requetes : "+nb_line+"\t nombre de GP : "+nb_GP+"\t nombre de null GP "+nb_nullGP);
             System.out.println("taille liste "+PatternList.size());
 
