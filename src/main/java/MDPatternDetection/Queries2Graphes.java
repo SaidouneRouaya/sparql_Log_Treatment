@@ -7,11 +7,10 @@ import com.google.common.base.Stopwatch;
 import org.apache.jena.query.Query;
 import org.apache.jena.query.QueryFactory;
 import org.apache.jena.sparql.core.BasicPattern;
-import org.apache.jena.sparql.syntax.ElementTriplesBlock;
-import org.apache.jena.sparql.syntax.Template;
 
 import java.util.ArrayList;
 
+import static MDfromLogQueries.Declarations.Declarations.syntaxValidFileTest;
 import static java.util.concurrent.TimeUnit.SECONDS;
 
 public class Queries2Graphes {
@@ -35,7 +34,7 @@ public class Queries2Graphes {
             int nb_GP=0;
             int nb_nullGP=0;
             BasicPattern bp;
-            lines = (ArrayList<String>) FileOperation.ReadFile(/*syntaxValidFile*/"C:\\Users\\KamilaB\\Desktop\\3CS\\Prototypage\\Step_1\\Fichiers_Resultat\\Fichier_Syntaxe_Valide_test.txt");
+            lines = (ArrayList<String>) FileOperation.ReadFile(syntaxValidFileTest);
             QueryPatternExtraction QPE= new QueryPatternExtraction();
             Queries2Graphes queries2Graphes = new Queries2Graphes();
             for (String line : lines){

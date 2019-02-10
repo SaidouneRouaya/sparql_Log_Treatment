@@ -62,10 +62,10 @@ public class QueryConstruction {
         Graph graph = constructGraph(triples);
         Model queryModel = new ModelCom(graph); // We use a model to parse the graph by its subject -> properties -> objects
         Iterator nodeIterator = queryModel.listSubjects();
-        while (nodeIterator.hasNext()) { // for every subject we verify wether it has an rdf:type property in the origin basic pattern
+        while (nodeIterator.hasNext()) { // for every subject we verify whether it has an rdf:type property in the origin basic pattern
             Node subjectRDFTypeValue;
             subject = (Resource) nodeIterator.next();
-            subjectRDFTypeValue = verifyRDFTypeProperty(subject, i, rdfTypeProp, "sub"); //verifies wether the subject had an rdf:type triple
+            subjectRDFTypeValue = verifyRDFTypeProperty(subject, i, rdfTypeProp, "sub"); //verifies whether the subject had an rdf:type triple
             i++;
             propertyIterate(subject, subjectRDFTypeValue); // parses the properties of the subject
         }
@@ -103,6 +103,7 @@ public class QueryConstruction {
         Node subjectRDFTypeValue;
         Triple newTriple;
         Triple exists;
+
         if (!subject.hasProperty(rdfTypeProp)) {
             subjectRDFTypeValue = new Node_Variable(subobj + i);
             newTriple = new Triple(subject.asNode(), rdfTypeProp.asNode(), subjectRDFTypeValue);
@@ -132,7 +133,8 @@ public class QueryConstruction {
             {
                 try {
                     System.out.println("Je suis rentré dans le datatype peroepty ");
-                    returnValue = ((OntProperty) property).isDatatypeProperty();
+                    // returnValue = ((OntProperty) property).isDatatypeProperty();
+                    returnValue = ((OntProperty) property).asDatatypeProperty().isDatatypeProperty();
                 }
                 catch (Exception e)
                 {
