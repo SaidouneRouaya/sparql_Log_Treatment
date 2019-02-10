@@ -6,7 +6,6 @@ import org.apache.jena.graph.Node;
 import org.apache.jena.graph.Node_Variable;
 import org.apache.jena.graph.Triple;
 import org.apache.jena.graph.impl.CollectionGraph;
-import org.apache.jena.ontology.OntProperty;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.Resource;
@@ -124,7 +123,7 @@ public class QueryConstruction {
 
     private boolean isDatatypeProperty(Property property) {
 
-        return  Constants.isDatatypeProperty(property);
+        return Constants.isDatatypeProperty(property);
     }
 
     private boolean isObjectProperty(Property property) {
@@ -142,7 +141,7 @@ public class QueryConstruction {
             if (property.asNode().isVariable() || !property.getNameSpace().matches(rdfTypeProp.getNameSpace())) {
                 if (!property.asNode().isVariable() && isDatatypeProperty(property)) {
                     //Iterator rangeIterator = Constants.getRangeofProperty(property).iterator();
-                    objectRDFTypeValue =  Constants.getTemporarRange();//Constants.getRangeofProperty(property);
+                    objectRDFTypeValue = Constants.getTemporarRange();//Constants.getRangeofProperty(property);
                    /* while (rangeIterator.hasNext()) {
                         objectRDFTypeValue = (Node) rangeIterator.next();*/
                         newTriple = new Triple(subjectRDFTypeValue, property.asNode(), objectRDFTypeValue);

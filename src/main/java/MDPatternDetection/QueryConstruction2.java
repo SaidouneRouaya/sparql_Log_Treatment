@@ -1,7 +1,10 @@
 package MDPatternDetection;
 
 import MDfromLogQueries.Util.Constants;
-import org.apache.jena.graph.*;
+import org.apache.jena.graph.Graph;
+import org.apache.jena.graph.Node;
+import org.apache.jena.graph.Node_Variable;
+import org.apache.jena.graph.Triple;
 import org.apache.jena.graph.impl.CollectionGraph;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Property;

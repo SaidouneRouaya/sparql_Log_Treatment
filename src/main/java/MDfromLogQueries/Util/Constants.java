@@ -1,22 +1,15 @@
 package MDfromLogQueries.Util;
 
 import MDPatternDetection.OntologyFactory;
-import org.apache.jena.atlas.iterator.Iter;
 import org.apache.jena.graph.Node;
-import org.apache.jena.graph.NodeFactory;
-import org.apache.jena.graph.Node_Blank;
-import org.apache.jena.graph.Node_Variable;
-import org.apache.jena.ontology.*;
+import org.apache.jena.ontology.OntModel;
+import org.apache.jena.ontology.OntProperty;
 import org.apache.jena.query.*;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Property;
-import org.apache.jena.rdf.model.impl.PropertyImpl;
 
-import javax.xml.crypto.Data;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 
 // TODO Cette classe est à initialiser au niveau de l'appel de toutes les requêtes et pas seulement d'une seule
 public class Constants {
@@ -58,13 +51,11 @@ public class Constants {
         objectProperties.addAll(ontologie.listObjectProperties().toList());
     }
 
-    private static boolean contains(Property property)
-    {
+    private static boolean contains(Property property) {
         boolean returnValue = false;
-        Node  node ;
+        Node node;
         node = getRangeofProperty(property);
-        if (node != null)
-        {
+        if (node != null) {
             returnValue = true;
             temporarRange = node;
         }
@@ -72,26 +63,22 @@ public class Constants {
 
     }
 
-    public static boolean isDatatypeProperty(Property property)
-    {
+    public static boolean isDatatypeProperty(Property property) {
         boolean returnValue = false;
-        if (contains(property))
-        {
+        if (contains(property)) {
             System.out.println("je suis laaa ds le if");
             returnValue = true;
-        }
-        else
-        {
+        } else {
             OntModel ontoModel = ModelFactory.createOntologyModel();
-            OntologyFactory.readOntology(property.getNameSpace(),ontoModel);
+            OntologyFactory.readOntology(property.getNameSpace(), ontoModel);
             System.out.println("je suis laaa ds le ekseeee");
             ontologies.add(ontoModel);
-            System.out.println("taille du datatypeProperties"+ ontoModel.listOntProperties().toList().size());
+            System.out.println("taille du datatypeProperties" + ontoModel.listOntProperties().toList().size());
             datatypeProperties.addAll(ontoModel.listOntProperties().toList());
             objectProperties.addAll(ontoModel.listOntProperties().toList());
             for (OntProperty property1 : ontoModel.listOntProperties().toList())
-            System.out.println(" propriété : "+ property1);
-            returnValue =  contains(property);
+                System.out.println(" propriété : " + property1);
+            returnValue = contains(property);
 
         }
         return returnValue;
@@ -135,12 +122,10 @@ public class Constants {
         OntologyFactory.readOntology(ontologyPath, ontologie);*/
         OntProperty datatypeProperty;
         Node range = null;
-        Iterator<OntProperty>  iterator = datatypeProperties.iterator();
-        while(iterator.hasNext())
-        {
+        Iterator<OntProperty> iterator = datatypeProperties.iterator();
+        while (iterator.hasNext()) {
             datatypeProperty = iterator.next();
-            if (datatypeProperty.getURI().matches(property.getURI()))
-            {
+            if (datatypeProperty.getURI().matches(property.getURI())) {
                 range = datatypeProperty.getRange().asNode();
             }
         }
