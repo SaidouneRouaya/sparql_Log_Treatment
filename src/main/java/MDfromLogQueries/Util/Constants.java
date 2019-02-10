@@ -120,7 +120,8 @@ public class Constants {
             ResultSet results = qexec.execSelect();
             int i = 0;
             while (results.hasNext()) {
-                propertySet.add(results.next().toString());
+                propertySet.add(results.next().getResource("prop").getURI());
+
                 i++;
             }
         } catch (Exception e) {
