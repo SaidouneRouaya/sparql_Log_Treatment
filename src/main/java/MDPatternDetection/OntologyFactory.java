@@ -21,7 +21,7 @@ public class OntologyFactory {
             in.close();
         } catch (IOException e)
         {
-            e.printStackTrace();
+            //e.printStackTrace();
         }
     }
     public static void main(String[] args){
