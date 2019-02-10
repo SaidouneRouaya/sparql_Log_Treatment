@@ -1,10 +1,17 @@
 package MDPatternDetection;
 
 
+import org.apache.jena.ontology.OntModel;
+import org.apache.jena.ontology.OntProperty;
 import org.apache.jena.query.Query;
 import org.apache.jena.query.QueryFactory;
+import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.rdf.model.Property;
+import org.apache.jena.rdf.model.impl.PropertyImpl;
 import org.apache.jena.sparql.algebra.Algebra;
 import org.apache.jena.sparql.algebra.Op;
+
+import java.util.List;
 
 /**
  * Hello world!
@@ -36,13 +43,21 @@ public class App {
                 "     ?game foaf:name ?title ." +
                 "} ORDER by ?title limit 10";
 
-        Query query = QueryFactory.create(queryStr);
+       /* Query query = QueryFactory.create(queryStr);
         System.out.println("*************" + query.toString());
         Op op = Algebra.compile(query);
         System.out.println(op.toString());
         //System.out.println(movb.executeQuery(queryStr).getResourceModel().size());
         movb.myOpVisitorWalker(op);
-        movb.contructGraph();
+        movb.contructGraph();*/
+        Property property = new PropertyImpl("http://www.w3.org/1999/02/22-rdf-syntax-ns#type");
+        System.out.println("le namespace  :" + property.getNameSpace().replaceAll("#",""));
+        OntModel ontoModel = ModelFactory.createOntologyModel();
+        OntologyFactory.readOntology(property.getNameSpace().replaceAll("#",""),ontoModel);
+        List<OntProperty> list = ontoModel.listOntProperties().toList();
+        for (OntProperty property1 : list)
+            System.out.println(" propriété : "+ property1);
+
     }
 }
 

@@ -129,13 +129,13 @@ public class QueryConstruction2 {
             Node objectRDFTypeValue;
             property = ((Statement) propertyIterator.next()).getPredicate();
             if (isDatatypeProperty(property)) {
-                Iterator rangeIterator = Constants.getRangeofProperty(property).iterator();
-                while (rangeIterator.hasNext()) {
+                //Iterator rangeIterator = Constants.getRangeofProperty(property).iterator();
+                /*while (rangeIterator.hasNext()) {
                     objectRDFTypeValue = (Node) rangeIterator.next();
                     newTriple = new Triple(subjectRDFTypeValue, property.asNode(), objectRDFTypeValue);
                     bpConstruct.add(newTriple); // if it's a datatype property it searches for its range (type of object) and sets
                     // the triple of the construct with it
-                }
+                }*/
             } else {
                 objectRDFTypeValue = verifyRDFTypeProperty(subject.getProperty(property).getObject().asResource(), j, rdfTypeProp, "ob");
                 newTriple = new Triple(subjectRDFTypeValue, property.asNode(), objectRDFTypeValue);

@@ -123,26 +123,8 @@ public class QueryConstruction {
 
 
     private boolean isDatatypeProperty(Property property) {
-        boolean returnValue= false;
-        if(!property.asNode().isVariable()) {
-           System.out.println("format  : "+property.getURI());
-            if (Constants.getDatatypeProperties().contains(property.getURI()))
-                returnValue = true;
-            else
-            {
-                try {
-                    System.out.println("Je suis rentré dans le datatype peroepty ");
-                    returnValue = ((OntProperty) property).isDatatypeProperty();
-                }
-                catch (Exception e)
-                {
 
-                }
-            }
-        }
-        else
-             returnValue = false;
-        return returnValue;
+        return  Constants.isDatatypeProperty(property);
     }
 
     private boolean isObjectProperty(Property property) {
@@ -158,14 +140,15 @@ public class QueryConstruction {
             Node objectRDFTypeValue;
             property = ((Statement) propertyIterator.next()).getPredicate();
             if (property.asNode().isVariable() || !property.getNameSpace().matches(rdfTypeProp.getNameSpace())) {
-                if (isDatatypeProperty(property)) {
-                    Iterator rangeIterator = Constants.getRangeofProperty(property).iterator();
-                    while (rangeIterator.hasNext()) {
-                        objectRDFTypeValue = (Node) rangeIterator.next();
+                if (!property.asNode().isVariable() && isDatatypeProperty(property)) {
+                    //Iterator rangeIterator = Constants.getRangeofProperty(property).iterator();
+                    objectRDFTypeValue =  Constants.getTemporarRange();//Constants.getRangeofProperty(property);
+                   /* while (rangeIterator.hasNext()) {
+                        objectRDFTypeValue = (Node) rangeIterator.next();*/
                         newTriple = new Triple(subjectRDFTypeValue, property.asNode(), objectRDFTypeValue);
                         bpConstruct.add(newTriple); // if it's a datatype property it searches for its range (type of object) and sets
                         // the triple of the construct with it
-                    }
+                    //}
                 } else {
                     objectRDFTypeValue = verifyRDFTypeProperty(subject.getProperty(property).getObject().asResource(), j, rdfTypeProp, "ob");
                     newTriple = new Triple(subjectRDFTypeValue, property.asNode(), objectRDFTypeValue);
