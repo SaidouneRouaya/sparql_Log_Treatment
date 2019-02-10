@@ -1,18 +1,14 @@
-package MDfromLogQueries.SPARQLSyntaxicValidation;
+package MDfromLogQueries.SPARQLSyntacticalValidation;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.jena.iri.impl.Main;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.nio.charset.StandardCharsets;
-import java.util.Collections;
-import java.util.List;
 import java.util.Properties;
-import java.util.stream.Collectors;
 
 public class Resources {
 
@@ -20,7 +16,7 @@ public class Resources {
         return LoggerFactory.getLogger(Resources.class);
     }
 
-    private static final ThreadLocal<ClassLoader> cl = new ThreadLocal<ClassLoader>() {
+    private static final ThreadLocal<ClassLoader> cl = new ThreadLocal<>() {
         @Override
         protected ClassLoader initialValue() {
             return Thread.currentThread().getContextClassLoader();
@@ -91,6 +87,16 @@ public class Resources {
         }
     }
 
+
+    public static InputStream getResourceAsStream(String resourceName) {
+        return currentClassLoader().getResourceAsStream(resourceName);
+    }
+
+    /*
+    public static String getLocalProperty(String key) {
+        return properties.getProperty(key);
+    }
+
     public static List<String> listResources(String path) {
         try (InputStream inputStream = currentClassLoader().getResourceAsStream(path)) {
             BufferedReader br = new BufferedReader(new InputStreamReader(
@@ -100,10 +106,6 @@ public class Resources {
 
             return Collections.emptyList();
         }
-    }
-
-    public static String getLocalProperty(String key) {
-        return properties.getProperty(key);
     }
 
     public static String getLocalPropertyOr(String key, String alternative) {
@@ -134,18 +136,11 @@ public class Resources {
         }
         return null;
     }
-
-
-    public static InputStream getResourceAsStream(String resourceName) {
-        return currentClassLoader().getResourceAsStream(resourceName);
-    }
-
-
     public static InputStream getFileStreamFromProperty(String key) {
         try {
             return new FileInputStream(getLocalProperty(key));
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         }
-    }
+    }*/
 }

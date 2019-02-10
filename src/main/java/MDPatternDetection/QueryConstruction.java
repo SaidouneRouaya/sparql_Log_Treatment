@@ -20,6 +20,12 @@ import java.util.List;
 import java.util.Set;
 
 public class QueryConstruction {
+
+    /**
+     * This class completes the Basic pattern with missing rdf:type triples
+     * and create a Construct basic pattern
+     **/
+
     private BasicPattern bpModified; // QueryPattern after modification to build a construct query
     private BasicPattern bpWhere = new BasicPattern(); //Query pattern of the WHERE clause after adding rdf:type triples
     private BasicPattern bpConstruct = new BasicPattern();//Query pattern of the CONSTRUCT clause to generate the graph automaticly
@@ -37,9 +43,6 @@ public class QueryConstruction {
     }
 
 
-    /**
-     * Fix the basic graph pattern to create an ontology to test with the dataset ontology
-     **/
 
     /** Takes e_bpwhere the basic pattern of the query before modification and returns bpwhere the basic pattern of the query after modification
      * Same for optional
@@ -141,7 +144,7 @@ public class QueryConstruction {
             if (property.asNode().isVariable() || !property.getNameSpace().matches(rdfTypeProp.getNameSpace())) {
                 if (!property.asNode().isVariable() && isDatatypeProperty(property)) {
                     //Iterator rangeIterator = Constants.getRangeofProperty(property).iterator();
-                    objectRDFTypeValue = Constants.getTemporarRange();//Constants.getRangeofProperty(property);
+                    objectRDFTypeValue = Constants.getTemporareRange();//Constants.getRangeofProperty(property);
                    /* while (rangeIterator.hasNext()) {
                         objectRDFTypeValue = (Node) rangeIterator.next();*/
                         newTriple = new Triple(subjectRDFTypeValue, property.asNode(), objectRDFTypeValue);

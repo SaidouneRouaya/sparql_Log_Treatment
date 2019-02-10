@@ -4,15 +4,23 @@ import MDPatternDetection.OntologyFactory;
 import org.apache.jena.graph.Node;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.ontology.OntProperty;
-import org.apache.jena.query.*;
+import org.apache.jena.query.Query;
+import org.apache.jena.query.QueryExecution;
+import org.apache.jena.query.QueryExecutionFactory;
+import org.apache.jena.query.ResultSet;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Property;
 
 import java.util.HashSet;
 import java.util.Iterator;
 
-// TODO Cette classe est à initialiser au niveau de l'appel de toutes les requêtes et pas seulement d'une seule
+
 public class Constants {
+
+    /**
+     * This class is for constants' declaration
+     **/
+
     private static HashSet<OntProperty> datatypeProperties = new HashSet<>();
     private static HashSet<OntProperty> objectProperties = new HashSet<>();
     private static String ontologyPath;
@@ -25,32 +33,42 @@ public class Constants {
         initDatatypeProperties();
     }
 
-    public static Node getTemporarRange() {
+    public static Node getTemporareRange() {
         return temporarRange;
     }
 
+    /**
+     * Initialize the DataType properties into a list
+     **/
     private static void initDatatypeProperties() {
         OntModel ontologie = ModelFactory.createOntologyModel();
         OntologyFactory.readOntology(ontologyPath, ontologie);
         ontologie.add(ontologie);
-        String datatypeQuery = "PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> " +
+       /* String datatypeQuery = "PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> " +
                 "PREFIX  owl:  <http://www.w3.org/2002/07/owl#>" +
                 "select ?prop where { ?prop rdf:type owl:DatatypeProperty}";
-        Query query = QueryFactory.create(datatypeQuery);
+        Query query = QueryFactory.create(datatypeQuery);*/
+
         datatypeProperties.addAll(ontologie.listDatatypeProperties().toList());
-        System.out.println("*** taille de datatypeProperties ****** "+datatypeProperties.size());
+
+        /* System.out.println(" Size of datatypeProperties "+datatypeProperties.size()); */
     }
 
+    /** Initialize a list of Object properties **/
     private static void initObjectProperties() {
         OntModel ontologie = ModelFactory.createOntologyModel();
         OntologyFactory.readOntology(ontologyPath, ontologie);
-        String datatypeQuery = "PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> " +
+
+        /*String datatypeQuery = "PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> " +
                 "PREFIX  owl:  <http://www.w3.org/2002/07/owl#>" +
                 "select ?prop where { ?prop rdf:type owl:ObjectProperty}";
-        Query query = QueryFactory.create(datatypeQuery);
+        Query query = QueryFactory.create(datatypeQuery);*/
+
         objectProperties.addAll(ontologie.listObjectProperties().toList());
     }
 
+
+    /** Verify if the property given as parameter is already in the Properties list **/
     private static boolean contains(Property property) {
         boolean returnValue = false;
         Node node;
@@ -60,30 +78,49 @@ public class Constants {
             temporarRange = node;
         }
         return returnValue;
-
     }
 
+
+    /**
+     * Return properties set
+     **/
+    //à changer probablement en créant un nouveau type contenant la datatypeProperty et son ou ses range
+    public static Node getRangeofProperty(Property property) {
+
+        OntProperty datatypeProperty;
+        Node range = null;
+        Iterator<OntProperty> iterator = datatypeProperties.iterator();
+        while (iterator.hasNext()) {
+            datatypeProperty = iterator.next();
+            if (datatypeProperty.getURI().matches(property.getURI())) {
+                range = datatypeProperty.getRange().asNode();
+            }
+        }
+        return range;
+    }
+
+    /** Verify if the property is a dataType property **/
     public static boolean isDatatypeProperty(Property property) {
-        boolean returnValue = false;
-        if (contains(property)) {
-            System.out.println("je suis laaa ds le if");
-            returnValue = true;
-        } else {
+        boolean returnValue;
+        if (contains(property)) returnValue = true;
+        else {
+
             OntModel ontoModel = ModelFactory.createOntologyModel();
             OntologyFactory.readOntology(property.getNameSpace(), ontoModel);
-            System.out.println("je suis laaa ds le ekseeee");
             ontologies.add(ontoModel);
-            System.out.println("taille du datatypeProperties" + ontoModel.listOntProperties().toList().size());
+            /* System.out.println("Size of datatypeProperties" + ontoModel.listOntProperties().toList().size());*/
             datatypeProperties.addAll(ontoModel.listOntProperties().toList());
             objectProperties.addAll(ontoModel.listOntProperties().toList());
-            for (OntProperty property1 : ontoModel.listOntProperties().toList())
-                System.out.println(" propriété : " + property1);
-            returnValue = contains(property);
 
+            /*for (OntProperty propertyy : ontoModel.listOntProperties().toList())
+                System.out.println(" propriété : " + propertyy);*/
+
+            returnValue = contains(property);
         }
         return returnValue;
 
     }
+
 
     public static HashSet<OntProperty> getDatatypeProperties() {
         if (datatypeProperties.size() < 1) {
@@ -99,7 +136,7 @@ public class Constants {
         return objectProperties;
     }
 
-    /* Execute a query into an ontology*/
+    /** Execute a query onto an ontology **/
     private static HashSet<String> simpleExecution(Query query, OntModel ontologie)
     {
         HashSet<String> propertySet = new HashSet<>();
@@ -116,19 +153,5 @@ public class Constants {
         return propertySet;
     }
 
-    //à changer probablement en créant un nouveau type contenant la datatypeProperty et son ou ses range
-    public static Node getRangeofProperty(Property property) {
-        /*OntModel ontologie = ModelFactory.createOntologyModel();
-        OntologyFactory.readOntology(ontologyPath, ontologie);*/
-        OntProperty datatypeProperty;
-        Node range = null;
-        Iterator<OntProperty> iterator = datatypeProperties.iterator();
-        while (iterator.hasNext()) {
-            datatypeProperty = iterator.next();
-            if (datatypeProperty.getURI().matches(property.getURI())) {
-                range = datatypeProperty.getRange().asNode();
-            }
-        }
-        return range;
-    }
+
 }

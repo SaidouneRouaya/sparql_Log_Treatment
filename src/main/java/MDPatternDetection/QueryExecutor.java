@@ -6,6 +6,10 @@ import org.apache.jena.sparql.engine.http.QueryEngineHTTP;
 
 public class QueryExecutor {
 
+    /**
+     * This class executes the queries
+     **/
+
     public QueryExecutor() {
     }
 
@@ -15,10 +19,8 @@ public class QueryExecutor {
         try{
             Query query = QueryFactory.create(queryStr);
             QueryExecution qexec = QueryExecutionFactory.sparqlService(endpoint, query);
-
             results = qexec.execSelect();
-
-            System.out.println("Resultat " + results.next());
+            /*  System.out.println("Result " + results.next());*/
         }
         catch (Exception e){
             e.printStackTrace();
@@ -32,14 +34,9 @@ public class QueryExecutor {
         Model results = null;
         try{
             Query query = QueryFactory.create(queryStr);
-            //QueryExecution qexec = QueryExecutionFactory.sparqlService(endpoint, query);
-
-
             QueryEngineHTTP qexec = QueryExecutionFactory.createServiceRequest(endpoint, query);
-
             results = qexec.execConstruct();
-
-            System.out.println("Resultat "+ results.toString());
+            /* System.out.println("Result "+ results.toString());*/
         }
         catch (Exception e){
             e.printStackTrace();

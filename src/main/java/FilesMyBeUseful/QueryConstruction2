@@ -18,6 +18,11 @@ import java.util.Iterator;
 import java.util.List;
 
 public class QueryConstruction2 {
+
+    /**
+     * Fix the basic graph pattern to create an ontology to test with the dataset ontology
+     **/
+
     private BasicPattern bpModified; // QueryPattern after modification to build a construct query
     private BasicPattern bpWhere = new BasicPattern(); //Query pattern of the WHERE clause after adding rdf:type triples
     private BasicPattern bpWhereOptional = new BasicPattern();//Query pattern of the WHERE OPTIONAL clause after adding rdf:type triples
@@ -38,9 +43,7 @@ public class QueryConstruction2 {
         return bpWhereOptional;
     }
 
-    /**
-     * Fix the basic graph pattern to create an ontology to test with the dataset ontology
-     **/
+
 
     /** Takes e_bpwhere the basic pattern of the query before modification and returns bpwhere the basic pattern of the query after modification
      * Same for optional

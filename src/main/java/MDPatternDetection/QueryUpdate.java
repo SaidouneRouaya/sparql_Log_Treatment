@@ -11,17 +11,28 @@ import org.apache.jena.sparql.core.BasicPattern;
 import org.apache.jena.sparql.syntax.Template;
 
 public class QueryUpdate {
+
+    /**
+     * This class update queries with rdf:type triples
+     **/
+
     private QueryConstruction queryConstruction = new QueryConstruction();
     private Query theQuery;
+
     public QueryUpdate(Query query)
     {
-        //theQuery = query;
         addGP2Query(query);
         theQuery = toConstruct(query,new Template(queryConstruction.getBpConstruct()));
     }
 
     public Query getTheQuery() {
         return theQuery;
+    }
+
+    private static Query toConstruct(Query query, Template constructTemplate) {
+        query.setQueryConstructType();
+        query.setConstructTemplate(constructTemplate);
+        return query;
     }
 
     public static void main(String[] args) {
@@ -65,7 +76,7 @@ public class QueryUpdate {
                 "}";
 
 
-         Query query = QueryFactory.create(queryString);
+        Query query = QueryFactory.create(queryString);
         System.out.println("== before ==\n" + query);
 
         BasicPattern bp = new BasicPattern();
@@ -82,13 +93,6 @@ public class QueryUpdate {
         //System.out.println(" query construct : "+ queryConstruction.getBpConstruct().toString());
         // query = toConstruct(query,new Template(queryConstruction.getBpConstruct()));
         System.out.println("nouvelle query : "+query);
-    }
-
-    private static Query toConstruct(Query query, Template constructTemplate)
-    {
-        query.setQueryConstructType();
-        query.setConstructTemplate(constructTemplate);
-        return query;
     }
 
     public Query addGP2Query(Query query) {

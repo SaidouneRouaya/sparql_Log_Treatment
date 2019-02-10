@@ -7,10 +7,8 @@ import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Statement;
 
 import java.util.Iterator;
+//TODO delete this class
 
-/**
- * Hello world!
- */
 public class App {
    /* public static void main(String[] args) {
        /* String queryStr =
@@ -19,8 +17,7 @@ public class App {
                         "{?x foaf:mbox <mailt:person@server> ." +
                         "?x foaf:name ?name " +
                         "OPTIONAL { ?x foaf:nick ?nick }}";
-        MyOpVisitorBase movb = new MyOpVisitorBase();
-        String queryStr = "PREFIX owl: <http://www.w3.org/2002/07/owl#>" +
+         String queryStr = "PREFIX owl: <http://www.w3.org/2002/07/owl#>" +
                 "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>" +
                 "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>" +
                 "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>" +

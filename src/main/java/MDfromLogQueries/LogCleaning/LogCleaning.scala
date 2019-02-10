@@ -11,25 +11,27 @@ import org.apache.http.client.utils.URLEncodedUtils
 import scala.collection.JavaConversions._
 import scala.collection.JavaConverters
 
-//class LogCleaning{
 object Main extends App {
 
+  /** This class reads the log files and extract queries **/
 
   val t1 = System.currentTimeMillis()
 
-println("je suis dans log cleaner")
 
-  // directory contenant les ficheir a lire
-  //val dirPath = Declarations.directoryPath
+  /* Directory that coontains the log files 's Path */
   val dirPath = Declarations.directoryPath
-  //fichier ou ecrire
-  val filePath = Declarations.cleanedQueriesFileCopie
-  //taille buffer pour paralleliser
 
+  /* Result (cleaned queries)'s file path */
+  val filePath = Declarations.cleanedQueriesFileCopie
+
+  /* Regex on wich is based the algorithm to extract the queries */
   private val PATTERN = Pattern.compile("[^\"]*\"(?:GET )?/sparql/?\\?([^\"\\s\\n]*)[^\"]*\".*")
-var nb_queries=0
+
+  /* Statistical variables*/
+  var nb_queries = 0
   val duration = System.currentTimeMillis() - t1
 
+  /** Write the cleaned queries in the destination file path **/
   def writeFiles(directoryPath: String, destinationfilePath: String) = {
     val dir = new File(directoryPath)
     val logs = dir.listFiles().toList.par.flatMap(x => extractQueries(x))
@@ -39,7 +41,7 @@ var nb_queries=0
     writer.close()
   }
 
-  /** Read lines of log file passed as parameter and return queries **/
+  /** Read lines of log file passed as parameter **/
 
   def extractQueries(file: File) = {
 
@@ -52,23 +54,6 @@ var nb_queries=0
     }
   }
 
-  def queryFromLogLine(line: String) = {
-    val matcher = PATTERN.matcher(line)
-
-    if (matcher.find) {
-      val requestStr = matcher.group(1)
-      val queryStr = queryFromRequest(requestStr)
-      if (queryStr != null) {
-        //println(queryStr)
-        queryStr
-      }
-      else requestStr
-    }
-    else null
-  }
-
-  writeFiles(dirPath, filePath)
-  println(s"nb queries $nb_queries")
 
   def queryFromRequest(requestStr: String): String = {
     val pairs = URLEncodedUtils.parse(requestStr, StandardCharsets.UTF_8)
@@ -81,6 +66,21 @@ var nb_queries=0
     null
   }
 
+  /** match the line passed as parameter with the Regex to extract the query and return the query **/
+  def queryFromLogLine(line: String) = {
+    val matcher = PATTERN.matcher(line)
+
+    if (matcher.find) {
+      val requestStr = matcher.group(1)
+      val queryStr = queryFromRequest(requestStr)
+      if (queryStr != null) queryStr
+      else requestStr
+    }
+    else null
+  }
+
+  writeFiles(dirPath, filePath)
+
   println(duration)
 }
-//}
+
