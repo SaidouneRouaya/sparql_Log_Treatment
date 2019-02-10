@@ -2,18 +2,19 @@ package MDPatternDetection;
 
 import org.apache.jena.graph.Triple;
 import org.apache.jena.sparql.core.BasicPattern;
-import org.apache.jena.sparql.core.PathBlock;
 import org.apache.jena.sparql.core.TriplePath;
 import org.apache.jena.sparql.syntax.Element;
 import org.apache.jena.sparql.syntax.ElementPathBlock;
 import org.apache.jena.sparql.syntax.ElementVisitorBase;
 import org.apache.jena.sparql.syntax.ElementWalker;
 
-import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 public class QueryModifyElementVisitor extends ElementVisitorBase {
+
+    /**
+     * This class implements methods to visit queries (Gps of queries)
+     **/
 
     private BasicPattern basicPattern = new BasicPattern();
     private QueryConstruction queryConstruction;

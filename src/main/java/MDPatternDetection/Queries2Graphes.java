@@ -6,77 +6,62 @@ import MDfromLogQueries.Util.FileOperation;
 import com.google.common.base.Stopwatch;
 import org.apache.jena.query.Query;
 import org.apache.jena.query.QueryFactory;
-import org.apache.jena.sparql.core.BasicPattern;
-import org.apache.jena.sparql.syntax.ElementTriplesBlock;
-import org.apache.jena.sparql.syntax.Template;
 
 import java.util.ArrayList;
 
+import static MDfromLogQueries.Declarations.Declarations.syntaxValidFileTest;
 import static java.util.concurrent.TimeUnit.SECONDS;
 
 public class Queries2Graphes {
+    /**
+     * This class transforms queries to CONSTRUCT to give back their graph for further manipulation
+     **/
 
-
-    public Queries2Graphes()
-    {
-        //TODO change the path in case of using another query logs
-        new Constants(Declarations.dbPediaOntologyPath); // init the constants tu use it next
+    public Queries2Graphes() {
+        /* Change the path in the case of using another query logs */
+        new Constants(Declarations.dbPediaOntologyPath); // init the Constants to use it next
     }
-    public static void main(String[] args)  {
-        Stopwatch stopwatch = Stopwatch.createStarted();
-        ArrayList<String> lines = new ArrayList<>();
-        ArrayList<BasicPattern> PatternList = new ArrayList<>();
-        Query query = null;
-        QueryUpdate queryUpdate;
-        Query constructQuery;
+
+    /**
+     * Transforms queries read from the file filePath, to CONSTRUCT queries
+     * to get the graph corresponding to each query
+     **/
+
+    public static ArrayList<Query> TransformQueriesinFile(String filePath) {
+
+        ArrayList<Query> constructQueriesList = new ArrayList<>();
+        ArrayList<String> lines;
+
+        int nb_line = 0; // for statistical matters
+
         try {
             /** Graph pattern extraction **/
-            int nb_line=0;
-            int nb_GP=0;
-            int nb_nullGP=0;
-            BasicPattern bp;
-            lines = (ArrayList<String>) FileOperation.ReadFile(/*syntaxValidFile*/"C:\\Users\\KamilaB\\Desktop\\3CS\\Prototypage\\Step_1\\Fichiers_Resultat\\Fichier_Syntaxe_Valide_test.txt");
-            QueryPatternExtraction QPE= new QueryPatternExtraction();
-            Queries2Graphes queries2Graphes = new Queries2Graphes();
-            for (String line : lines){
+
+            lines = (ArrayList<String>) FileOperation.ReadFile(filePath);
+
+            for (String line : lines) {
                 nb_line++;
-                query = QueryFactory.create(line);
-                System.out.println("== before ==\n" + query);
-                queryUpdate = new QueryUpdate(query);
-                constructQuery = queryUpdate.getTheQuery();
-                System.out.println( "== after == \n"+constructQuery);
-
+                constructQueriesList.add(new QueryUpdate(QueryFactory.create(line)).getTheQuery());
             }
-           // query = QueryFactory.create("PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> SELECT ?s where { ?s ?p ?o }");
-            //query = QueryFactory.create("PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> SELECT ?s where { ?s ?p ?o Optional {?s ?pr ?var FILTER ( ! bound(?s) )}}");
-            //System.out.println( "ligne \t"+query);
+          
+           /* System.out.println(" Queries number : "+nb_line);
+            System.out.println("size of Pattern List  "+PatternList.size());*/
 
-           /* try {
-                QPE.extractGP(query);
-                QueryConstruction2 qc = new QueryConstruction2();
-                qc.completePatterns(QPE.getGraphPattern(),QPE.getGraphOptionalPattern());
-                query.setQueryConstructType();
-                query.setConstructTemplate(new Template(qc.getBpConstruct()));
-                query.setQueryPattern(new ElementTriplesBlock(QPE.getGraphPattern()));
-                //  query.;
-                System.out.println(QPE.getGraphPattern().toString() + "\n" + nb_GP);
-                PatternList.add(QPE.getGraphPattern());
-                nb_GP++;
-            } catch (Exception e) {
-                nb_nullGP++;
-                e.printStackTrace();
-            }
-*/
-            System.out.println(" nombre de requetes : "+nb_line+"\t nombre de GP : "+nb_GP+"\t nombre de null GP "+nb_nullGP);
-            System.out.println("taille liste "+PatternList.size());
-
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             e.printStackTrace();
         }
+        return constructQueriesList;
+    }
+
+
+    public static void main(String[] args)  {
+        Stopwatch stopwatch = Stopwatch.createStarted();
+
+        TransformQueriesinFile(syntaxValidFileTest);
         stopwatch.stop();
         System.out.println("\n Time elapsed for the program is "+ stopwatch.elapsed(SECONDS));
 
     }
+
+
 }

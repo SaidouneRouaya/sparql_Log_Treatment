@@ -11,17 +11,28 @@ import org.apache.jena.sparql.core.BasicPattern;
 import org.apache.jena.sparql.syntax.Template;
 
 public class QueryUpdate {
-    private static QueryConstruction queryConstruction = new QueryConstruction();
+
+    /**
+     * This class update queries with rdf:type triples
+     **/
+
+    private QueryConstruction queryConstruction = new QueryConstruction();
     private Query theQuery;
+
     public QueryUpdate(Query query)
     {
-        //theQuery = query;
         addGP2Query(query);
         theQuery = toConstruct(query,new Template(queryConstruction.getBpConstruct()));
     }
 
     public Query getTheQuery() {
         return theQuery;
+    }
+
+    private static Query toConstruct(Query query, Template constructTemplate) {
+        query.setQueryConstructType();
+        query.setConstructTemplate(constructTemplate);
+        return query;
     }
 
     public static void main(String[] args) {
@@ -65,7 +76,7 @@ public class QueryUpdate {
                 "}";
 
 
-         Query query = QueryFactory.create(queryString);
+        Query query = QueryFactory.create(queryString);
         System.out.println("== before ==\n" + query);
 
         BasicPattern bp = new BasicPattern();
@@ -76,21 +87,15 @@ public class QueryUpdate {
         bp.add(triple);
         bp.add(triple2);
         bp.add(triple3);
-        addGP2Query(query);
+        // addGP2Query(query);
 
         System.out.println("\n\n\n== after ==\n" + query);
-        System.out.println(" query construct : "+ queryConstruction.getBpConstruct().toString());
-        query = toConstruct(query,new Template(queryConstruction.getBpConstruct()));
+        //System.out.println(" query construct : "+ queryConstruction.getBpConstruct().toString());
+        // query = toConstruct(query,new Template(queryConstruction.getBpConstruct()));
         System.out.println("nouvelle query : "+query);
     }
 
-    private static Query toConstruct(Query query, Template constructTemplate)
-    {
-        query.setQueryConstructType();
-        query.setConstructTemplate(constructTemplate);
-        return query;
-    }
-    public static Query addGP2Query(Query query) {
+    public Query addGP2Query(Query query) {
         QueryModifyElementVisitor qmev = new QueryModifyElementVisitor();
         qmev.walker(query.getQueryPattern(),queryConstruction);
         return query;

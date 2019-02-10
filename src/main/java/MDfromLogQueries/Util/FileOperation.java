@@ -8,20 +8,22 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 public class FileOperation {
 
+    /**
+     * This class implements some recurrent file operations
+     **/
 
     public static int nbTotalLines =0;
+
     public static Collection<String> ReadFile(String readingFilePath) {
 
         File file = new File(readingFilePath);
-        String line = "";
-       ArrayList<String> collection = new ArrayList<>();
+        String line;
+        ArrayList<String> collection = new ArrayList<>();
         BufferedReader br = null;
-        int linesNumbers =0;
+        int linesNumbers = 0; // for statistical matters
         try {
             if (!file.isFile()) file.createNewFile();
-
             br = new BufferedReader(new FileReader(file));
-
             while ((line = br.readLine()) != null) {
                 collection.add(line);
                 linesNumbers++;
@@ -37,9 +39,11 @@ public class FileOperation {
             }
         }
         nbTotalLines+=linesNumbers;
-        System.out.println("nombre de ligne dans le fichier est :   "+linesNumbers );
+        /*System.out.println("number of lines in the file  :   "+linesNumbers );*/
+
         return collection;
     }
+
    /* public static CopyOnWriteArrayList ReadFileParallel (String readingFilePath) {
 
         File file = new File(readingFilePath);
@@ -104,7 +108,7 @@ public class FileOperation {
 
             for ( int i=0; i<synchronizedList.size(); i++) {
 
-                bw.write(synchronizedList.get(i)+"####");
+                bw.write(synchronizedList.get(i) + "\n");
 
                 bw.flush();
             }
