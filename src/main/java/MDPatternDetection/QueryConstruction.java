@@ -53,7 +53,7 @@ public class QueryConstruction {
     }
 
     /** Takes a basic pattern and returns the basic pattern + every variable rdf:type ?type **/
-    public BasicPattern modifyBasicPattern(BasicPattern bpat) {
+    private BasicPattern modifyBasicPattern(BasicPattern bpat) {
         List<Triple> triples = bpat.getList();
         bpModified= new BasicPattern();
         //bpModified = bpat;
@@ -71,7 +71,7 @@ public class QueryConstruction {
         return bpModified;
     }
 
-    public Graph constructGraph(List<Triple> triples) {
+    private Graph constructGraph(List<Triple> triples) {
         Graph graph = new CollectionGraph();
         for (Triple t : triples) {
             graph.add(t);
@@ -98,7 +98,7 @@ public class QueryConstruction {
     }
 
     /** Verifies for every Node of type Resource whether it has a rdf:type triple in the basic pattern **/
-    public Node verifyRDFTypeProperty(Resource subject, int i, Property rdfTypeProp, String subobj) {
+    private Node verifyRDFTypeProperty(Resource subject, int i, Property rdfTypeProp, String subobj) {
         Node subjectRDFTypeValue;
         Triple newTriple;
         Triple exists;
@@ -121,7 +121,7 @@ public class QueryConstruction {
     }
 
     /** Parses every property of a subject **/
-    public void propertyIterate(Resource subject, Node subjectRDFTypeValue) {
+    private void propertyIterate(Resource subject, Node subjectRDFTypeValue) {
         Property property;
         Iterator propertyIterator = subject.listProperties();
         Triple newTriple;

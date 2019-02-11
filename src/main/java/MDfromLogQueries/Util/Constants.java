@@ -186,7 +186,7 @@ public class Constants {
     }
 
     /** Verify if the property is a dataType property **/
-    public static boolean isDatatypeProperty(Property property) {
+    private static boolean isDatatypeProperty(Property property) {
         boolean returnValue= false;
         if(setContains(property,datatypeProperties))
         {
@@ -197,7 +197,7 @@ public class Constants {
     }
 
     /** Verify if the property is an object property **/
-    public static boolean isObjectProperty(Property property) {
+    private static boolean isObjectProperty(Property property) {
         boolean returnValue= false;
         if(setContains(property,objectProperties))
         {
@@ -208,7 +208,7 @@ public class Constants {
     }
 
     /** Verify if the property is on other property **/
-    public static boolean isOtherProperty(Property property) {
+    private static boolean isOtherProperty(Property property) {
         boolean returnValue= false;
         if(setContains(property,otherProperties))
         {
