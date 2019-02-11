@@ -2,6 +2,7 @@ package MDPatternDetection;
 
 import MDfromLogQueries.Declarations.Declarations;
 import MDfromLogQueries.Util.Constants;
+import MDfromLogQueries.Util.FileOperation;
 import com.google.common.base.Stopwatch;
 import org.apache.jena.query.Query;
 import org.apache.jena.query.QueryFactory;
@@ -36,7 +37,10 @@ public class Queries2Graphes {
         try {
             /** Graph pattern extraction **/
 
-            // lines = (ArrayList<String>) FileOperation.ReadFile(filePath);
+            lines = (ArrayList<String>) FileOperation.ReadFile(filePath);
+
+
+/*
             String queryString = "PREFIX owl: <http://www.w3.org/2002/07/owl#>" +
                     "PREFIX foaf: <http://xmlns.com/foaf/0.1/>" +
                     "PREFIX dbo: <http://dbpedia.org/ontology/>" +
@@ -63,18 +67,30 @@ public class Queries2Graphes {
                     "     ?game a dbo:Game  ." +
                     " OPTIONAL { ?game foaf:name ?title } " +
                     "} ORDER by ?title limit 10";
+
             lines = new ArrayList<>();
             lines.add(queryString);
             lines.add(queryString2);
+*/
             for (String line : lines) {
-                nb_line++;
 
-                Query query = QueryFactory.create(line);
+                try {
+                    nb_line++;
 
-                QueryUpdate queryUpdate = new QueryUpdate(query);
+                    Query query = QueryFactory.create(line);
 
-                query = queryUpdate.toConstruct(query);
-                constructQueriesList.add(query);
+                    QueryUpdate queryUpdate = new QueryUpdate(query);
+
+                    query = queryUpdate.toConstruct(query);
+
+                    constructQueriesList.add(query);
+
+                    // System.out.println("***********   "+query);
+
+
+                } catch (Exception e) {
+
+                }
 
             }
           
@@ -92,6 +108,7 @@ public class Queries2Graphes {
         Stopwatch stopwatch = Stopwatch.createStarted();
 
         TransformQueriesinFile(syntaxValidFileTest);
+
         stopwatch.stop();
         System.out.println("\n Time elapsed for the program is "+ stopwatch.elapsed(SECONDS));
 

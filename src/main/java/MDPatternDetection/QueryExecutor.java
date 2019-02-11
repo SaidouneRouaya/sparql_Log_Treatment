@@ -29,11 +29,11 @@ public class QueryExecutor {
     }
 
 
-    public Model executeQueryConstruct(String queryStr, String endpoint)
+    public Model executeQueryConstruct(Query query, String endpoint)
     {
         Model results = null;
         try{
-            Query query = QueryFactory.create(queryStr);
+
             QueryEngineHTTP qexec = QueryExecutionFactory.createServiceRequest(endpoint, query);
             results = qexec.execConstruct();
             /* System.out.println("Result "+ results.toString());*/

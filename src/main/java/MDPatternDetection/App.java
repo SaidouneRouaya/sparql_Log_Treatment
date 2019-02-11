@@ -2,11 +2,15 @@ package MDPatternDetection;
 
 
 import org.apache.jena.query.Query;
-import org.apache.jena.query.QueryFactory;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Statement;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
+
+import static MDfromLogQueries.Declarations.Declarations.syntaxValidFileTest;
 //TODO delete this class
 
 public class App {
@@ -42,11 +46,7 @@ public class App {
         //System.out.println(movb.executeQuery(queryStr).getResourceModel().size());
         movb.myOpVisitorWalker(op);
         movb.contructGraph();
-    }*/
 
-    public static void main(String[] args) {
-
-        String endPoint = "https://dbpedia.org/sparql";
 
 
         String queryStr2 = "CONSTRUCT " +
@@ -60,36 +60,139 @@ public class App {
                 "SELECT ?title WHERE { ?game a dbo:Game  . ?game foaf:name ?title .} " +
                 "ORDER by ?title limit 10";
 
-        Query query = QueryFactory.create(queryStr2);
-        System.out.println("*************   " + query.toString());
+    }*/
 
-      /*  try () {
-            System.out.println("***********************************");
-            ResultSet results = qexec.execSelect();
-            while (results.hasNext()) {
-                System.out.println(results.next().toString()+"\n");
-                System.out.println("___________________________________________");
+    public static void main(String[] args) {
+
+        String endPoint = "https://dbpedia.org/sparql";
+
+
+        try {
+
+            Queries2Graphes q2g = new Queries2Graphes();
+            QueryExecutor queryExecutor = new QueryExecutor();
+            ArrayList<Query> constructQueriesList = Queries2Graphes.TransformQueriesinFile(syntaxValidFileTest);
+
+            ArrayList<Model> results = new ArrayList<>();
+
+            // Execution de chaque requete Construct
+            for (Query query : constructQueriesList) {
+                query.setLimit(10);
+                //   System.out.println("*************   " + query.toString());
+                results.add(queryExecutor.executeQueryConstruct(query, endPoint));
             }
+
+            // affichage
+            System.out.println("------------------------------- AFFICHAGE DES RESULTATS ---------------------------------------");
+            // afficherModels(results);
+
+
+            Statement statement;
+            HashMap<String, EachNodeSInformation> listInfoNodes = new HashMap<>();
+
+
+            // For every model in results
+            for (Model m : results) {
+                Iterator<Statement> list = m.listStatements();
+                // For every Statement (tripple) in model
+                while (list.hasNext()) {
+
+                    statement = list.next();
+                    String subject = statement.getSubject().toString();
+
+                    // if the subject is not in listInfoNodes as a subject
+                    if (!listInfoNodes.containsKey(subject)) {
+                        // if it doesn't exist , create a new instance with numberAsSubject = 1
+                        listInfoNodes.put(subject, new EachNodeSInformation(statement.getSubject(), 1, 0, statement, null));
+
+                    } else {// if the subject exists in listInfoNodes
+
+                        // incremente number of subjects and add the statement too the list
+                        listInfoNodes.get(subject).setNumberAsSubject();
+                        listInfoNodes.get(subject).getListAsSubject().add(statement);
+
+
+                        // test if the object doesn't exists in listInfoNodes
+                        String object = statement.getObject().toString();
+                        if (!listInfoNodes.containsKey(object)) {
+                            // if yes, add a new instance where the object is a subject with numberAsObject = 1
+                            listInfoNodes.put(object, new EachNodeSInformation(statement.getObject().asResource(), 0, 1, null, statement));
+                        } else { // if the object exists in listInfoNodes
+                            // incremente number of object and add the statement too the list
+                            listInfoNodes.get(object).setNumberAsObject();
+                            listInfoNodes.get(object).getListAsObject().add(statement);
+
+                        }
+
+                    }
+
+                }
+            }
+
+
+            afficherListInformations(listInfoNodes);
         } catch (Exception e) {
             e.printStackTrace();
-        }*/
 
-    /*   ResultSet result= new QueryExecutor().executeQuerySelect (queryStr, endPoint);
-        while (result.hasNext()) {
-            System.out.println(result.next().toString()+"\n");
-            System.out.println("___________________________________________");
-        }*/
-
-        Model result = new QueryExecutor().executeQueryConstruct(queryStr2, endPoint);
+        }
+    }
 
 
-        Iterator<Statement> list = result.listStatements();
-        while (list.hasNext()) {
-            System.out.println(list.next().toString() + "\n");
-            System.out.println("___________________________________________");
+    //TODO a enlever après
+
+    public static void afficherModels(ArrayList<Model> results) {
+
+        Statement statement;
+        for (Model m : results) {
+            System.out.println("________________________ NEW MODEL ____________________________________\n");
+
+            Iterator<Statement> list = m.listStatements();
+            while (list.hasNext()) {
+                statement = list.next();
+
+
+                System.out.println("Subject \t" + statement.getSubject().toString() + "\n");
+                System.out.println("Statement \t" + statement.toString() + "\n");
+
+            }
+
+
+            System.out.println("_____________________________ END _______________________________\n");
+
         }
 
 
     }
+
+    //TODO a enlever après
+    public static void afficherListInformations(HashMap<String, EachNodeSInformation> listInfoNodes) {
+
+        Iterator it = listInfoNodes.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry<String, EachNodeSInformation> pair = (Map.Entry) it.next();
+
+            System.out.println(pair.getKey() + " : \n -------------- List as Subject --------------");
+
+            for (Statement st : pair.getValue().getListAsSubject()) {
+                System.out.println(st.toString() + "\n");
+            }
+
+            System.out.println("\n --------------------------------- List as Object --------------");
+
+            for (Statement st : pair.getValue().getListAsObject()) {
+                System.out.println(st.toString() + "\n");
+            }
+            System.out.println("\n###########################################################################\n\n\n");
+
+            it.remove(); // avoids a ConcurrentModificationException
+        }
+    }
+
+
 }
+
+
+
+
+
 

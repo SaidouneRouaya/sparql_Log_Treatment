@@ -20,7 +20,7 @@ public class OntologyFactory {
             model.read(in, "RDF/XML");
             in.close();
         } catch (IOException e) {
-            e.printStackTrace();
+
         }
     }
 }

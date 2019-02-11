@@ -18,7 +18,7 @@ public class QueryUpdate {
     public QueryUpdate(Query query)
     {
         addGP2Query(query);
-        //theQuery = toConstruct(query,new Template(queryConstruction.getBpConstruct()));
+
     }
 
     public static void main(String[] args) {
@@ -57,11 +57,8 @@ public class QueryUpdate {
 
         //    query = toConstruct(query,new Template(queryConstruction.getBpConstruct()));
 
-        // addGP2Query(query);
 
         System.out.println("\n\n\n== after ==\n" + query);
-        //System.out.println(" query construct : "+ queryConstruction.getBpConstruct().toString());
-        //
 
     }
 

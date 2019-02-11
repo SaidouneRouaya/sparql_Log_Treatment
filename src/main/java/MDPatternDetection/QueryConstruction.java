@@ -51,7 +51,7 @@ public class QueryConstruction {
     {
         existingTriples.addAll(e_bpwhere.getList());
         this.bpWhere=  modifyBasicPattern(e_bpwhere);
-        System.out.println(bpWhere.toString());
+        //System.out.println(bpWhere.toString());
         //afficher();
     }
 
