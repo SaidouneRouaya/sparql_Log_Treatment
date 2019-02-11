@@ -130,7 +130,8 @@ public class QueryConstruction {
     }
 
     private boolean isObjectProperty(Property property) {
-        return Constants.getObjectProperties().contains(property.getNameSpace());
+        //return Constants.getObjectProperties().contains(property.getNameSpace());
+        return true;
     }
 
     /** Parses every property of a subject **/

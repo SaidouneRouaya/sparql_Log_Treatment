@@ -4,6 +4,7 @@ import org.apache.jena.iri.impl.Main;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
@@ -92,6 +93,11 @@ public class Resources {
         return currentClassLoader().getResourceAsStream(resourceName);
     }
 
+    public static String getMainResourceFilename(String resourceName) {
+        String base = "sparql_Log_Treatment/src/main/resources/";
+        File file = new File(base, resourceName);
+        return file.getPath();
+    }
     /*
     public static String getLocalProperty(String key) {
         return properties.getProperty(key);
