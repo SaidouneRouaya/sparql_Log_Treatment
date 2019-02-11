@@ -1,10 +1,7 @@
 package MDPatternDetection;
 
 import MDfromLogQueries.Util.Constants;
-import org.apache.jena.graph.Graph;
-import org.apache.jena.graph.Node;
-import org.apache.jena.graph.Node_Variable;
-import org.apache.jena.graph.Triple;
+import org.apache.jena.graph.*;
 import org.apache.jena.graph.impl.CollectionGraph;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Property;
@@ -123,47 +120,87 @@ public class QueryConstruction {
         return subjectRDFTypeValue;
     }
 
-
-    private boolean isDatatypeProperty(Property property) {
-
-        return Constants.isDatatypeProperty(property);
-    }
-
-    private boolean isObjectProperty(Property property) {
-        //return Constants.getObjectProperties().contains(property.getNameSpace());
-        return true;
-    }
-
     /** Parses every property of a subject **/
     public void propertyIterate(Resource subject, Node subjectRDFTypeValue) {
         Property property;
         Iterator propertyIterator = subject.listProperties();
         Triple newTriple;
+        String propertyType;
         while (propertyIterator.hasNext()) {
-            Node objectRDFTypeValue;
+            Node objectRDFTypeValue = NodeFactory.createBlankNode();
             property = ((Statement) propertyIterator.next()).getPredicate();
             if (property.asNode().isVariable() || !property.getNameSpace().matches(rdfTypeProp.getNameSpace())) {
-                if (!property.asNode().isVariable() && isDatatypeProperty(property)) {
-                    //Iterator rangeIterator = Constants.getRangeofProperty(property).iterator();
-                    objectRDFTypeValue = Constants.getTemporareRange();//Constants.getRangeofProperty(property);
-                   /* while (rangeIterator.hasNext()) {
-                        objectRDFTypeValue = (Node) rangeIterator.next();*/
-                        newTriple = new Triple(subjectRDFTypeValue, property.asNode(), objectRDFTypeValue);
-                        bpConstruct.add(newTriple); // if it's a datatype property it searches for its range (type of object) and sets
+                propertyType = Constants.getPropertyType(property);
+                switch (propertyType)
+                {
+                    case ("variable"):
+                    {
+                        if (subject.getProperty(property).getObject().isLiteral())
+                        {
+                            objectRDFTypeValue = NodeFactory.createURI("http://www.w3.org/2000/01/rdf-schema#Literal");
+                        }
+                        else {
+                            objectRDFTypeValue = verifyRDFTypeProperty(subject.getProperty(property).getObject().asResource(), j, rdfTypeProp, "ob");
+                            j++;
+                        }// if it's an object property, it treats it as a subject
+                    }
+                    break;
+                    case ("datatypeProperty"):
+                    {
+                        objectRDFTypeValue = Constants.getRangeofProperty(property);
+                        if (objectRDFTypeValue==null)
+                        {
+                            objectRDFTypeValue = NodeFactory.createURI("http://www.w3.org/2000/01/rdf-schema#Literal");
+                        }
+                         // if it's a datatype property it searches for its range (type of object) and sets
                         // the triple of the construct with it
-                    //}
-                } else {
-                    objectRDFTypeValue = verifyRDFTypeProperty(subject.getProperty(property).getObject().asResource(), j, rdfTypeProp, "ob");
-                    newTriple = new Triple(subjectRDFTypeValue, property.asNode(), objectRDFTypeValue);
-                    bpConstruct.add(newTriple); // if it's an object property, it treats it as a subject
-                    j++;
+                    }
+                    break;
+                    case ("objectProperty"):
+                    {
+                        objectRDFTypeValue = verifyRDFTypeProperty(subject.getProperty(property).getObject().asResource(), j, rdfTypeProp, "ob");
+                         // if it's an object property, it treats it as a subject
+                        j++;
+                    }
+                    break;
+                    case ("otherProperty"):
+                    {
+                        objectRDFTypeValue = Constants.getRangeofProperty(property);
+                        if (objectRDFTypeValue==null)
+                        {
+                            if(subject.getProperty(property).getObject().isLiteral())
+                                objectRDFTypeValue = NodeFactory.createURI("http://www.w3.org/2000/01/rdf-schema#Literal");
+                            else {
+                                objectRDFTypeValue = verifyRDFTypeProperty(subject.getProperty(property).getObject().asResource(), j, rdfTypeProp, "ob");
+                                j++;
+                            }
+
+                        }
+                        else if (!objectRDFTypeValue.getURI().matches("http://www.w3.org/2000/01/rdf-schema#Literal"))
+                        {
+                            objectRDFTypeValue = verifyRDFTypeProperty(subject.getProperty(property).getObject().asResource(), j, rdfTypeProp, "ob");
+                            j++;
+                        }
+                    }
+                    break;
+                    case ("notFound"):
+                    {
+                        if (subject.getProperty(property).getObject().isLiteral())
+                        {
+                            objectRDFTypeValue = NodeFactory.createURI("http://www.w3.org/2000/01/rdf-schema#Literal");
+                        }
+                        else
+                        {
+                            objectRDFTypeValue = verifyRDFTypeProperty(subject.getProperty(property).getObject().asResource(), j, rdfTypeProp, "ob");
+                            j++;
+                        }
+
+                    }
+                    break;
                 }
-            }
-            /*else
-            {
-                newTriple = new Triple(subjectRDFTypeValue, property.asNode(), subject.getProperty(property).getObject().asNode());
+                newTriple = new Triple(subjectRDFTypeValue, property.asNode(), objectRDFTypeValue);
                 bpConstruct.add(newTriple);
-            }*/
+            }
         }
     }
 

@@ -28,7 +28,7 @@ public class Queries2Graphes {
      **/
 
     public static ArrayList<Query> TransformQueriesinFile(String filePath) {
-
+        new Constants(Declarations.dbPediaOntologyPath);
         ArrayList<Query> constructQueriesList = new ArrayList<>();
         ArrayList<String> lines;
 
@@ -85,11 +85,11 @@ public class Queries2Graphes {
 
                     constructQueriesList.add(query);
 
-                    // System.out.println("***********   "+query);
+                    System.out.println("***********   "+query);
 
 
                 } catch (Exception e) {
-
+                    e.printStackTrace();
                 }
 
             }

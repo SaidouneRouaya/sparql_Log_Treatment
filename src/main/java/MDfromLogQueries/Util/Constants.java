@@ -2,11 +2,9 @@ package MDfromLogQueries.Util;
 
 import MDPatternDetection.OntologyFactory;
 import MDfromLogQueries.Declarations.Declarations;
-import MDfromLogQueries.SPARQLSyntacticalValidation.Resources;
 import org.apache.jena.graph.Node;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.ontology.OntProperty;
-import org.apache.jena.ontology.impl.OntPropertyImpl;
 import org.apache.jena.query.Query;
 import org.apache.jena.query.QueryExecution;
 import org.apache.jena.query.QueryExecutionFactory;
@@ -15,14 +13,14 @@ import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.impl.PropertyImpl;
 
-import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
-
-import static MDfromLogQueries.Declarations.Declarations.LogDirectory;
 
 
 public class Constants {
@@ -36,7 +34,6 @@ public class Constants {
     private static HashSet<OntProperty> otherProperties = new HashSet<>();
     private static String ontologyPath;
     private static String defaultOntologiesDirectory = Declarations.defaultOntologiesDir;
-    private static Node temporarRange;
     private static OntProperty currentProperty= null;
 
     public Constants(String path) {
@@ -46,10 +43,6 @@ public class Constants {
         initDefaultProperties();
     }
 
-    public static Node getTemporareRange() {
-        return temporarRange;
-    }
-
     /**
      * Initialize the DataType properties into a list
      **/
@@ -57,26 +50,13 @@ public class Constants {
         OntModel ontologie = ModelFactory.createOntologyModel();
         OntologyFactory.readOntology(ontologyPath, ontologie);
         ontologie.add(ontologie);
-       /* String datatypeQuery = "PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> " +
-                "PREFIX  owl:  <http://www.w3.org/2002/07/owl#>" +
-                "select ?prop where { ?prop rdf:type owl:DatatypeProperty}";
-        Query query = QueryFactory.create(datatypeQuery);*/
-
         datatypeProperties.addAll(ontologie.listDatatypeProperties().toList());
-
-        /* System.out.println(" Size of datatypeProperties "+datatypeProperties.size()); */
     }
 
     /** Initialize a list of Object properties **/
     private static void initObjectProperties() {
         OntModel ontologie = ModelFactory.createOntologyModel();
         OntologyFactory.readOntology(ontologyPath, ontologie);
-
-        /*String datatypeQuery = "PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> " +
-                "PREFIX  owl:  <http://www.w3.org/2002/07/owl#>" +
-                "select ?prop where { ?prop rdf:type owl:ObjectProperty}";
-        Query query = QueryFactory.create(datatypeQuery);*/
-
         objectProperties.addAll(ontologie.listObjectProperties().toList());
     }
     public static void main(String[] args) {
@@ -98,7 +78,7 @@ public class Constants {
             for (Path p : filesInFolder) {
                 OntModel ontology = ModelFactory.createOntologyModel();
                 String chemin = p.toString();
-                System.out.println("Vous avez saisi l'url: " + chemin);
+                //System.out.println("Vous avez saisi l'url: " + chemin);
                 OntologyFactory.readOntology(chemin, ontology);
                 addPropertiesToList(ontology);
             }
@@ -110,8 +90,6 @@ public class Constants {
     {
         int datatypePropertiesSize =ontology.listDatatypeProperties().toList().size();
         int objectPropertiesSize = ontology.listObjectProperties().toList().size();
-
-        System.out.println("datatype "+datatypePropertiesSize+"\n object "+objectPropertiesSize+" ohtter "+ontology.listOntProperties().toList().size());
         otherProperties.addAll(ontology.listOntProperties().toList());
         if ( datatypePropertiesSize > 0 || objectPropertiesSize >0 )
         {
@@ -128,37 +106,74 @@ public class Constants {
     }
 
 
-    /** Verify if the property given as parameter is already in the Properties list **/
-    private static boolean contains(Property property) {
-        boolean returnValue = false;
-        Node node;
-        node = getRangeofProperty(property);
-        if (node != null) {
-            returnValue = true;
-            temporarRange = node;
-        }
-        return returnValue;
-    }
-
-
     /**
      * Return properties set
      **/
     //à changer probablement en créant un nouveau type contenant la datatypeProperty et son ou ses range
     public static Node getRangeofProperty(Property property) {
-
-        OntProperty datatypeProperty;
-        Node range = null;
-        Iterator<OntProperty> iterator = datatypeProperties.iterator();
-        while (iterator.hasNext()) {
-            datatypeProperty = iterator.next();
-            if (datatypeProperty.getURI().matches(property.getURI())) {
-                range = datatypeProperty.getRange().asNode();
+        if (currentProperty.getURI().matches(property.getURI()))
+            return currentProperty.getRange().asNode();
+        else {
+            Set<OntProperty> verificationSet= datatypeProperties;
+            verificationSet.addAll(otherProperties);
+            Node range;
+            for (OntProperty ontProperty : verificationSet)
+            {
+                if (ontProperty.getURI().matches(property.getURI())) {
+                    range = ontProperty.getRange().asNode();
+                    return range;
+                }
             }
+
         }
-        return range;
+        return null;
     }
 
+    public static String getPropertyType(Property property)
+    {
+        /* If property is a variable */
+        if (property.asNode().isVariable())
+        {
+            return "variable";
+        }
+
+        /* If property is a DatatypeProperty */
+        else if (!property.asNode().isVariable() && isDatatypeProperty(property)) {
+            return "datatypeProperty";
+        }
+
+        /* If property is an object property */
+        else if (isObjectProperty(property)) {
+            return "objectProperty";
+        }
+
+        /* if property is another property without type identified */
+        else if(isOtherProperty(property) || findProperty(property))
+        {
+            return "otherProperty";
+
+        }
+        else
+            return "notFound";
+    }
+
+    private static boolean findProperty(Property property)
+    {
+        OntModel ontoModel = ModelFactory.createOntologyModel();
+        OntologyFactory.readOntology(property.getNameSpace(), ontoModel);
+        /* System.out.println("Size of datatypeProperties" + ontoModel.listOntProperties().toList().size());*/
+        OntProperty ontProperty = ontoModel.getOntProperty(property.getURI());
+        if (ontProperty != null)
+        {
+            currentProperty = ontProperty;
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
+    /** Verify if the property is contained in other properties **/
     private static boolean setContains(Property property, HashSet<OntProperty> set)
     {
         for (OntProperty prop : set) {
@@ -192,6 +207,16 @@ public class Constants {
 
     }
 
+    /** Verify if the property is on other property **/
+    public static boolean isOtherProperty(Property property) {
+        boolean returnValue= false;
+        if(setContains(property,otherProperties))
+        {
+            returnValue = true;
+        }
+        return returnValue;
+
+    }
 
 
 
