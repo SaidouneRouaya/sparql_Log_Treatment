@@ -3,6 +3,8 @@ package MDPatternDetection;
 
 import org.apache.jena.query.Query;
 import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
 
 import java.util.ArrayList;
@@ -94,7 +96,7 @@ public class App {
             // For every model in results
             for (Model m : results) {
                 Iterator<Statement> list = m.listStatements();
-                // For every Statement (tripple) in model
+                // For every Statement (triple) in model
                 while (list.hasNext()) {
 
                     statement = list.next();
@@ -107,7 +109,7 @@ public class App {
 
                     } else {// if the subject exists in listInfoNodes
 
-                        // incremente number of subjects and add the statement too the list
+                        // increment number of subjects and add the statement too the list
                         listInfoNodes.get(subject).setNumberAsSubject();
                         listInfoNodes.get(subject).getListAsSubject().add(statement);
 
@@ -118,7 +120,7 @@ public class App {
                             // if yes, add a new instance where the object is a subject with numberAsObject = 1
                             listInfoNodes.put(object, new EachNodeSInformation(statement.getObject().asResource(), 0, 1, null, statement));
                         } else { // if the object exists in listInfoNodes
-                            // incremente number of object and add the statement too the list
+                            // increment number of object and add the statement too the list
                             listInfoNodes.get(object).setNumberAsObject();
                             listInfoNodes.get(object).getListAsObject().add(statement);
 
@@ -130,7 +132,26 @@ public class App {
             }
 
 
-            afficherListInformations(listInfoNodes);
+            afficherListInformations2(listInfoNodes);
+
+            Model finalModel = ModelFactory.createDefaultModel();
+
+            for (Model m : results) {
+                finalModel.add(m);
+            }
+            Iterator<Statement> list = finalModel.listStatements();
+
+
+            while (list.hasNext()) {
+                System.out.println(list.next().toString() + "\n");
+
+            }
+
+            System.out.println("number of subjects" + finalModel.listSubjects().toList().size());
+            for (Resource res : finalModel.listSubjects().toList()) {
+                System.out.println(" subject = " + res.toString() + "\n");
+            }
+
         } catch (Exception e) {
             e.printStackTrace();
 
@@ -188,6 +209,21 @@ public class App {
         }
     }
 
+    public static void afficherListInformations2(HashMap<String, EachNodeSInformation> listInfoNodes) {
+
+        Iterator it = listInfoNodes.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry<String, EachNodeSInformation> pair = (Map.Entry) it.next();
+
+            System.out.println(pair.getKey() + " : \n -------------- Number as Subject -------------- \n " + pair.getValue().getNumberAsSubject());
+
+            System.out.println("\n --------------------------------- Number as Object -------------- \n " + pair.getValue().getNumberAsObject());
+
+            System.out.println("\n###########################################################################\n\n\n");
+
+            it.remove(); // avoids a ConcurrentModificationException
+        }
+    }
 
 }
 
