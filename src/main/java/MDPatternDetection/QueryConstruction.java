@@ -154,7 +154,6 @@ public class QueryConstruction {
                         {
                             objectRDFTypeValue = NodeFactory.createURI("http://www.w3.org/2000/01/rdf-schema#Literal");
                         }
-
                     }
                     break;
                     case ("objectProperty"):
