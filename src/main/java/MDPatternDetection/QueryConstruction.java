@@ -147,13 +147,14 @@ public class QueryConstruction {
                     break;
                     case ("datatypeProperty"):
                     {
+                        // if it's a datatype property it searches for its range (type of object) and sets
+                        // the triple of the construct with it
                         objectRDFTypeValue = Constants.getRangeofProperty(property);
                         if (objectRDFTypeValue==null)
                         {
                             objectRDFTypeValue = NodeFactory.createURI("http://www.w3.org/2000/01/rdf-schema#Literal");
                         }
-                         // if it's a datatype property it searches for its range (type of object) and sets
-                        // the triple of the construct with it
+
                     }
                     break;
                     case ("objectProperty"):
