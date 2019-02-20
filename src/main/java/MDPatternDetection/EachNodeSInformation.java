@@ -84,4 +84,13 @@ public class EachNodeSInformation {
         } else return false;
 
     }
+
+    public void removeAsSubject(Statement st) {
+        listAsSubject.remove(st);
+
+    }
+
+    public void removeAsObject(Statement st) {
+        listAsObject.remove(st);
+    }
 }

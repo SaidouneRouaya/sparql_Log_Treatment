@@ -6,7 +6,6 @@ import org.apache.jena.ontology.OntModel;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Path;
 
 
 public class OntologyFactory {
@@ -35,7 +34,7 @@ public class OntologyFactory {
             model.read(in, file, extension);
             in.close();
         } catch (IOException e) {
-
+            // e.printStackTrace();
         }
     }
 }
