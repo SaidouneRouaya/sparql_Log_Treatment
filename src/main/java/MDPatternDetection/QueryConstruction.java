@@ -10,6 +10,7 @@ import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.rdf.model.impl.ModelCom;
 import org.apache.jena.rdf.model.impl.PropertyImpl;
 import org.apache.jena.sparql.core.BasicPattern;
+import org.apache.jena.vocabulary.RDF;
 
 import java.util.HashSet;
 import java.util.Iterator;
@@ -26,7 +27,7 @@ public class QueryConstruction {
     private BasicPattern bpModified; // QueryPattern after modification to build a construct query
     private BasicPattern bpWhere = new BasicPattern(); //Query pattern of the WHERE clause after adding rdf:type triples
     private BasicPattern bpConstruct = new BasicPattern();//Query pattern of the CONSTRUCT clause to generate the graph automaticly
-    private Property rdfTypeProp = new PropertyImpl("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"); // Variable containing rdfType property
+    private Property rdfTypeProp = RDF.type;//new PropertyImpl("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"); // Variable containing rdfType property
     private Set<Triple> existingTriples = new HashSet<>();
     private int i = 1; //Number of subject variables
     private int j = 1; // Number of predicate variables
@@ -176,6 +177,7 @@ public class QueryConstruction {
                             }
 
                         }
+                        //TODO voir si ça ne pose pas de problème par rapport aux literaux typés : xsd:String, xsd:int
                         else if (!objectRDFTypeValue.getURI().matches("http://www.w3.org/2000/01/rdf-schema#Literal"))
                         {
                             objectRDFTypeValue = verifyRDFTypeProperty(subject.getProperty(property).getObject().asResource(), j, rdfTypeProp, "ob");
