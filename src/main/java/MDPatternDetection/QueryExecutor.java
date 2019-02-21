@@ -4,11 +4,31 @@ import org.apache.jena.query.*;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.sparql.engine.http.QueryEngineHTTP;
 
+import java.util.ArrayList;
+
 public class QueryExecutor {
 
     /**
      * This class executes the queries
      **/
+
+    public static ArrayList<Model> executeQuiersInFile(String filePath, String endPoint) {
+        ArrayList<Model> results = new ArrayList<>();
+
+        try {
+            QueryExecutor queryExecutor = new QueryExecutor();
+            ArrayList<Query> constructQueriesList = Queries2Graphes.TransformQueriesinFile(filePath);
+            // Execution of each CONSTRUCT query
+            for (Query query : constructQueriesList) {
+                System.out.println("exeution d'une requete");
+                results.add(queryExecutor.executeQueryConstruct(query, endPoint));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return results;
+    }
 
     public QueryExecutor() {
     }

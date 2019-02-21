@@ -1,107 +1,27 @@
 package MDPatternDetection;
 
-import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.ModelFactory;
-import org.apache.jena.rdf.model.ResourceFactory;
-import org.apache.jena.rdf.model.Statement;
-import org.apache.jena.rdf.model.impl.StatementImpl;
+import org.apache.jena.rdf.model.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
+
+import static MDfromLogQueries.Declarations.Declarations.syntaxValidFileTest;
 
 public class TestConsolidation2 {
+
+
     public static void main(String[] args) {
 
         String endPoint = "https://dbpedia.org/sparql";
-        ArrayList<Model> results = new ArrayList<>();
+        ArrayList<Model> results = QueryExecutor.executeQuiersInFile(syntaxValidFileTest, endPoint);
+        App.afficherModels(results);
 
-        try {
+        System.out.println("\n\n ------------------ consolidation Results -------------------\n\n");
+        HashMap<String, Model> map = consolidate(results);
+        afficherListInformations(map);
 
-          /*  Queries2Graphes q2g = new Queries2Graphes();
-            QueryExecutor queryExecutor = new QueryExecutor();
-            ArrayList<Query> constructQueriesList = Queries2Graphes.TransformQueriesinFile(syntaxValidFileTest);
-
-
-
-            // Execution de chaque requete Construct
-            for (Query query : constructQueriesList) {
-                //System.out.println(query.toString()+"\n");
-                results.add(queryExecutor.executeQueryConstruct(query, endPoint));
-            }
-
-           */
-
-            // for test issues
-
-            for (int j = 0; j < 3; j++) {
-                Model mod = ModelFactory.createDefaultModel();
-                for (int i = 0; i < 4; i++) {
-
-                    Statement s = new StatementImpl(ResourceFactory.createResource("Subj" + i), ResourceFactory.createProperty("predecate1" + j + i), ResourceFactory.createResource("obj1" + j + i));
-                    Statement s1 = new StatementImpl(ResourceFactory.createResource("Subj" + i), ResourceFactory.createProperty("predecate2" + j + i), ResourceFactory.createResource("obj2" + j + i));
-                    Statement s2 = new StatementImpl(ResourceFactory.createResource("Subj" + i), ResourceFactory.createProperty("predecate3" + j + i), ResourceFactory.createResource("obj3" + j + i));
-
-                    Statement s3 = new StatementImpl(ResourceFactory.createResource("obj30" + i), ResourceFactory.createProperty("predecate1" + j + i), ResourceFactory.createResource("obj1" + j + i));
-                    Statement s4 = new StatementImpl(ResourceFactory.createResource("obj30" + i), ResourceFactory.createProperty("predecate2" + j + i), ResourceFactory.createResource("obj2" + j + i));
-                    Statement s5 = new StatementImpl(ResourceFactory.createResource("obj30" + i), ResourceFactory.createProperty("predecate3" + j + i), ResourceFactory.createResource("obj3" + j + i));
-
-                    Statement s6 = new StatementImpl(ResourceFactory.createResource("obj21" + i), ResourceFactory.createProperty("predecate1" + j + i), ResourceFactory.createResource("obj1" + j + i));
-                    Statement s7 = new StatementImpl(ResourceFactory.createResource("obj21" + i), ResourceFactory.createProperty("predecate2" + j + i), ResourceFactory.createResource("obj2" + j + i));
-                    Statement s8 = new StatementImpl(ResourceFactory.createResource("obj21" + i), ResourceFactory.createProperty("predecate3" + j + i), ResourceFactory.createResource("obj3" + j + i));
-
-                    if (j == 0) {
-                        mod.add(s);
-                        mod.add(s1);
-                        mod.add(s2);
-                    }
-                    if (j == 1) {
-                        mod.add(s3);
-                        mod.add(s4);
-                        mod.add(s5);
-                    }
-                    if (j == 2) {
-                        mod.add(s6);
-                        mod.add(s7);
-                        mod.add(s8);
-                    }
-                }
-                results.add(mod);
-            }
-
-            // App.afficherModels(results);
-
-            System.out.println("------------------------------- AFFICHAGE DES RESULTATS ---------------------------------------");
-
-
-            /* L'idée: stocker le sujet et son model */
-
-            HashMap<String, Model> listInfoNodes = consolidate(results);
-
-
-            //  afficherListInformations(listInfoNodes);
-            System.out.println("\n\n/////////////////////////////////////////////////////////////////////////////////////////////\n\n");
-
-            HashMap<String, Model> listInfoNodesFinal = consolidate(listInfoNodes);
-            HashMap<String, Model> listInfoNodesFinal2;
-            listInfoNodesFinal = consolidate(listInfoNodesFinal);
-            // listInfoNodesFinal = consolidate(listInfoNodesFinal);
-            // listInfoNodesFinal2 = consolidate(listInfoNodesFinal);
-
-
-            //if (listInfoNodesFinal.equals(listInfoNodesFinal2)) System.out.println(" je suis vrai \n");
-            //listInfoNodesFinal = consolidate(listInfoNodesFinal);
-            afficherListInformations(listInfoNodesFinal);
-            //afficherListInformations(listInfoNodesFinal2);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-
-        }
     }
 
-
+    //TODO enlever cella
     public static void afficherListInformations(HashMap<String, Model> listInfoNodes) {
 
         Iterator it = listInfoNodes.entrySet().iterator();
@@ -121,118 +41,105 @@ public class TestConsolidation2 {
 
             System.out.println("\n______________________________________________________________________\n");
 
-            //   it.remove(); // avoids a ConcurrentModificationException
         }
     }
 
 
-    public static HashMap<String, Model> consolidate(ArrayList<Model> results) {
+    public static HashMap<String, Model> consolidate(ArrayList<Model> modelArrayList) {
+
+        return consolidate(toStringModelHashMap(modelArrayList));
+    }
+
+    /**
+     * Transforms an Array list of models to a hashmap
+     * where the key is a subject and the value is the corresponding model
+     */
+
+    public static HashMap<String, Model> toStringModelHashMap(ArrayList<Model> modelArrayList) {
         Statement statement;
-        HashMap<String, Model> listInfoNodes = new HashMap<>();
-        int numbersModels = 0;
+        String subject;
+        HashMap<String, Model> modelHashMap = new HashMap<>();
+        // create a pair <String, Model> where the key (Stringà is the subject of the statements that compose the model (value)
 
-        // For every model in results
-
-
-        for (Model m : results) {
+        // For every model in modelArrayList
+        for (Model m : modelArrayList) {
             Iterator<Statement> list = m.listStatements();
-            // For every Statement (triple) in model
+            // For every Statement in the model
             while (list.hasNext()) {
-
                 statement = list.next();
-                String subject = statement.getSubject().toString();
+                subject = statement.getSubject().toString();
 
-
-                if (!listInfoNodes.containsKey(subject)) {
-                    // if it doesn't exist , create a new instance
-                    listInfoNodes.put(subject, ModelFactory.createDefaultModel());
-                    numbersModels++;
-                    listInfoNodes.get(subject).add(statement);
-
+                // if the pair doesn't exist in the map create a new instance
+                if (!modelHashMap.containsKey(subject)) {
+                    modelHashMap.put(subject, ModelFactory.createDefaultModel());
+                    modelHashMap.get(subject).add(statement);
                 } else {
-                    // if the subject exists in listInfoNodes
-
-                    // add the statement to the model
-                    listInfoNodes.get(subject).add(statement);
-                    //System.out.println("je suis la 1");
-                    // test if the object doesn't exists in listInfoNodes
+                    // add the statement to the corresponding model
+                    modelHashMap.get(subject).add(statement);
                 }
-
-             /*   String object = statement.getObject().toString();
-
-
-                if (!listInfoNodes.containsKey(object)) {
-                    // if yes, add a new instance where the object is a subject with numberAsObject = 1
-
-                    listInfoNodes.put(object,  ModelFactory.createDefaultModel());
-                    listInfoNodes.get(object).add(statement);
-                    //  System.out.println("je suis la 2");
-
-                } else { // if the object exists in listInfoNodes
-
-                    // add the statement to the model
-                    listInfoNodes.get(object).add(statement);
-                    //System.out.println("je suis la 3");
-                }
-                //   m.remove(statement);
-            */
             }
         }
-
-        System.out.println("\n--------------- number of models :  " + numbersModels + "\n\n");
-
-        return listInfoNodes;
+        return modelHashMap;
     }
 
-    public static HashMap<String, Model> consolidate(HashMap<String, Model> results) {
-        Statement statement;
-        HashMap<String, Model> newResults = new HashMap<>(results);
-        //  HashMap<String, Model> newResults= new HashMap<>();
+    /**
+     * Consolidates the given model map so that all models (values) are mutually independent
+     * (two model are independent if there is no node shared between them)
+     */
 
-        boolean finish = false;
-        Iterator it = results.entrySet().iterator();
+    public static HashMap<String, Model> consolidate(HashMap<String, Model> modelsHashMap) {
+
+        int sizeOfResults = modelsHashMap.size();
+        int newSizeOfResults = 0; // to compare it with the old one and exit the loop
+
+        // loop until there is no connsolidation possible i.e. the size of the map doesn't change
+        while (sizeOfResults != newSizeOfResults) {
+            Set<String> kies = modelsHashMap.keySet();
+            sizeOfResults = newSizeOfResults;
+
+            for (String key : kies) {
+                NodeIterator nodeIterator = modelsHashMap.get(key).listObjects();
+                // for all nodes in modelsHashMap
+                while (nodeIterator.hasNext()) {
+                    RDFNode node = nodeIterator.next();
+
+                    // if node already exists as key (subject) in the map, and its model is not empty
+                    if (modelsHashMap.containsKey(node.toString()) && !modelsHashMap.get(node.toString()).isEmpty()) {
+
+                        // then consolidate it with the model in question
+                        modelsHashMap.get(key).add(modelsHashMap.get(node.toString()));
+                        modelsHashMap.put(node.toString(), ModelFactory.createDefaultModel());
+                    }
+                }
+            }
+
+            // clean the map from the empty models
+            modelsHashMap = cleanMap(modelsHashMap);
+            newSizeOfResults = modelsHashMap.size();
+        }
+        return modelsHashMap;
+    }
+
+    /**
+     * Cleans the given map from paris with empty values
+     */
+    public static HashMap<String, Model> cleanMap(HashMap<String, Model> map) {
+
+        HashMap<String, Model> newResults = new HashMap<>();
+
+        Iterator it = map.entrySet().iterator();
         Map.Entry<String, Model> pair;
 
-        while (!finish) {
+        while (it.hasNext()) {
 
-            // while (!results.equals(newResults)) {
-            while (it.hasNext()) {
-
-                pair = (Map.Entry) it.next();
-
-                Model m = pair.getValue();
-
-                Iterator<Statement> list = m.listStatements();
-
-                // For every Statement (triple) in the model
-
-
-                while (list.hasNext()) {
-
-                    statement = list.next();
-                    String object = statement.getObject().toString();
-                    String subject = statement.getSubject().toString();
-
-                    if (results.containsKey(object)) {
-                        finish = false;
-                        results.get(subject).add(results.get(object));
-                        newResults.get(subject).add(results.get(object));
-
-                        newResults.values().remove(results.get(object));
-
-                    } else finish = true;
-
-                }
-                System.out.println(finish + "\n");
-                results = newResults;
+            pair = (Map.Entry) it.next();
+            if (!pair.getValue().isEmpty()) {
+                newResults.put(pair.getKey(),pair.getValue());
             }
-
         }
-
-        System.out.println("\n\n ----------------- number of models 2  " + newResults.size());
-
         return newResults;
     }
+
 
 
 }

@@ -1,0 +1,34 @@
+ for (int j = 0; j < 3; j++) {
+                Model mod = ModelFactory.createDefaultModel();
+                for (int i = 0; i < 4; i++) {
+
+                    Statement s = new StatementImpl(ResourceFactory.createResource("Subj" + i), ResourceFactory.createProperty("predecate1" + j + i), ResourceFactory.createResource("obj1" + j + i));
+                    Statement s1 = new StatementImpl(ResourceFactory.createResource("Subj" + i), ResourceFactory.createProperty("predecate2" + j + i), ResourceFactory.createResource("obj2" + j + i));
+                    Statement s2 = new StatementImpl(ResourceFactory.createResource("Subj" + i), ResourceFactory.createProperty("predecate3" + j + i), ResourceFactory.createResource("obj3" + j + i));
+
+                    Statement s3 = new StatementImpl(ResourceFactory.createResource("obj30" + i), ResourceFactory.createProperty("predecate1" + j + i), ResourceFactory.createResource("obj1" + j + i));
+                    Statement s4 = new StatementImpl(ResourceFactory.createResource("obj30" + i), ResourceFactory.createProperty("predecate2" + j + i), ResourceFactory.createResource("obj2" + j + i));
+                    Statement s5 = new StatementImpl(ResourceFactory.createResource("obj30" + i), ResourceFactory.createProperty("predecate3" + j + i), ResourceFactory.createResource("obj3" + j + i));
+
+                    Statement s6 = new StatementImpl(ResourceFactory.createResource("obj21" + i), ResourceFactory.createProperty("predecate1" + j + i), ResourceFactory.createResource("obj1" + j + i));
+                    Statement s7 = new StatementImpl(ResourceFactory.createResource("obj21" + i), ResourceFactory.createProperty("predecate2" + j + i), ResourceFactory.createResource("obj2" + j + i));
+                    Statement s8 = new StatementImpl(ResourceFactory.createResource("obj21" + i), ResourceFactory.createProperty("predecate3" + j + i), ResourceFactory.createResource("obj3" + j + i));
+
+                    if (j == 0) {
+                        mod.add(s);
+                        mod.add(s1);
+                        mod.add(s2);
+                    }
+                    if (j == 1) {
+                        mod.add(s3);
+                        mod.add(s4);
+                        mod.add(s5);
+                    }
+                    if (j == 2) {
+                        mod.add(s6);
+                        mod.add(s7);
+                        mod.add(s8);
+                    }
+                }
+                results.add(mod);
+            }
