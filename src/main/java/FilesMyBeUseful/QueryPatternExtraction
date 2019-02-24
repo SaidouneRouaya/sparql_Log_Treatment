@@ -48,7 +48,7 @@ public class QueryPatternExtraction {
                 graphPattern = opBPVisitor.getTemp();
                 graphOptionalPattern = new BasicPattern();
             }
-            //TODO to delete when everything works fine
+
             System.out.println("*******" + graphPattern);
             System.out.println("*********" + opBPVisitor.getBgpopt());
 

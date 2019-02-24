@@ -85,7 +85,7 @@ public class Queries2Graphes {
 
                     constructQueriesList.add(query);
 
-                    System.out.println("***********   "+query);
+                    //  System.out.println("***********   "+query);
 
 
                 } catch (Exception e) {

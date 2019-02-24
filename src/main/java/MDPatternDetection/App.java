@@ -3,7 +3,6 @@ package MDPatternDetection;
 
 import org.apache.jena.query.Query;
 import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
 
@@ -134,13 +133,78 @@ public class App {
 
             afficherListInformations2(listInfoNodes);
 
+            // Consolidation
+
+
+            // loop on listInfoNodes, for every node which appears as subject more then object
+            // Create it's new model that's composed of it's sub models contained in Node.listAsSubject
+
+         /*  Iterator it = listInfoNodes.entrySet().iterator();
+            Map.Entry<String, EachNodeSInformation> pair;
+
+            ArrayList<Model> resultsS = new ArrayList<>();
+            ArrayList<Model> resultsO = new ArrayList<>();
+            while (it.hasNext()) {
+
+               pair = (Map.Entry) it.next();
+
+               ArrayList<Statement> listAsObject =pair.getValue().getListAsObject();
+               ArrayList<Statement> listAsSubject = pair.getValue().getListAsSubject();
+
+               if (pair.getValue().getNumberAsSubject()>pair.getValue().getNumberAsObject()) {
+
+                   Model model = ModelFactory.createDefaultModel();
+
+
+                  // consolidate all the statements and build a model with a unique subject
+
+                    for (Statement st:listAsSubject)
+                    {
+                        model.add(st);
+                        // delete the statement from the list
+                    }
+
+                    // add the resulting model to results
+                    resultsS.add(model);
+
+                   Model modell = ModelFactory.createDefaultModel();
+
+                   // create a model from the remaining statements
+                if (pair.getValue().getNumberAsObject()!=0)
+                {
+                    for (Statement st:listAsObject)
+                    {
+                        modell.add(st);
+                        // delete the statement from the list
+                    }
+                    resultsO.add(modell);
+                }
+
+               }
+               else
+
+                it.remove(); // avoids a ConcurrentModificationException
+            }
+
+
+
+
+            System.out.println("########## Affichage apres consolidation number As subject ##########");
+          afficherModels(resultsS);
+            System.out.println("\n\n\n\n ########## Affichage apres consolidation du reste des statements ##########");
+          afficherModels(resultsO);
+
+/*
             Model finalModel = ModelFactory.createDefaultModel();
 
             for (Model m : results) {
                 finalModel.add(m);
             }
-            Iterator<Statement> list = finalModel.listStatements();
 
+
+            // affichage apres consolidation
+
+            Iterator<Statement> list = finalModel.listStatements();
 
             while (list.hasNext()) {
                 System.out.println(list.next().toString() + "\n");
@@ -151,6 +215,7 @@ public class App {
             for (Resource res : finalModel.listSubjects().toList()) {
                 System.out.println(" subject = " + res.toString() + "\n");
             }
+            */
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -167,17 +232,27 @@ public class App {
         for (Model m : results) {
             System.out.println("________________________ NEW MODEL ____________________________________\n");
 
-            Iterator<Statement> list = m.listStatements();
-            while (list.hasNext()) {
-                statement = list.next();
+            Iterator<Resource> listSubjects = m.listSubjects();
 
+            while (listSubjects.hasNext()) {
+                Resource sub = listSubjects.next();
+                Iterator<Statement> listProp = sub.listProperties();
 
-                System.out.println("Subject \t" + statement.getSubject().toString() + "\n");
-                System.out.println("Statement \t" + statement.toString() + "\n");
+                while (listProp.hasNext()) {
+                    System.out.println(" \t\t\t " + listProp.next().toString());
+                }
 
             }
 
 
+            /*Iterator<Statement> list = m.listStatements();
+
+            while (list.hasNext()) {
+                statement = list.next();
+                System.out.println("Subject \t" + statement.getSubject().toString() + "\n");
+                System.out.println("\t\tStatement \t" + statement.toString() + "\n");
+
+            }*/
             System.out.println("_____________________________ END _______________________________\n");
 
         }
@@ -215,11 +290,11 @@ public class App {
         while (it.hasNext()) {
             Map.Entry<String, EachNodeSInformation> pair = (Map.Entry) it.next();
 
-            System.out.println(pair.getKey() + " : \n -------------- Number as Subject -------------- \n " + pair.getValue().getNumberAsSubject());
+            System.out.println(pair.getKey() + " : \n -------------- Number as Subject : \t " + pair.getValue().getNumberAsSubject());
 
-            System.out.println("\n --------------------------------- Number as Object -------------- \n " + pair.getValue().getNumberAsObject());
+            System.out.println("\t -------------- Number as Object : " + pair.getValue().getNumberAsObject() + "\n");
 
-            System.out.println("\n###########################################################################\n\n\n");
+            System.out.println("\n______________________________________________________________________\n\n\n");
 
             it.remove(); // avoids a ConcurrentModificationException
         }

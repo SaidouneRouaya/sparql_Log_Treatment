@@ -1,0 +1,94 @@
+package MDPatternDetection;
+
+
+import MDfromLogQueries.Util.FileOperation;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.Statement;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+
+import static MDfromLogQueries.Declarations.Declarations.modelsFilePath;
+
+public class TestModelSerializationInFile {
+    public static void main(String[] args) {
+
+        String endPoint = "https://dbpedia.org/sparql";
+
+
+        try {
+
+            Queries2Graphes q2g = new Queries2Graphes();
+            QueryExecutor queryExecutor = new QueryExecutor();
+            String modelfilePath = modelsFilePath;
+            ArrayList<Model> results = new ArrayList<>();
+
+/*
+
+            ArrayList<Query> constructQueriesList = Queries2Graphes.TransformQueriesinFile(syntaxValidFileTest);
+
+
+            // Execution de chaque requete Construct
+           for (Query query : constructQueriesList) {
+                query.setLimit(10);
+                //  System.out.println("*************   " + query.toString());
+                results.add(queryExecutor.executeQueryConstruct(query, endPoint));
+            }
+
+            // affichage
+            System.out.println("------------------------------- AFFICHAGE DES RESULTATS ---------------------------------------");
+           // afficherModels(results);
+
+
+            // Ecriture dans le fichier
+             FileOperation.writeModelsInFile(modelfilePath, results);
+*/
+            // read a partir d'un fichier
+
+            System.out.println("Lecture du fichier");
+
+
+            results = FileOperation.readModelsFromFile(modelfilePath);
+            System.out.println("Fin de la Lecture du fichier");
+
+            afficherModels(results);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+
+        }
+    }
+
+
+    //TODO a enlever après
+
+    public static void afficherModels(ArrayList<Model> results) {
+
+        Statement statement;
+        for (Model m : results) {
+            System.out.println("________________________ NEW MODEL ___________________________________\n");
+
+
+            Iterator<Statement> list = m.listStatements();
+
+            while (list.hasNext()) {
+                statement = list.next();
+
+
+                System.out.println("Subject \t" + statement.getSubject().toString() + "\n");
+                System.out.println("Statement \t" + statement.toString() + "\n");
+
+            }
+
+
+            System.out.println("_____________________________ END __________________________________\n");
+
+        }
+
+
+    }
+
+
+}
+
+
