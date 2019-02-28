@@ -47,11 +47,14 @@ public class TestConsolidation2 {
 
     public static HashMap<String, Model> consolidate(ArrayList<Model> modelArrayList) {
 
+        if (modelArrayList.size() == 0) {
+            System.out.println("\nresults vide\n");
+            return null;
+        }
         return consolidate(toStringModelHashMap(modelArrayList));
     }
 
-    /**
-     * Transforms an Array list of models to a hashmap
+    /** Transforms an Array list of models to a hashmap
      * where the key is a subject and the value is the corresponding model
      */
 
@@ -59,10 +62,11 @@ public class TestConsolidation2 {
         Statement statement;
         String subject;
         HashMap<String, Model> modelHashMap = new HashMap<>();
-        // create a pair <String, Model> where the key (Stringà is the subject of the statements that compose the model (value)
+        // create a pair <String, Model> where the key (String à is the subject of the statements that compose the model (value)
 
         // For every model in modelArrayList
         for (Model m : modelArrayList) {
+
             Iterator<Statement> list = m.listStatements();
             // For every Statement in the model
             while (list.hasNext()) {
@@ -78,6 +82,7 @@ public class TestConsolidation2 {
                     modelHashMap.get(subject).add(statement);
                 }
             }
+
         }
         return modelHashMap;
     }

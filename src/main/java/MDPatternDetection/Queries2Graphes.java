@@ -8,6 +8,8 @@ import org.apache.jena.query.Query;
 import org.apache.jena.query.QueryFactory;
 
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 import static MDfromLogQueries.Declarations.Declarations.syntaxValidFileTest;
 import static java.util.concurrent.TimeUnit.SECONDS;
@@ -40,41 +42,12 @@ public class Queries2Graphes {
             lines = (ArrayList<String>) FileOperation.ReadFile(filePath);
 
 
-/*
-            String queryString = "PREFIX owl: <http://www.w3.org/2002/07/owl#>" +
-                    "PREFIX foaf: <http://xmlns.com/foaf/0.1/>" +
-                    "PREFIX dbo: <http://dbpedia.org/ontology/>" +
-                    "SELECT ?title WHERE {" +
-                    "     ?game a dbo:Game  ." +
-                    "?game foaf:friend ?op ." +
-                    "Filter (?game = \"gg\")" +
-                    "    OPTIONAL { ?game foaf:name ?title }." +
-                    "} ORDER by ?title limit 10";
-
-
-            String queryString2 = "PREFIX owl: <http://www.w3.org/2002/07/owl#>" +
-                    "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>" +
-                    "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>" +
-                    "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>" +
-                    "PREFIX foaf: <http://xmlns.com/foaf/0.1/>" +
-                    "PREFIX dc: <http://purl.org/dc/elements/1.1/>" +
-                    "PREFIX : <http://dbpedia.org/resource/>" +
-                    "PREFIX dbo: <http://dbpedia.org/ontology/>" +
-                    "PREFIX dbpedia2: <http://dbpedia.org/property/>" +
-                    "PREFIX dbpedia: <http://dbpedia.org/>" +
-                    "PREFIX skos: <http://www.w3.org/2004/02/skos/core#>" +
-                    "SELECT ?title WHERE {" +
-                    "     ?game a dbo:Game  ." +
-                    " OPTIONAL { ?game foaf:name ?title } " +
-                    "} ORDER by ?title limit 10";
-
-            lines = new ArrayList<>();
-            lines.add(queryString);
-            lines.add(queryString2);
-*/
+            //while (nb_line<1000){
             for (String line : lines) {
 
                 try {
+
+                    // String line = lines.get(nb_line);
                     nb_line++;
 
                     Query query = QueryFactory.create(line);
@@ -85,24 +58,63 @@ public class Queries2Graphes {
 
                     constructQueriesList.add(query);
 
-                    //  System.out.println("***********   "+query);
-
+                    // System.out.println("*  "+nb_line);
 
                 } catch (Exception e) {
                     //e.printStackTrace();
+                    //Todo do something (++ nb for statistics)
                 }
 
             }
-          
-           /* System.out.println(" Queries number : "+nb_line);
-            System.out.println("size of Pattern List  "+PatternList.size());*/
 
         } catch (Exception e) {
             e.printStackTrace();
         }
+
         return constructQueriesList;
     }
 
+    public static ArrayList<Query> TransformQueriesinFile2(List<String> lines) {
+
+        new Constants(Declarations.dbPediaOntologyPath);
+
+        ArrayList<Query> constructQueriesList = new ArrayList<>();
+
+
+        int nb_line = 0; // for statistical matters
+
+        try {
+            /** Graph pattern extraction **/
+
+            System.out.println("je suis la 1");
+            Iterator<String> it = lines.iterator();
+
+            while (it.hasNext()) {
+
+                try {
+
+                    String line = it.next();
+                    nb_line++;
+                    Query query = QueryFactory.create(line);
+
+                    QueryUpdate queryUpdate = new QueryUpdate(query);
+
+                    query = queryUpdate.toConstruct(query);
+
+                    constructQueriesList.add(query);
+                    it.remove();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    //Todo do something (++ nb for statistics)
+                }
+                System.out.println("je suis la 2");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return constructQueriesList;
+    }
 
     public static void main(String[] args)  {
         Stopwatch stopwatch = Stopwatch.createStarted();
