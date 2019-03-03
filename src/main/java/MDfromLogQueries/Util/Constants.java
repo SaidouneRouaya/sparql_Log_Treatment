@@ -129,6 +129,12 @@ public class Constants {
         return null;
     }
 
+    public static Boolean isFunctionalProperty(Property property)
+    {
+        return currentProperty.isFunctionalProperty();
+    }
+
+
     public static String getPropertyType(Property property)
     {
         /* If property is a variable */

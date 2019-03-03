@@ -85,7 +85,7 @@ public class App {
 
             // affichage
             System.out.println("------------------------------- AFFICHAGE DES RESULTATS ---------------------------------------");
-            // afficherModels(results);
+            afficherModels(results);
 
 
             Statement statement;

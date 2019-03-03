@@ -16,5 +16,6 @@ public class Declarations {
     public static  String syntaxValidFileTest ="C:\\Users\\KamilaB\\Desktop\\3CS\\Prototypage\\Step_1\\Fichiers_Resultat\\Fichier_Syntaxe_Valide_Test.txt";
     public static String dbPediaOntologyPath = "C:\\Users\\pc\\Desktop\\PFE\\Ontologies\\dbpedia_2014.owl";
     public static String defaultOntologiesDir="C:\\Users\\KamilaB\\Desktop\\3CS\\Prototypage\\Step_1\\ontologies_namespaces";
+    public static String modelsFilePath ="";
 
 }
