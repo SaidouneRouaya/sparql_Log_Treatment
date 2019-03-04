@@ -218,7 +218,11 @@ public class Constants {
 
     }
 
+    public static boolean isFunctionalProperty(Property property) {
 
+        return isFunctionalProperty(property);
+
+    }
 
 
     /** Execute a query onto an ontology **/
