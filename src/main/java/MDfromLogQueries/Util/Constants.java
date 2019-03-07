@@ -66,7 +66,7 @@ public class Constants {
     }
 
     private static void initDefaultProperties() {
-                List<Path> filesInFolder = new ArrayList<>();
+        List<Path> filesInFolder = new ArrayList<>();
         try {
             filesInFolder = Files.walk(Paths.get(defaultOntologiesDirectory))
                     .filter(Files::isRegularFile)
@@ -132,16 +132,13 @@ public class Constants {
         return null;
     }
 
-    public static Boolean isFunctionalProperty(Property property)
-    {
+    public static Boolean isFunctionalProperty(Property property) {
         if (currentProperty.getURI().matches(property.getURI()))
             return currentProperty.isFunctionalProperty();
-        else
-        {
-            Set<OntProperty> verificationSet= objectProperties;
+        else {
+            Set<OntProperty> verificationSet = objectProperties;
             verificationSet.addAll(otherProperties);
-            for (OntProperty ontProperty : verificationSet)
-            {
+            for (OntProperty ontProperty : verificationSet) {
                 if (ontProperty.getURI().matches(property.getURI())) {
                     return ontProperty.isFunctionalProperty();
                 }
@@ -195,11 +192,10 @@ public class Constants {
         }
     }
 
-    public static boolean askDatatypePropEndpoint(Property property, String endpoint)
-    {
-        String queryStr = "Ask { <"+property.getURI()+"> a <http://www.w3.org/2002/07/owl#DatatypeProperty>}";
+    public static boolean askDatatypePropEndpoint(Property property, String endpoint) {
+        String queryStr = "Ask { <" + property.getURI() + "> a <http://www.w3.org/2002/07/owl#DatatypeProperty>}";
         QueryExecutor queryExecutor = new QueryExecutor();
-        return queryExecutor.executeQueryAsk(queryStr,endpoint);
+        return queryExecutor.executeQueryAsk(queryStr, endpoint);
     }
 
     /** Verify if the property is contained in other properties **/

@@ -3,7 +3,6 @@ package MDPatternDetection;
 import MDfromLogQueries.Declarations.Declarations;
 import com.google.common.base.Stopwatch;
 import org.apache.jena.query.Dataset;
-import org.apache.jena.query.ReadWrite;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.StmtIterator;
 import org.apache.jena.tdb.TDB;
@@ -19,7 +18,7 @@ import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 
 public class TestTDB {
-
+    private static Dataset dataset = TDBFactory.createDataset(tdbDirectory);
 
     public static void main(String... argv) {
 
@@ -66,9 +65,16 @@ public class TestTDB {
     }
 
 
+    public static boolean exists(String name) {
+
+
+        return dataset.containsNamedModel(name);
+    }
+
+
     public static void persistModelsMap(HashMap<String, Model> modelHashMap) {
 
-        Dataset dataset = TDBFactory.createDataset(tdbDirectory);
+
 
         try {
 
@@ -82,19 +88,20 @@ public class TestTDB {
             Iterator it = modelHashMap.entrySet().iterator();
 
             while (it.hasNext()) {
-                dataset.begin(ReadWrite.WRITE);
+
                 Map.Entry<String, Model> pair = (Map.Entry) it.next();
 
-                dataset.addNamedModel("http:\\c\\*Users\\pc\\Desktop\\PFE\\Files\\" + pair.getKey(), pair.getValue());
-                dataset.commit();
+                //Verify if the model exists already in the tdb
+
+                if (exists(pair.getKey())) {
+                    dataset.getNamedModel(pair.getKey()).add(pair.getValue());
+                } else {
+                    dataset.addNamedModel(pair.getKey(), pair.getValue());
+                }
+
             }
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-
-            dataset.end();
-            dataset.close();
-
         }
     }
 
@@ -113,7 +120,7 @@ public class TestTDB {
     public static HashMap<String, Model> unpersistModelsMap() {
         HashMap<String, Model> results = new HashMap<>();
 
-        Dataset dataset = TDBFactory.createDataset(tdbDirectory);
+        //Dataset dataset = TDBFactory.createDataset(tdbDirectory);
 
 
         TDB.sync(dataset);
@@ -123,7 +130,7 @@ public class TestTDB {
 
         Iterator<String> it = dataset.listNames();
         String name;
-        it.next();
+        // it.next();
 
         try {
             while (it.hasNext()) {

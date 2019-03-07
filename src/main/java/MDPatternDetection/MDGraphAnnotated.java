@@ -4,47 +4,59 @@ import MDPatternDetection.AnnotationClasses.Annotations;
 import MDfromLogQueries.Util.Constants;
 import com.google.common.base.Stopwatch;
 import org.apache.jena.query.Dataset;
-import org.apache.jena.rdf.model.*;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.Property;
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.rdf.model.impl.PropertyImpl;
 import org.apache.jena.tdb.TDBFactory;
-import org.apache.jena.tdb2.TDB2;
 import org.apache.jena.vocabulary.RDF;
 
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import static MDfromLogQueries.Declarations.Declarations.tdbDirectory;
 import static MDfromLogQueries.Util.FileOperation.readModelFromFile;
-import static MDfromLogQueries.Util.FileOperation.readModelsFromFile;
-import static MDfromLogQueries.Util.FileOperation.writeModelInFile;
 import static java.util.concurrent.TimeUnit.SECONDS;
 
 public class MDGraphAnnotated {
-    private Model associatedModel;
-    private Model mdModel;
-    private String modelSubject;
+    //private Model associatedModel;
+    //private Model mdModel;
+    //   private String modelSubject;
 
-    public MDGraphAnnotated(Model model, String modelsSubject)
-    {
-        associatedModel = model;
-        mdModel = associatedModel;
-        modelSubject = modelsSubject;
-        construtMDGraph();
+    public MDGraphAnnotated(Model model, String modelsSubject) {
+
     }
 
-    public Model getMdModel() {
-        return mdModel;
+
+    public static void constructMDGraphs(HashMap<String, Model> hashMapModels) {
+        // HashMap<String , Model > results= new HashMap<>();
+
+        Iterator it = hashMapModels.entrySet().iterator();
+        int i = 0;
+        while (it.hasNext()) {
+
+            Map.Entry<String, Model> pair = (Map.Entry) it.next();
+            System.out.println(i++ + "\n");
+            construtMDGraph(pair.getKey(), pair.getValue());
+
+        }
+
+        //return hashMapModels;
     }
 
-    public void construtMDGraph()
-    {
-        Resource subject= null;
+
+    public static void construtMDGraph(String modelSubject, Model model) {
+        Resource subject = null;
         String propertyType;
         Statement statement;
         Property property;
         //Iterator<Resource> subjects = mdModel.listSubjects();
-        subject = mdModel.getResource(modelSubject);
+
+        subject = model.getResource(modelSubject);
+
         /*while (subjects.hasNext() && subject==null)
         {
             Resource loopSubject = subjects.next();
@@ -52,8 +64,7 @@ public class MDGraphAnnotated {
                 subject = loopSubject;
         }*/
 
-        if (subject != null)
-        {
+        if (subject != null) {
             subject.addProperty(RDF.type, Annotations.FACT.toString());
             List<Statement> propertyIterator = subject.listProperties().toList();
             for (Statement stat : propertyIterator) {
@@ -61,7 +72,7 @@ public class MDGraphAnnotated {
                 property = statement.getPredicate();
                 if (!property.equals(RDF.type)) {
                     propertyType = Constants.getPropertyType(property);
-                    System.out.println(" predicat :"+property+ "type dialha : "+propertyType);
+                    //  System.out.println(" predicat :"+property+ "type dialha : "+propertyType);
                     switch (propertyType) {
                         case ("datatypeProperty"): {
                             statement.getObject().asResource().addProperty(RDF.type, Annotations.FACTATTRIBUTE.toString());
@@ -94,10 +105,10 @@ public class MDGraphAnnotated {
             }
         }
 
+        // return model;
     }
 
-    public void addDimensionLevels(Resource dimension)
-    {
+    public static void addDimensionLevels(Resource dimension) {
         //Statement statement;
         Property property;
         String propertyType;
@@ -124,7 +135,7 @@ public class MDGraphAnnotated {
                         addDimensionLevels(statement.getObject().asResource());
                     }
                     break;
-                    default : {
+                    default: {
                         //TODO Ajouter ce cas là
                         if (Constants.askDatatypePropEndpoint(property, "https://dbpedia.org/sparql") || statement.getObject().asNode().getURI().matches("http://www.w3.org/2000/01/rdf-schema#Literal")) {
                             statement.getObject().asResource().addProperty(RDF.type, Annotations.DIMENSIONATTRIBUTE.toString());
@@ -140,12 +151,12 @@ public class MDGraphAnnotated {
         }
     }
 
-    public static void main(String[] args)  {
+    public static void main(String[] args) {
         Stopwatch stopwatch = Stopwatch.createStarted();
         //MDGraphAnnotated mdGraphAnnotated = new MDGraphAnnotated();
         //TODO Ajouter un exemple de test ou tester sur le résultats des étapes précédentes
         Dataset dataset = TDBFactory.createDataset(tdbDirectory);
-        String sujet= "http://dbpedia.org/class/yago/WikicatPopulatedPlacesInGegharkunikProvince";
+        String sujet = "http://dbpedia.org/class/yago/WikicatPopulatedPlacesInGegharkunikProvince";
         //Model testModel = ModelFactory.createModelForGraph(dataset.getNamedModel(sujet).getGraph());
         Model testModel = readModelFromFile("test.ttl");
         //writeModelInFile("test",testModel);
@@ -153,15 +164,15 @@ public class MDGraphAnnotated {
         // mdGraphAnnotated.construtMDGraph();
 
         //System.out.println(mdGraphAnnotated.getMdModel());
-        HashMap<String,Model> hashMap = new HashMap<String, Model>();
-        hashMap.put(sujet,testModel);
+        HashMap<String, Model> hashMap = new HashMap<String, Model>();
+        hashMap.put(sujet, testModel);
 
-        MDGraphAnnotated mdGraphAnnotated = new MDGraphAnnotated(testModel,sujet);
-        hashMap.put("new",mdGraphAnnotated.getMdModel());
+        MDGraphAnnotated mdGraphAnnotated = new MDGraphAnnotated(testModel, sujet);
+        // hashMap.put("new",mdGraphAnnotated.getMdModel());
         TestConsolidation2.afficherListInformations(hashMap);
 
         stopwatch.stop();
-        System.out.println("\n Time elapsed for the program is "+ stopwatch.elapsed(SECONDS));
+        System.out.println("\n Time elapsed for the program is " + stopwatch.elapsed(SECONDS));
 
     }
 

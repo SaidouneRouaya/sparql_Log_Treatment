@@ -104,7 +104,7 @@ public class TestConsolidation2 {
             sizeOfResults = newSizeOfResults;
 
             for (String key : kies) {
-                System.out.println("la clé "+ key);
+
                 nodeIterator = modelsHashMap.get(key).listObjects();
                 // for all nodes in modelsHashMap
                 while (nodeIterator.hasNext()) {

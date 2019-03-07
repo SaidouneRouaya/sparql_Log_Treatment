@@ -42,10 +42,11 @@ public class QueryExecutor {
 
         ArrayList<String> allLines = (ArrayList<String>) FileOperation.ReadFile(filePath);
         //int size = allLines.size();
-        int size = 200;
+        int size = 40;
         List<String> lines;
         Stopwatch stopwatch_consolidation = Stopwatch.createUnstarted();
         Stopwatch stopwatch_persist = Stopwatch.createUnstarted();
+        Stopwatch stopwatch_annotate = Stopwatch.createUnstarted();
 
 
         try {
@@ -65,25 +66,36 @@ public class QueryExecutor {
 
                 QueryExecutor queryExecutor = new QueryExecutor();
 
-                System.out.println("je suis avant la transformation ");
+                System.out.println("\nla transformation en construct \n");
+
                 ArrayList<Query> constructQueriesList = Queries2Graphes.TransformQueriesinFile2(allLines.subList(0, cpt));
                 // Execution of each CONSTRUCT query
 
                 int num = 0;
+                System.out.println("\nL'execution des requetes \n");
                 for (Query query : constructQueriesList) {
                     num++;
-                    System.out.println("exeution req " + num + "\n");
+                    // System.out.println("exeution req " + num + "\n");
                     Model model;
                     if ((model = queryExecutor.executeQueryConstruct(query, endPoint)) != null) results.add(model);
                 }
 
+                System.out.println("\nLa consolidation \n");
                 if (!results.isEmpty()) {
                     stopwatch_consolidation = Stopwatch.createStarted();
                     HashMap<String, Model> modelHashMap = TestConsolidation2.consolidate(results);
                     stopwatch_consolidation.stop();
 
 
+                    // annotation
+
+                    System.out.println("\n L'annotation \n");
+                    stopwatch_annotate = Stopwatch.createStarted();
+                    MDGraphAnnotated.constructMDGraphs(modelHashMap);
+                    stopwatch_annotate.stop();
+
                     // persisting
+                    System.out.println("\n le persisting \n");
                     stopwatch_persist = Stopwatch.createStarted();
                     TestTDB.persistModelsMap(modelHashMap);
                     stopwatch_persist.stop();
@@ -101,6 +113,19 @@ public class QueryExecutor {
         System.out.println("\nTime elapsed for consolidation program is \t" + stopwatch_consolidation.elapsed(MILLISECONDS));
         System.out.println("\nTime elapsed for persist program is \t" + stopwatch_persist.elapsed(MILLISECONDS));
 
+    }
+
+    public boolean executeQueryAsk(String queryStr, String endpoint) {
+        boolean results = false;
+        try {
+            Query query = QueryFactory.create(queryStr);
+            QueryExecution qexec = QueryExecutionFactory.sparqlService(endpoint, query);
+            results = qexec.execAsk();
+            /*  System.out.println("Result " + results.next());*/
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return results;
     }
 
     public QueryExecutor() {

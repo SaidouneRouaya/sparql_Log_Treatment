@@ -151,7 +151,9 @@ public class FileOperation {
             }
 
         }
-    } public static void writeModelInFile(String writingFilePath,Model model) {
+    }
+
+    public static void writeModelInFile(String writingFilePath, Model model) {
         System.out.println("RAni sdakhel Write\n");
 
         File file = new File(writingFilePath);
@@ -169,9 +171,9 @@ public class FileOperation {
             BufferedWriter bw = new BufferedWriter(new FileWriter(file, true));
             out = new FileOutputStream(file);
 
-                model.write(out, "TURTLE");
+            model.write(out, "TURTLE");
 
-                //bw.flush();
+            //bw.flush();
             System.out.println("kamalt write\n");
         } catch (IOException e) {
             System.out.println("Impossible file creation");
@@ -257,8 +259,8 @@ public class FileOperation {
 
             br = new BufferedReader(new FileReader(file));
 
-            model= ModelFactory.createDefaultModel();
-            model.read(in, filePath,  "TURTLE");
+            model = ModelFactory.createDefaultModel();
+            model.read(in, filePath, "TURTLE");
 
             System.out.println("*****\t" + linesNumbers);
 
