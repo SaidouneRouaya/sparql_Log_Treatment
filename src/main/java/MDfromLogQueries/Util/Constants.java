@@ -6,10 +6,8 @@ import MDfromLogQueries.Declarations.Declarations;
 import org.apache.jena.graph.Node;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.ontology.OntProperty;
-import org.apache.jena.query.Query;
-import org.apache.jena.query.QueryExecution;
-import org.apache.jena.query.QueryExecutionFactory;
-import org.apache.jena.query.ResultSet;
+import org.apache.jena.query.*;
+import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.impl.PropertyImpl;
@@ -23,6 +21,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static MDfromLogQueries.Util.FileOperation.writeModelInFile;
+
 
 public class Constants {
 
@@ -33,9 +33,13 @@ public class Constants {
     private static HashSet<OntProperty> datatypeProperties = new HashSet<>();
     private static HashSet<OntProperty> objectProperties = new HashSet<>();
     private static HashSet<OntProperty> otherProperties = new HashSet<>();
+    private static HashSet<OntProperty> addedProperties = new HashSet<>();
+    private static OntModel addedPropertiesOntology = ModelFactory.createOntologyModel();
     private static String ontologyPath;
     private static String defaultOntologiesDirectory = Declarations.defaultOntologiesDir;
     private static OntProperty currentProperty= null;
+    //TODO a changer pour le test d'autres endpoints (mettre en entrée)
+    private static String endpoint = "https://dbpedia.org/sparql";
 
     public Constants(String path) {
         ontologyPath = path;
@@ -61,8 +65,19 @@ public class Constants {
         objectProperties.addAll(ontologie.listObjectProperties().toList());
     }
     public static void main(String[] args) {
+        new Constants(Declarations.dbPediaOntologyPath);
         initDefaultProperties();
-        System.out.println(isDatatypeProperty(new PropertyImpl("http://purl.org/dc/terms/alternative")));
+        for (OntProperty ontProperty : otherProperties)
+        {
+            try {
+                System.out.println("the range : "+ontProperty.getRange());
+            }
+            catch (Exception e)
+            {
+                System.out.println("erreur");
+            }
+        }
+
     }
 
     private static void initDefaultProperties() {
@@ -176,7 +191,7 @@ public class Constants {
 
         }
         else
-            return "notFound";
+            return selectPropertyFromEnpoint(property,endpoint);
     }
 
     private static boolean findProperty(Property property)
@@ -200,6 +215,45 @@ public class Constants {
         String queryStr = "Ask { <"+property.getURI()+"> a <http://www.w3.org/2002/07/owl#DatatypeProperty>}";
         QueryExecutor queryExecutor = new QueryExecutor();
         return queryExecutor.executeQueryAsk(queryStr,endpoint);
+    }
+
+
+    public static String selectPropertyFromEnpoint(Property property, String endpoint)
+    {
+        String queryStr = "Construct{ <"+property.getURI()+"> ?predicate ?object } " +
+                "WHERE {<"+property.getURI()+"> ?predicate ?object  }";
+        Query query = QueryFactory.create(queryStr);
+        QueryExecutor queryExecutor = new QueryExecutor();
+        try{
+            Model model = queryExecutor.executeQueryConstruct(query,endpoint);
+            addedPropertiesOntology.add(model);
+            currentProperty = addedPropertiesOntology.getOntProperty(property.getURI());
+            if (currentProperty.isDatatypeProperty())
+            {
+                datatypeProperties.add(currentProperty);
+                return "datatypeProperty";
+            }
+            else if (currentProperty.isObjectProperty())
+            {
+                objectProperties.add(currentProperty);
+                return "objectProperty";
+            }
+            else
+            {
+                otherProperties.add(currentProperty);
+                return "otherProperty";
+            }
+        }
+        catch (Exception e)
+        {
+            return "notFound";
+        }
+
+    }
+
+    public static void persistModel()
+    {
+        writeModelInFile(Declarations.propertiesOntology,addedPropertiesOntology);
     }
 
     /** Verify if the property is contained in other properties **/
