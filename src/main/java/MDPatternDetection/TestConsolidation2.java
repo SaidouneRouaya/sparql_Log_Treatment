@@ -96,6 +96,7 @@ public class TestConsolidation2 {
 
         int sizeOfResults = modelsHashMap.size();
         int newSizeOfResults = 0; // to compare it with the old one and exit the loop
+        NodeIterator nodeIterator;
 
         // loop until there is no connsolidation possible i.e. the size of the map doesn't change
         while (sizeOfResults != newSizeOfResults) {
@@ -103,7 +104,8 @@ public class TestConsolidation2 {
             sizeOfResults = newSizeOfResults;
 
             for (String key : kies) {
-                NodeIterator nodeIterator = modelsHashMap.get(key).listObjects();
+                System.out.println("la clé "+ key);
+                nodeIterator = modelsHashMap.get(key).listObjects();
                 // for all nodes in modelsHashMap
                 while (nodeIterator.hasNext()) {
                     RDFNode node = nodeIterator.next();

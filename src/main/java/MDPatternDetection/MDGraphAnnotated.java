@@ -1,350 +1,168 @@
 package MDPatternDetection;
 
 import MDPatternDetection.AnnotationClasses.Annotations;
-import MDfromLogQueries.Declarations.Declarations;
 import MDfromLogQueries.Util.Constants;
 import com.google.common.base.Stopwatch;
+import org.apache.jena.query.Dataset;
 import org.apache.jena.rdf.model.*;
 import org.apache.jena.rdf.model.impl.PropertyImpl;
+import org.apache.jena.tdb.TDBFactory;
+import org.apache.jena.tdb2.TDB2;
 import org.apache.jena.vocabulary.RDF;
 
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
+import java.util.List;
 
-import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static MDfromLogQueries.Declarations.Declarations.tdbDirectory;
+import static MDfromLogQueries.Util.FileOperation.readModelFromFile;
+import static MDfromLogQueries.Util.FileOperation.readModelsFromFile;
+import static MDfromLogQueries.Util.FileOperation.writeModelInFile;
+import static java.util.concurrent.TimeUnit.SECONDS;
 
 public class MDGraphAnnotated {
+    private Model associatedModel;
+    private Model mdModel;
+    private String modelSubject;
 
-
-    private static Model associatedModel;
-    private static Model mdModel;
-
-    public static void main(String[] args) {
-
-        new Constants(Declarations.dbPediaOntologyPath);
-        Stopwatch stopwatch_unpersist = Stopwatch.createStarted();
-        HashMap<String, Model> modelHashMap = TestTDB.unpersistModelsMap();
-        stopwatch_unpersist.stop();
-        System.out.println("\nTime elapsed for unpersist program is \t" + stopwatch_unpersist.elapsed(MILLISECONDS) + "\n\n");
-
-        Stopwatch stopwatch_annotation = Stopwatch.createStarted();
-        HashMap<String, Model> modelHashMapAnnotated = new HashMap<>();
-        Iterator it = modelHashMap.entrySet().iterator();
-
-        while (it.hasNext()) {
-            Map.Entry<String, Model> pair = (Map.Entry) it.next();
-
-            modelHashMapAnnotated.put(pair.getKey(), MDGraphAnnotated.construtMDGraph2(pair.getKey(), pair.getValue()));
-        }
-
-        stopwatch_annotation.stop();
-        System.out.println("\n Time elapsed for annotation program is " + stopwatch_annotation.elapsed(MILLISECONDS));
-
-
-//        afficher(modelHashMap);
-
+    public MDGraphAnnotated(Model model, String modelsSubject)
+    {
+        associatedModel = model;
+        mdModel = associatedModel;
+        modelSubject = modelsSubject;
+        construtMDGraph();
     }
 
-    /*
-        public static Model construtMDGraph(String subjectModel, Model model) {
+    public Model getMdModel() {
+        return mdModel;
+    }
 
-            Resource subject = null;
-            String propertyType;
-            Statement statement;
-            Property property;
+    public void construtMDGraph()
+    {
+        Resource subject= null;
+        String propertyType;
+        Statement statement;
+        Property property;
+        //Iterator<Resource> subjects = mdModel.listSubjects();
+        subject = mdModel.getResource(modelSubject);
+        /*while (subjects.hasNext() && subject==null)
+        {
+            Resource loopSubject = subjects.next();
+            if (loopSubject.hasURI(modelSubject))
+                subject = loopSubject;
+        }*/
 
-           try {
-
-            associatedModel = model;
-            mdModel = associatedModel;
-
-    //        Iterator<Resource> subjects = mdModel.listSubjects();
-
-          subject=  mdModel.getResource(subjectModel);
-           /* while (subjects.hasNext() && subject == null) {
-                Resource loopSubject = subjects.next();
-                if (loopSubject.hasURI(subjectModel))
-                    subject = loopSubject;
-            }*
-
-
-            if (subject != null) {
-                // mark the subject as Fact
-                subject.addProperty(RDF.type, Annotations.FACT.toString());
-
-                // annotation of the other nodes
-                Iterator propertyIterator = subject.listProperties();
-
-                while (propertyIterator.hasNext()) {
-                    statement = (Statement) propertyIterator.next();
-                    property = statement.getPredicate();
+        if (subject != null)
+        {
+            subject.addProperty(RDF.type, Annotations.FACT.toString());
+            List<Statement> propertyIterator = subject.listProperties().toList();
+            for (Statement stat : propertyIterator) {
+                statement = stat;
+                property = statement.getPredicate();
+                if (!property.equals(RDF.type)) {
                     propertyType = Constants.getPropertyType(property);
-
+                    System.out.println(" predicat :"+property+ "type dialha : "+propertyType);
                     switch (propertyType) {
                         case ("datatypeProperty"): {
-                            System.out.println("dakhel datatype prop");
                             statement.getObject().asResource().addProperty(RDF.type, Annotations.FACTATTRIBUTE.toString());
                         }
                         break;
                         case ("objectProperty"): {
-                            System.out.println("dakhel object prop");
+
                             if (Constants.isFunctionalProperty(property)) {
                                 statement.getObject().asResource().addProperty(RDF.type, Annotations.DIMENSION.toString());
                             } else {
                                 statement.getObject().asResource().addProperty(RDF.type, Annotations.NONFUNCTIONALDIMENSION.toString());
 
                             }
-
-                           // addDimensionLevels(statement.getObject().asResource());
-                            addDimensionLevels(statement);
+                            addDimensionLevels(statement.getObject().asResource());
                         }
                         break;
-                        case ("otherProperty"): {
-                            // TODO Ajouter ce cas là
-                            System.out.println("dakhel other prop");
-                            if (statement.getObject().asNode().getURI().matches("http://www.w3.org/2000/01/rdf-schema#Literal")) {
+                        default: {
+                            //TODO Ajouter ce cas là
+                            if (Constants.askDatatypePropEndpoint(property, "https://dbpedia.org/sparql") || statement.getObject().asNode().getURI().matches("http://www.w3.org/2000/01/rdf-schema#Literal")) {
                                 statement.getObject().asResource().addProperty(RDF.type, Annotations.FACTATTRIBUTE.toString());
                             } else {
-                                // TODO sinon il faut demander au endpoint si c fonctionnel
+                                //TODO sinon il faut demander au endpoint si c fonctionnel
                                 statement.getObject().asResource().addProperty(RDF.type, Annotations.NONFUNCTIONALDIMENSION.toString());
-                               // addDimensionLevels(statement.getObject().asResource());
-                                addDimensionLevels(statement);
+                                addDimensionLevels(statement.getObject().asResource());
                             }
                         }
                         break;
-                        default:
-                            break;
                     }
                 }
             }
-           }
-           catch (Exception e){
-               e.printStackTrace();
-           }
-
-            return mdModel;
         }
-    */
-    public static void addDimensionLevels(Resource dimension) {
 
     }
-/*
-    public static void addDimensionLevels(Statement state) {
-        Statement statement;
+
+    public void addDimensionLevels(Resource dimension)
+    {
+        //Statement statement;
         Property property;
         String propertyType;
-        Resource dimension= state.getObject().asResource();
-        Iterator propertyIterator = dimension.listProperties();
-
-        while (propertyIterator.hasNext()) {
-
-            statement = (Statement) propertyIterator.next();
+        List<Statement> propertyIterator = dimension.listProperties().toList();
+        for (Statement statement : propertyIterator) {
+            //statement = (Statement) propertyIterator.next();
             property = statement.getPredicate();
-            propertyType = Constants.getPropertyType(property);
-
-            switch (propertyType) {
-                case ("datatypeProperty"): {
-                    statement.getObject().asResource().addProperty(RDF.type, Annotations.DIMENSIONATTRIBUTE.toString());
-                }
-                break;
-                case ("objectProperty"): {
-
-                    if (Constants.isFunctionalProperty(property)) {
-                        statement.getObject().asResource().addProperty(RDF.type, Annotations.DIMENSIONLEVEL.toString());
-                        statement.getObject().asResource().addProperty(new PropertyImpl(Annotations.PARENTLEVEL.toString()), dimension);
-                    } else {
-                        statement.getObject().asResource().addProperty(RDF.type, Annotations.NONFUNCTIONALDIMENSION.toString());
-                        statement.getObject().asResource().addProperty(new PropertyImpl(Annotations.PARENTLEVEL.toString()), dimension);
-                    }
-                    addDimensionLevels(statement.getObject().asResource());
-                }
-                break;
-                case ("otherProperty"): {
-                    //TODO Ajouter ce cas là
-                    if (statement.getObject().asNode().getURI().matches("http://www.w3.org/2000/01/rdf-schema#Literal")) {
+            if (!property.equals(RDF.type)) {
+                propertyType = Constants.getPropertyType(property);
+                switch (propertyType) {
+                    case ("datatypeProperty"): {
                         statement.getObject().asResource().addProperty(RDF.type, Annotations.DIMENSIONATTRIBUTE.toString());
-                    } else {
-                        //TODO sinon il faut demander au endpoint si c fonctionnel
-                        statement.getObject().asResource().addProperty(RDF.type, Annotations.NONFUNCTIONALDIMENSIONLEVEL.toString());
-                        statement.getObject().asResource().addProperty(new PropertyImpl(Annotations.PARENTLEVEL.toString()), dimension);
                     }
-                }
-                break;
-                default:
                     break;
-            }
-        }
-    }
-*/
+                    case ("objectProperty"): {
 
-    public static Model construtMDGraph2(String subjectModel, Model model) {
-
-        Resource subject = null;
-        String propertyType;
-        Statement statement;
-        Property property;
-
-        try {
-
-            //associatedModel = model;
-            //mdModel = associatedModel;
-
-
-            subject = model.getResource(subjectModel);
-
-
-            if (subject != null) {
-                // mark the subject as Fact
-                subject.addProperty(RDF.type, Annotations.FACT.toString());
-            }
-
-            ResIterator resIterator = model.listSubjects();
-
-
-            while (resIterator.hasNext()) {
-                Resource node = resIterator.next();
-                // for the fact node
-
-                if (node.hasProperty(RDF.type, Annotations.FACT.toString())) {
-
-                    // annotation of the other nodes
-                    Iterator propertyIterator = node.listProperties();
-
-                    while (propertyIterator.hasNext()) {
-
-                        statement = (Statement) propertyIterator.next();
-                        property = statement.getPredicate();
-                        propertyType = Constants.getPropertyType(property);
-
-                        switch (propertyType) {
-                            case ("datatypeProperty"): {
-                                System.out.println("dakhel datatype prop");
-                                statement.getObject().asResource().addProperty(RDF.type, Annotations.FACTATTRIBUTE.toString());
-                            }
-                            break;
-                            case ("objectProperty"): {
-                                System.out.println("dakhel object prop");
-                                if (Constants.isFunctionalProperty(property)) {
-                                    statement.getObject().asResource().addProperty(RDF.type, Annotations.DIMENSION.toString());
-                                } else {
-                                    statement.getObject().asResource().addProperty(RDF.type, Annotations.NONFUNCTIONALDIMENSION.toString());
-
-                                }
-
-                            }
-                            break;
-                            case ("otherProperty"): {
-                                // TODO Ajouter ce cas là
-                                System.out.println("dakhel other prop");
-                                if (statement.getObject().asNode().getURI().matches("http://www.w3.org/2000/01/rdf-schema#Literal")) {
-                                    statement.getObject().asResource().addProperty(RDF.type, Annotations.FACTATTRIBUTE.toString());
-                                } else {
-                                    // TODO sinon il faut demander au endpoint si c fonctionnel
-                                    statement.getObject().asResource().addProperty(RDF.type, Annotations.NONFUNCTIONALDIMENSION.toString());
-
-                                }
-                            }
-                            break;
-                            default:
-                                break;
+                        if (Constants.isFunctionalProperty(property)) {
+                            statement.getObject().asResource().addProperty(RDF.type, Annotations.DIMENSIONLEVEL.toString());
+                            statement.getObject().asResource().addProperty(new PropertyImpl(Annotations.PARENTLEVEL.toString()), dimension);
+                        } else {
+                            statement.getObject().asResource().addProperty(RDF.type, Annotations.NONFUNCTIONALDIMENSION.toString());
+                            statement.getObject().asResource().addProperty(new PropertyImpl(Annotations.PARENTLEVEL.toString()), dimension);
                         }
-
+                        addDimensionLevels(statement.getObject().asResource());
                     }
-
-                }// for the other nodes
-                else {
-                    if (node.hasProperty(RDF.type, Annotations.DIMENSION.toString()) || node.hasProperty(RDF.type, Annotations.DIMENSIONLEVEL.toString())) {
-
-                        Statement state;
-                        Property prop;
-                        String propType;
-                        Iterator propertyIterator = node.listProperties();
-
-                        while (propertyIterator.hasNext()) {
-
-                            state = (Statement) propertyIterator.next();
-                            prop = state.getPredicate();
-                            propType = Constants.getPropertyType(prop);
-
-                            switch (propType) {
-                                case ("datatypeProperty"): {
-                                    state.getObject().asResource().addProperty(RDF.type, Annotations.DIMENSIONATTRIBUTE.toString());
-                                }
-                                break;
-                                case ("objectProperty"): {
-
-                                    if (Constants.isFunctionalProperty(prop)) {
-                                        state.getObject().asResource().addProperty(RDF.type, Annotations.DIMENSIONLEVEL.toString());
-                                        state.getObject().asResource().addProperty(new PropertyImpl(Annotations.PARENTLEVEL.toString()), node);
-                                    } else {
-                                        state.getObject().asResource().addProperty(RDF.type, Annotations.NONFUNCTIONALDIMENSION.toString());
-                                        state.getObject().asResource().addProperty(new PropertyImpl(Annotations.PARENTLEVEL.toString()), node);
-                                    }
-                                    addDimensionLevels(state.getObject().asResource());
-                                }
-                                break;
-                                case ("otherProperty"): {
-                                    //TODO Ajouter ce cas là
-                                    if (state.getObject().asNode().getURI().matches("http://www.w3.org/2000/01/rdf-schema#Literal")) {
-                                        state.getObject().asResource().addProperty(RDF.type, Annotations.DIMENSIONATTRIBUTE.toString());
-                                    } else {
-                                        //TODO sinon il faut demander au endpoint si c fonctionnel
-                                        state.getObject().asResource().addProperty(RDF.type, Annotations.NONFUNCTIONALDIMENSIONLEVEL.toString());
-                                        state.getObject().asResource().addProperty(new PropertyImpl(Annotations.PARENTLEVEL.toString()), node);
-                                    }
-                                }
-                                break;
-                                default:
-                                    break;
-                            }
+                    break;
+                    default : {
+                        //TODO Ajouter ce cas là
+                        if (Constants.askDatatypePropEndpoint(property, "https://dbpedia.org/sparql") || statement.getObject().asNode().getURI().matches("http://www.w3.org/2000/01/rdf-schema#Literal")) {
+                            statement.getObject().asResource().addProperty(RDF.type, Annotations.DIMENSIONATTRIBUTE.toString());
+                        } else {
+                            //TODO sinon il faut demander au endpoint si c fonctionnel
+                            statement.getObject().asResource().addProperty(RDF.type, Annotations.NONFUNCTIONALDIMENSIONLEVEL.toString());
+                            statement.getObject().asResource().addProperty(new PropertyImpl(Annotations.PARENTLEVEL.toString()), dimension);
                         }
-
                     }
-
+                    break;
                 }
-
-
             }
-
-
-        } catch (Exception e) {
-            e.printStackTrace();
         }
-
-
-        return mdModel;
     }
 
+    public static void main(String[] args)  {
+        Stopwatch stopwatch = Stopwatch.createStarted();
+        //MDGraphAnnotated mdGraphAnnotated = new MDGraphAnnotated();
+        //TODO Ajouter un exemple de test ou tester sur le résultats des étapes précédentes
+        Dataset dataset = TDBFactory.createDataset(tdbDirectory);
+        String sujet= "http://dbpedia.org/class/yago/WikicatPopulatedPlacesInGegharkunikProvince";
+        //Model testModel = ModelFactory.createModelForGraph(dataset.getNamedModel(sujet).getGraph());
+        Model testModel = readModelFromFile("test.ttl");
+        //writeModelInFile("test",testModel);
 
+        // mdGraphAnnotated.construtMDGraph();
 
-    // TODO à enlever apres
-    public static void afficher(HashMap<String, Model> modelHashMap) {
+        //System.out.println(mdGraphAnnotated.getMdModel());
+        HashMap<String,Model> hashMap = new HashMap<String, Model>();
+        hashMap.put(sujet,testModel);
 
-        Iterator it = modelHashMap.entrySet().iterator();
+        MDGraphAnnotated mdGraphAnnotated = new MDGraphAnnotated(testModel,sujet);
+        hashMap.put("new",mdGraphAnnotated.getMdModel());
+        TestConsolidation2.afficherListInformations(hashMap);
 
-        System.out.println(" Afichage des résultats \n");
+        stopwatch.stop();
+        System.out.println("\n Time elapsed for the program is "+ stopwatch.elapsed(SECONDS));
 
-
-        while (it.hasNext()) {
-
-            Map.Entry<String, Model> pair = (Map.Entry) it.next();
-
-            System.out.println(" Fact: \t\t " + pair.getKey() + "\n");
-
-            System.out.println(" Dimensions: \t\n ");
-
-            Iterator<Statement> listStatements = pair.getValue().listStatements();
-            while (listStatements.hasNext()) {
-
-                Statement statement = listStatements.next();
-
-                System.out.println(statement.toString());
-
-            }
-
-            System.out.println("\n______________________________________________________________________\n");
-        }
     }
 
 
