@@ -14,6 +14,7 @@ public class Declarations {
     public static String writingFilePathCopie = "C:\\Users\\pc\\Desktop\\PFE\\Files\\ProgramOutput\\FFichier_log_Nettoye_Complet_Parallel_Java_Copie.txt";
 
     public static String writingDedupFilePath = "C:\\Users\\pc\\Desktop\\PFE\\Files\\ProgramOutput\\Fichier_log_dedup_Nettoye.txt";
+    //public static String modelsFilePath = "C:\\Users\\pc\\Desktop\\PFE\\Files\\ProgramOutput\\Fichier_models.rdf";
     public static String modelsFilePath = "C:\\Users\\pc\\Desktop\\PFE\\Files\\ProgramOutput\\Fichier_models.rdf";
 
     public static String syntaxValidFile = "C:\\Users\\pc\\Desktop\\PFE\\Files\\ProgramOutput\\Fichier_Syntaxe_Valide.txt";
