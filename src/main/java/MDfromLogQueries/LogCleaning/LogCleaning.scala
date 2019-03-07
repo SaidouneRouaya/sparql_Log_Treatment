@@ -8,8 +8,8 @@ import MDfromLogQueries.Declarations.Declarations
 import MDfromLogQueries.Util.FileOperation
 import org.apache.http.client.utils.URLEncodedUtils
 
-import scala.collection.JavaConversions._
 import scala.collection.JavaConverters
+
 
 object Main extends App {
 
@@ -29,7 +29,7 @@ object Main extends App {
 
   /* Statistical variables*/
   var nb_queries = 0
-  val duration = System.currentTimeMillis() - t1
+
 
   /** Write the cleaned queries in the destination file path **/
   def writeFiles(directoryPath: String, destinationfilePath: String) = {
@@ -55,16 +55,7 @@ object Main extends App {
   }
 
 
-  def queryFromRequest(requestStr: String): String = {
-    val pairs = URLEncodedUtils.parse(requestStr, StandardCharsets.UTF_8)
-
-    for (pair <- pairs) {
-      if ("query" == pair.getName) {
-        return pair.getValue
-      }
-    }
-    null
-  }
+  val duration = System.currentTimeMillis() - t1
 
   /** match the line passed as parameter with the Regex to extract the query and return the query **/
   def queryFromLogLine(line: String) = {
@@ -81,6 +72,20 @@ object Main extends App {
 
   writeFiles(dirPath, filePath)
 
+  def queryFromRequest(requestStr: String): String = {
+    val pairs = URLEncodedUtils.parse(requestStr, StandardCharsets.UTF_8)
+    /*
+        for (pair <- pairs) {
+         // if ("query" == pair.getName) {
+           // return pair.getValue
+          //}
+        }
+       */
+    null
+
+  }
   println(duration)
+
+
 }
 

@@ -60,7 +60,6 @@ public class TestModelSerializationInFile {
     }
 
 
-    //TODO a enlever après
 
     public static void afficherModels(ArrayList<Model> results) {
 
