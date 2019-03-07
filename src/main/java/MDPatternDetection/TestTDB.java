@@ -3,7 +3,10 @@ package MDPatternDetection;
 import MDfromLogQueries.Declarations.Declarations;
 import com.google.common.base.Stopwatch;
 import org.apache.jena.query.Dataset;
+import org.apache.jena.query.ReadWrite;
 import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.StmtIterator;
+import org.apache.jena.tdb.TDB;
 import org.apache.jena.tdb.TDBFactory;
 
 import java.util.HashMap;
@@ -25,11 +28,11 @@ public class TestTDB {
 
         String endPoint = "https://dbpedia.org/sparql";
         //ArrayList<Model> results = QueryExecutor.executeQuiersInFile(syntaxValidFileTest, endPoint);
-        // ArrayList<Model> results =  QueryExecutorParallel.executeQueriesInFile(Declarations.syntaxValidFile, "https://dbpedia.org/sparql");
+        //  ArrayList<Model> results =  QueryExecutorParallel.executeQueriesInFile(Declarations.syntaxValidFile, "https://dbpedia.org/sparql");
         QueryExecutor.executeQuiersInFile2(Declarations.syntaxValidFile, "https://dbpedia.org/sparql");
         stopwatch_exec.stop();
-
-  /*      if (results==null) return;
+/*
+      if (results==null) return;
 
         //  App.afficherModels(results);
 
@@ -58,6 +61,8 @@ public class TestTDB {
         System.out.println("\nTime elapsed for unpersist program is \t" + stopwatch_unpersist.elapsed(MILLISECONDS));
         System.out.println("\nTime elapsed for the whole program is \t" + stopwatch_total.elapsed(MILLISECONDS));
 
+
+        // MDGraphAnnotated. afficher(modelHashMap);
     }
 
 
@@ -72,32 +77,71 @@ public class TestTDB {
             if (!file.isFile()) file.createNewFile();
             */
 
+            //Dataset dataset = DatasetFactory.create(model);
+
             Iterator it = modelHashMap.entrySet().iterator();
 
             while (it.hasNext()) {
+                dataset.begin(ReadWrite.WRITE);
                 Map.Entry<String, Model> pair = (Map.Entry) it.next();
-                dataset.addNamedModel(pair.getKey(), pair.getValue());
-            }
 
+                dataset.addNamedModel("http:\\c\\*Users\\pc\\Desktop\\PFE\\Files\\" + pair.getKey(), pair.getValue());
+                dataset.commit();
+            }
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
+
+            dataset.end();
             dataset.close();
+
         }
     }
+
+
+/*
+    public Iterator<Triple> find (Node s, Node p, Node o)
+    {
+        Iterator<Tuple<NodeId>> iter = table.findAsNodeIds(s, p, o) ;
+        if ( iter == null )
+            return new NullIterator<>() ;
+        Iterator<Triple> iter2 = TupleLib.convertToTriples(table.getNodeTable(), iter) ;
+        return iter2 ;
+    }
+  */
 
     public static HashMap<String, Model> unpersistModelsMap() {
         HashMap<String, Model> results = new HashMap<>();
 
         Dataset dataset = TDBFactory.createDataset(tdbDirectory);
+
+
+        TDB.sync(dataset);
+
+
+        // Model modell = dataset . getDefaultModel ();
+
         Iterator<String> it = dataset.listNames();
         String name;
-        while (it.hasNext()) {
-            name = it.next();
+        it.next();
 
-            Model model = dataset.getNamedModel(name);
+        try {
+            while (it.hasNext()) {
+                name = it.next();
+                // Model model = dataset.getNamedModel(name);
+                Model model = dataset.getNamedModel(name);
 
-            results.put(name, model);
+                StmtIterator stmtIterator = model.listStatements();
+
+                while (stmtIterator.hasNext()) {
+                    System.out.println(stmtIterator.next() + "\n*\n");
+                }
+
+
+                results.put(name, model);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
         return results;

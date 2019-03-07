@@ -26,7 +26,7 @@ public class QueryExecutor {
             ArrayList<Query> constructQueriesList = Queries2Graphes.TransformQueriesinFile(filePath);
             // Execution of each CONSTRUCT query
             for (Query query : constructQueriesList) {
-                System.out.println("exeution d'une requete");
+                System.out.println("exeution req ");
                 Model model;
                 if ((model = queryExecutor.executeQueryConstruct(query, endPoint)) != null) results.add(model);
             }
@@ -41,7 +41,8 @@ public class QueryExecutor {
         ArrayList<Model> results = new ArrayList<>();
 
         ArrayList<String> allLines = (ArrayList<String>) FileOperation.ReadFile(filePath);
-        int size = allLines.size();
+        //int size = allLines.size();
+        int size = 200;
         List<String> lines;
         Stopwatch stopwatch_consolidation = Stopwatch.createUnstarted();
         Stopwatch stopwatch_persist = Stopwatch.createUnstarted();
@@ -68,8 +69,10 @@ public class QueryExecutor {
                 ArrayList<Query> constructQueriesList = Queries2Graphes.TransformQueriesinFile2(allLines.subList(0, cpt));
                 // Execution of each CONSTRUCT query
 
+                int num = 0;
                 for (Query query : constructQueriesList) {
-                    System.out.println("exeution d'une requete ");
+                    num++;
+                    System.out.println("exeution req " + num + "\n");
                     Model model;
                     if ((model = queryExecutor.executeQueryConstruct(query, endPoint)) != null) results.add(model);
                 }

@@ -65,7 +65,7 @@ public class Constants {
     }
 
     private static void initDefaultProperties() {
-                List<Path> filesInFolder = new ArrayList<>();
+        List<Path> filesInFolder = new ArrayList<>();
         try {
             filesInFolder = Files.walk(Paths.get(defaultOntologiesDirectory))
                     .filter(Files::isRegularFile)
@@ -111,8 +111,10 @@ public class Constants {
      **/
     //à changer probablement en créant un nouveau type contenant la datatypeProperty et son ou ses range
     public static Node getRangeofProperty(Property property) {
-        if (currentProperty.getURI().matches(property.getURI()))
-            return currentProperty.getRange().asNode();
+        if (currentProperty.getURI().matches(property.getURI())) {
+            if (currentProperty.getRange() != null)
+                return currentProperty.getRange().asNode();
+        }
         else {
             Set<OntProperty> verificationSet= datatypeProperties;
             verificationSet.addAll(otherProperties);
@@ -128,6 +130,22 @@ public class Constants {
         }
         return null;
     }
+
+    public static Boolean isFunctionalProperty(Property property) {
+        if (currentProperty.getURI().matches(property.getURI()))
+            return currentProperty.isFunctionalProperty();
+        else {
+            Set<OntProperty> verificationSet = objectProperties;
+            verificationSet.addAll(otherProperties);
+            for (OntProperty ontProperty : verificationSet) {
+                if (ontProperty.getURI().matches(property.getURI())) {
+                    return ontProperty.isFunctionalProperty();
+                }
+            }
+        }
+        return false;
+    }
+
 
     public static String getPropertyType(Property property)
     {
@@ -218,11 +236,7 @@ public class Constants {
 
     }
 
-    public static boolean isFunctionalProperty(Property property) {
 
-        return isFunctionalProperty(property);
-
-    }
 
 
     /** Execute a query onto an ontology **/
