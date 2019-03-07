@@ -1,6 +1,7 @@
 package MDfromLogQueries.Util;
 
 import MDPatternDetection.OntologyFactory;
+import MDPatternDetection.QueryExecutor;
 import MDfromLogQueries.Declarations.Declarations;
 import org.apache.jena.graph.Node;
 import org.apache.jena.ontology.OntModel;
@@ -111,8 +112,10 @@ public class Constants {
      **/
     //à changer probablement en créant un nouveau type contenant la datatypeProperty et son ou ses range
     public static Node getRangeofProperty(Property property) {
-        if (currentProperty.getURI().matches(property.getURI()))
-            return currentProperty.getRange().asNode();
+        if (currentProperty.getURI().matches(property.getURI())) {
+            if (currentProperty.getRange() != null)
+                return currentProperty.getRange().asNode();
+        }
         else {
             Set<OntProperty> verificationSet= datatypeProperties;
             verificationSet.addAll(otherProperties);
@@ -131,7 +134,20 @@ public class Constants {
 
     public static Boolean isFunctionalProperty(Property property)
     {
-        return currentProperty.isFunctionalProperty();
+        if (currentProperty.getURI().matches(property.getURI()))
+            return currentProperty.isFunctionalProperty();
+        else
+        {
+            Set<OntProperty> verificationSet= objectProperties;
+            verificationSet.addAll(otherProperties);
+            for (OntProperty ontProperty : verificationSet)
+            {
+                if (ontProperty.getURI().matches(property.getURI())) {
+                    return ontProperty.isFunctionalProperty();
+                }
+            }
+        }
+        return false;
     }
 
 
@@ -179,6 +195,13 @@ public class Constants {
         }
     }
 
+    public static boolean askDatatypePropEndpoint(Property property, String endpoint)
+    {
+        String queryStr = "Ask { <"+property.getURI()+"> a <http://www.w3.org/2002/07/owl#DatatypeProperty>}";
+        QueryExecutor queryExecutor = new QueryExecutor();
+        return queryExecutor.executeQueryAsk(queryStr,endpoint);
+    }
+
     /** Verify if the property is contained in other properties **/
     private static boolean setContains(Property property, HashSet<OntProperty> set)
     {
@@ -221,12 +244,6 @@ public class Constants {
             returnValue = true;
         }
         return returnValue;
-
-    }
-
-    public static boolean isFunctionalProperty(Property property) {
-
-        return isFunctionalProperty(property);
 
     }
 

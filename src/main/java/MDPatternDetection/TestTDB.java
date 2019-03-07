@@ -4,6 +4,7 @@ import MDfromLogQueries.Declarations.Declarations;
 import com.google.common.base.Stopwatch;
 import org.apache.jena.query.Dataset;
 import org.apache.jena.rdf.model.Model;
+import org.apache.jena.tdb.TDB;
 import org.apache.jena.tdb.TDBFactory;
 
 import java.util.HashMap;
@@ -26,7 +27,7 @@ public class TestTDB {
         String endPoint = "https://dbpedia.org/sparql";
         //ArrayList<Model> results = QueryExecutor.executeQuiersInFile(syntaxValidFileTest, endPoint);
         // ArrayList<Model> results =  QueryExecutorParallel.executeQueriesInFile(Declarations.syntaxValidFile, "https://dbpedia.org/sparql");
-        QueryExecutor.executeQuiersInFile2(Declarations.syntaxValidFile, "https://dbpedia.org/sparql");
+       //QueryExecutor.executeQuiersInFile2(Declarations.syntaxValidFile, "https://dbpedia.org/sparql");
         stopwatch_exec.stop();
 
   /*      if (results==null) return;
@@ -49,7 +50,37 @@ public class TestTDB {
         modelHashMap = unpersistModelsMap();
         stopwatch_unpersist.stop();
 
-        // TestConsolidation2.afficherListInformations(modelHashMap);
+        //TestConsolidation2.afficherListInformations(modelHashMap);
+        //HashMap<String,Model> newMap = TestConsolidation2.consolidate(modelHashMap);
+try {
+    TestConsolidation2.afficherListInformations(modelHashMap);
+}
+catch (Exception e)
+{
+
+}
+          HashMap<String,Model> annotatedHashMap = new HashMap<>();
+        MDGraphAnnotated mdGraphAnnotated;
+
+        Iterator it = modelHashMap.entrySet().iterator();
+        int cpt = 0;
+
+        while (it.hasNext() && cpt<100)
+        {
+            try {
+                Map.Entry<String, Model> pair = (Map.Entry) it.next();
+                mdGraphAnnotated = new MDGraphAnnotated(pair.getValue(), pair.getKey());
+                annotatedHashMap.put(pair.getKey(), mdGraphAnnotated.getMdModel());
+                System.out.println(cpt);
+                cpt++;
+            }
+            catch (Exception e)
+            {
+
+            }
+        }
+
+        TestConsolidation2.afficherListInformations(annotatedHashMap);
 
         System.out.println("\nsize after unpersisting  " + modelHashMap.size());
 
@@ -90,12 +121,16 @@ public class TestTDB {
         HashMap<String, Model> results = new HashMap<>();
 
         Dataset dataset = TDBFactory.createDataset(tdbDirectory);
+       // TDB.sync(dataset);
         Iterator<String> it = dataset.listNames();
         String name;
+        it.next();it.next();it.next();
         while (it.hasNext()) {
             name = it.next();
+           // System.out.println("la clé "+ name);
 
             Model model = dataset.getNamedModel(name);
+           // System.out.println(model);
 
             results.put(name, model);
         }

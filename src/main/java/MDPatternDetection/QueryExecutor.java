@@ -52,9 +52,9 @@ public class QueryExecutor {
             while (size != 0) {
 
                 int cpt;
-                if (size >= 10000) {
-                    cpt = 10000;
-                    size -= 10000;
+                if (size >= 500) {
+                    cpt = 500;
+                    size -= 500;
 
                 } else {
                     cpt = size;
@@ -69,7 +69,7 @@ public class QueryExecutor {
                 // Execution of each CONSTRUCT query
 
                 for (Query query : constructQueriesList) {
-                    System.out.println("exeution d'une requete ");
+                    System.out.println("exeution d'une requete "+ query.toString().replaceAll("[\n\r]","\t"));
                     Model model;
                     if ((model = queryExecutor.executeQueryConstruct(query, endPoint)) != null) results.add(model);
                 }
@@ -110,6 +110,21 @@ public class QueryExecutor {
             Query query = QueryFactory.create(queryStr);
             QueryExecution qexec = QueryExecutionFactory.sparqlService(endpoint, query);
             results = qexec.execSelect();
+            /*  System.out.println("Result " + results.next());*/
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+        return results;
+    }
+
+    public boolean executeQueryAsk(String queryStr, String endpoint)
+    {
+        boolean results = false;
+        try{
+            Query query = QueryFactory.create(queryStr);
+            QueryExecution qexec = QueryExecutionFactory.sparqlService(endpoint, query);
+            results = qexec.execAsk();
             /*  System.out.println("Result " + results.next());*/
         }
         catch (Exception e){

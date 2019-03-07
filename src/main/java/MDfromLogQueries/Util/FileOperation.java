@@ -151,7 +151,42 @@ public class FileOperation {
             }
 
         }
+    } public static void writeModelInFile(String writingFilePath,Model model) {
+        System.out.println("RAni sdakhel Write\n");
+
+        File file = new File(writingFilePath);
+        FileOutputStream outputFile = null;
+        OutputStream out = null;
+
+        Statement statement;
+
+        try {
+            if (!file.isFile()) file.createNewFile();
+
+            outputFile = new FileOutputStream(file);
+
+
+            BufferedWriter bw = new BufferedWriter(new FileWriter(file, true));
+            out = new FileOutputStream(file);
+
+                model.write(out, "TURTLE");
+
+                //bw.flush();
+            System.out.println("kamalt write\n");
+        } catch (IOException e) {
+            System.out.println("Impossible file creation");
+        } finally {
+
+            try {
+                out.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        }
     }
+
+
 
     public static ArrayList<Model> readModelsFromFile(String filePath) {
 
@@ -207,6 +242,38 @@ public class FileOperation {
             }
         }
         return models;
+    }
+
+    public static Model readModelFromFile(String filePath) {
+        BufferedReader br = null;
+        InputStream in = null;
+        File file = new File(filePath);
+        int linesNumbers = 0;
+        Model model = ModelFactory.createDefaultModel();
+
+        try {
+            if (!file.isFile()) file.createNewFile();
+            in = new FileInputStream(file);
+
+            br = new BufferedReader(new FileReader(file));
+
+            model= ModelFactory.createDefaultModel();
+            model.read(in, filePath,  "TURTLE");
+
+            System.out.println("*****\t" + linesNumbers);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+
+        } finally {
+
+            try {
+                br.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return model;
     }
 
 
