@@ -4,6 +4,7 @@ import MDfromLogQueries.Declarations.Declarations;
 import com.google.common.base.Stopwatch;
 import org.apache.jena.query.Dataset;
 import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.rdf.model.StmtIterator;
 import org.apache.jena.tdb.TDB;
 import org.apache.jena.tdb.TDBFactory;
@@ -67,21 +68,29 @@ public class TestTDB {
 
     public static boolean exists(String name) {
 
+        boolean exists = false;
+        // if exists a model with subject.toString == name
+        if (dataset.containsNamedModel(name)) exists = true;
+        else {
+            // Verify if it exists as a node inside some model in the tdb
+            Iterator<String> it = dataset.listNames();
+            String subject;
 
-        return dataset.containsNamedModel(name);
+            while (it.hasNext()) {
+                subject = it.next();
+                Model model = dataset.getNamedModel(subject);
+
+                if (model.containsResource(ResourceFactory.createResource(name))) exists = true;
+
+            }
+        }
+        return exists;
     }
 
 
     public static void persistModelsMap(HashMap<String, Model> modelHashMap) {
 
-
-
         try {
-
-            /*File file = new File(tdbDirectory);
-
-            if (!file.isFile()) file.createNewFile();
-            */
 
             //Dataset dataset = DatasetFactory.create(model);
 
@@ -143,7 +152,6 @@ public class TestTDB {
                 while (stmtIterator.hasNext()) {
                     System.out.println(stmtIterator.next() + "\n*\n");
                 }
-
 
                 results.put(name, model);
             }
