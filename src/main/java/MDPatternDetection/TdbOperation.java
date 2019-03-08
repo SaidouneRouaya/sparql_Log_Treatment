@@ -13,12 +13,14 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import static MDfromLogQueries.Declarations.Declarations.originalTdbDirectory;
 import static MDfromLogQueries.Declarations.Declarations.tdbDirectory;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 
 public class TdbOperation {
     private static Dataset dataset = TDBFactory.createDataset(tdbDirectory);
+    private static Dataset originalDataDet = TDBFactory.createDataset(originalTdbDirectory);
 
     public static void main(String... argv) {
 
@@ -42,7 +44,7 @@ public class TdbOperation {
        // Consolidation.afficherListInformations(modelHashMap);
 
         Stopwatch stopwatch_persist = Stopwatch.createStarted();
-        persistModelsMap(modelHashMap);
+        persistAnnotatedHashMap(modelHashMap);
         stopwatch_persist.stop();
 */
         HashMap<String, Model> modelHashMap;
@@ -65,19 +67,19 @@ public class TdbOperation {
     }
 
 
-    public static boolean exists(String name) {
+    public static boolean exists(String name, Dataset dt) {
 
         boolean exists = false;
         // if exists a model with subject.toString == name
-        if (dataset.containsNamedModel(name)) exists = true;
+        if (dt.containsNamedModel(name)) exists = true;
         else {
             // Verify if it exists as a node inside some model in the tdb
-            Iterator<String> it = dataset.listNames();
+            Iterator<String> it = dt.listNames();
             String subject;
 
             while (it.hasNext()) {
                 subject = it.next();
-                Model model = dataset.getNamedModel(subject);
+                Model model = dt.getNamedModel(subject);
 
                 if (model.containsResource(ResourceFactory.createResource(name))) exists = true;
 
@@ -87,10 +89,36 @@ public class TdbOperation {
     }
 
 
-    public static void persistModelsMap(HashMap<String, Model> modelHashMap) {
+    public static void persistNonAnnotated(HashMap<String, Model> modelHashMap) {
+        try {
+            //Dataset dataset = DatasetFactory.create(model);
+
+            Iterator it = modelHashMap.entrySet().iterator();
+
+            while (it.hasNext()) {
+
+                Map.Entry<String, Model> pair = (Map.Entry) it.next();
+
+                if (exists(pair.getKey(), originalDataDet)) {
+                    originalDataDet.getNamedModel(pair.getKey()).add(pair.getValue());
+                } else {
+                    originalDataDet.addNamedModel(pair.getKey(), pair.getValue());
+
+
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void persistAnnotatedHashMap(HashMap<String, Model> modelHashMap) {
+
 
         try {
 
+            //;
             //Dataset dataset = DatasetFactory.create(model);
 
             Iterator it = modelHashMap.entrySet().iterator();
@@ -101,7 +129,7 @@ public class TdbOperation {
 
                 //Verify if the model exists already in the tdb
 
-                if (exists(pair.getKey())) {
+                if (exists(pair.getKey(), dataset)) {
                     dataset.getNamedModel(pair.getKey()).add(pair.getValue());
                 } else {
                     dataset.addNamedModel(pair.getKey(), pair.getValue());

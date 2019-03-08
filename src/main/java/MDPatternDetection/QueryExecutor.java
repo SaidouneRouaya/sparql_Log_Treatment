@@ -41,8 +41,8 @@ public class QueryExecutor {
         ArrayList<Model> results = new ArrayList<>();
 
         ArrayList<String> allLines = (ArrayList<String>) FileOperation.ReadFile(filePath);
-        //int size = allLines.size();
-        int size = 40;
+        int size = allLines.size();
+        //int size=40;
         List<String> lines;
         Stopwatch stopwatch_consolidation = Stopwatch.createUnstarted();
         Stopwatch stopwatch_persist = Stopwatch.createUnstarted();
@@ -86,6 +86,11 @@ public class QueryExecutor {
                     HashMap<String, Model> modelHashMap = Consolidation.consolidate(results);
                     stopwatch_consolidation.stop();
 
+                    // persist before annotate
+                    System.out.println("\n le persisting 1  \n");
+                    stopwatch_persist = Stopwatch.createStarted();
+                    TdbOperation.persistNonAnnotated(modelHashMap);
+                    stopwatch_persist.stop();
 
                     // annotation
 
@@ -95,9 +100,9 @@ public class QueryExecutor {
                     stopwatch_annotate.stop();
 
                     // persisting
-                    System.out.println("\n le persisting \n");
+                    System.out.println("\n le persisting 2 \n");
                     stopwatch_persist = Stopwatch.createStarted();
-                    TdbOperation.persistModelsMap(modelHashMap);
+                    TdbOperation.persistAnnotatedHashMap(modelHashMap);
                     stopwatch_persist.stop();
                 }
                 lines = allLines.subList(0, cpt);

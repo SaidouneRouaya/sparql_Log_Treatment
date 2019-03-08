@@ -23,5 +23,6 @@ public class Declarations {
     public static String dbPediaOntologyPath = "C:\\Users\\pc\\Desktop\\PFE\\Files\\Ontologies\\dbpedia_2014.owl";
     public static String defaultOntologiesDir = "C:\\Users\\pc\\Desktop\\PFE\\Files\\Ontologies\\ontologies_namespaces";
     public static String tdbDirectory = "C:\\Users\\pc\\Desktop\\PFE\\Files\\tdbDirectory";
+    public static String originalTdbDirectory = "C:\\Users\\pc\\Desktop\\PFE\\Files\\originalTdbDirectory";
 
 }
