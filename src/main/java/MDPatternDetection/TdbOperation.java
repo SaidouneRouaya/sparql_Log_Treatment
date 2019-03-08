@@ -17,8 +17,7 @@ import static MDfromLogQueries.Declarations.Declarations.tdbDirectory;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 
-
-public class TestTDB {
+public class TdbOperation {
     private static Dataset dataset = TDBFactory.createDataset(tdbDirectory);
 
     public static void main(String... argv) {
@@ -37,10 +36,10 @@ public class TestTDB {
         //  App.afficherModels(results);
 
         Stopwatch stopwatch_consolidation = Stopwatch.createStarted();
-        HashMap<String, Model> modelHashMap = TestConsolidation2.consolidate(results);
+        HashMap<String, Model> modelHashMap = Consolidation.consolidate(results);
         stopwatch_consolidation.stop();
 
-       // TestConsolidation2.afficherListInformations(modelHashMap);
+       // Consolidation.afficherListInformations(modelHashMap);
 
         Stopwatch stopwatch_persist = Stopwatch.createStarted();
         persistModelsMap(modelHashMap);
@@ -52,7 +51,7 @@ public class TestTDB {
         modelHashMap = unpersistModelsMap();
         stopwatch_unpersist.stop();
 
-        // TestConsolidation2.afficherListInformations(modelHashMap);
+        // Consolidation.afficherListInformations(modelHashMap);
 
         System.out.println("\nsize after unpersisting  " + modelHashMap.size());
 

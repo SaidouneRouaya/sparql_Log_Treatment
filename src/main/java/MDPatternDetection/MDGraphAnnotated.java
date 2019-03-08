@@ -169,7 +169,7 @@ public class MDGraphAnnotated {
 
         MDGraphAnnotated mdGraphAnnotated = new MDGraphAnnotated(testModel, sujet);
         // hashMap.put("new",mdGraphAnnotated.getMdModel());
-        TestConsolidation2.afficherListInformations(hashMap);
+        Consolidation.afficherListInformations(hashMap);
 
         stopwatch.stop();
         System.out.println("\n Time elapsed for the program is " + stopwatch.elapsed(SECONDS));

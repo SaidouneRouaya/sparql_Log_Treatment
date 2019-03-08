@@ -83,7 +83,7 @@ public class QueryExecutor {
                 System.out.println("\nLa consolidation \n");
                 if (!results.isEmpty()) {
                     stopwatch_consolidation = Stopwatch.createStarted();
-                    HashMap<String, Model> modelHashMap = TestConsolidation2.consolidate(results);
+                    HashMap<String, Model> modelHashMap = Consolidation.consolidate(results);
                     stopwatch_consolidation.stop();
 
 
@@ -97,7 +97,7 @@ public class QueryExecutor {
                     // persisting
                     System.out.println("\n le persisting \n");
                     stopwatch_persist = Stopwatch.createStarted();
-                    TestTDB.persistModelsMap(modelHashMap);
+                    TdbOperation.persistModelsMap(modelHashMap);
                     stopwatch_persist.stop();
                 }
                 lines = allLines.subList(0, cpt);

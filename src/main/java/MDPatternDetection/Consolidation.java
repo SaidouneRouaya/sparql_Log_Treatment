@@ -6,7 +6,7 @@ import java.util.*;
 
 import static MDfromLogQueries.Declarations.Declarations.syntaxValidFileTest;
 
-public class TestConsolidation2 {
+public class Consolidation {
 
 
     public static void main(String[] args) {

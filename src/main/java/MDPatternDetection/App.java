@@ -19,10 +19,10 @@ public class App {
     public static void main(String[] args) {
 
         Stopwatch stopwatch_unpersist = Stopwatch.createStarted();
-        HashMap<String, Model> modelHashMap = TestTDB.unpersistModelsMap();
+        HashMap<String, Model> modelHashMap = TdbOperation.unpersistModelsMap();
         stopwatch_unpersist.stop();
         System.out.println("\nTime elapsed for unpersist program is \t" + stopwatch_unpersist.elapsed(MILLISECONDS) + "\n\n");
-        //TestConsolidation2.afficherListInformations(modelHashMap);
+        //Consolidation.afficherListInformations(modelHashMap);
         System.out.println("taille du tdb " + modelHashMap.size());
         System.out.println("\ntaille du tdb " + modelHashMap.keySet().size());
 
