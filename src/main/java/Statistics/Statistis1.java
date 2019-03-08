@@ -1,7 +1,6 @@
 package Statistics;
 
 import MDPatternDetection.AnnotationClasses.Annotations;
-import MDPatternDetection.TdbOperation;
 import org.apache.jena.query.Dataset;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ResIterator;
@@ -9,9 +8,14 @@ import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.tdb.TDBFactory;
 import org.apache.jena.vocabulary.RDF;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import static MDfromLogQueries.Declarations.Declarations.statisticsFile;
 import static MDfromLogQueries.Declarations.Declarations.tdbDirectory;
 import static java.lang.StrictMath.max;
 
@@ -57,7 +61,7 @@ public class Statistis1 {
     public Statistis1() {
     }
 
-    public static void main(String... argv) {
+   /* public static void main(String... argv) {
 
         Statistis1 statistis1 = new Statistis1();
         HashMap<String, Model> models = TdbOperation.unpersistModelsMap();
@@ -104,7 +108,104 @@ public class Statistis1 {
         }
         statistis1.setRBC((statistis1.getNBC() / statistis1.getNDC()) * 100);
         statistis1.setRSA((statistis1.getNAFC() / statistis1.getNADC()) * 100);
+        statistis1.writeStatisticsInFile(statisticsFile);
 
+    }*/
+
+    public void stat(HashMap<String, Model> models) {
+
+        // = TdbOperation.unpersistModelsMap();
+
+        ArrayList<Model> listModels = (ArrayList) models.values();
+        ResIterator resIterator;
+
+        for (Model m : listModels) {
+
+            resIterator = m.listSubjects();
+
+            int nbNodes = 0;
+            int levelsDepth = 0;
+
+            while (resIterator.hasNext()) {
+                Resource node = resIterator.next();
+                nbNodes++;
+
+
+                if (node.hasProperty(RDF.type, Annotations.FACT.toString())) this.setNFC(this.getNFC() + 1);
+                if (node.hasProperty(RDF.type, Annotations.DIMENSION.toString()))
+                    this.setNDC(this.getNDC() + 1);
+                if (node.hasProperty(RDF.type, Annotations.DIMENSIONLEVEL.toString())) {
+                    this.setNBC(this.getNBC() + 1);
+                    levelsDepth++;
+                }
+
+
+                if (node.hasProperty(RDF.type, Annotations.FACTATTRIBUTE.toString()))
+                    this.setNAFC(this.getNAFC() + 1);
+                if (node.hasProperty(RDF.type, Annotations.DIMENSIONATTRIBUTE.toString()))
+                    this.setNADC(this.getNADC() + 1);
+
+
+            }
+
+            this.setNC(this.getNC() + nbNodes);// also : statistis1.setNC(statistis1.getNC()+statistis1.getNFC()+statistis1.getNBC()+statistis1.getNDC());
+            this.setNLDH(max(this.getNLDH(), levelsDepth));
+
+        }
+        this.setRBC((this.getNBC() / this.getNDC()) * 100);
+        this.setRSA((this.getNAFC() / this.getNADC()) * 100);
+        this.writeStatisticsInFile(statisticsFile);
+
+    }
+
+
+    public void writeStatisticsInFile(String writingFilePath) {
+        File file = new File(writingFilePath);
+        BufferedWriter bw = null;
+        try {
+            if (!file.isFile()) file.createNewFile();
+            bw = new BufferedWriter(new FileWriter(file, true));
+
+
+            bw.write("Total number of classes of the star S\t:\tNC(S) =\t" + this.getNC() + "\n");
+            bw.write("Number of fact classes of the start S\t:\tNFC(S) =\t" + this.getNFC() + "\n");
+            bw.write("Number of dimension classes of the star S \t:\tNDC(S) =\t" + this.getNDC() + "\n");
+            bw.write("Number of base classes of the star S\t:\t =\tNBC(S) =\t" + this.getNBC() + "\n");
+            bw.write("Ratio of base classes. Number of base classes per dimension class of the star S\t:\tRBC(S) =\t" + this.getRBC() + "\n");
+            bw.write("Number of Fact Attributes attributes of the fact class of the star S\t:\tNAFC(S) =\t" + this.getNAFC() + "\n");
+            bw.write("Number of Dimension and Dimension Attributes of the dimension classes of the star S\t:\tNADC(S) =\t" + this.getNADC() + "\n");
+            bw.write("Number of  Dimension and Dimension Attributes of the base classes of the star S\t:\tNABC(S) =\t" + this.getNABC() + "\n");
+            bw.write("Total number of Fact Attributes, Dimensions and Dimension attributes of the star S\t:\tNA(S) =\t" + this.getNA() + "\n");
+            bw.write("Number of hierarchy relationships of the star S\t:\tNH(S) =\t" + this.getNH() + "\n");
+            bw.write("Maximum depth of the hierarchy relationships of the star S\t:\tDHP(S)  =\t" + this.getDHP() + "\n");
+            bw.write("Ratio of attributes of the star S\t:\tRSA(S) =\t" + this.getRSA() + "\n");
+            bw.write("Number of multiple hierarchies in the schema\t:\tNMH =\t" + this.getNMH() + "\n");
+            bw.write("Number of levels in dimension hierarchies of the schema\t:\tNLDH =\t" + this.getNLDH() + "\n");
+            bw.write("Number of alternate paths in multiple hierarchies of the schema\t:\tNAPMH =\t" + this.getNAPMH() + "\n");
+            bw.write("Number of dimensions involved in shared hierarchies of the schema\t:\t NDSH =\t" + this.getNDSH() + "\n");
+            bw.write("Number of shared hierarchies of the schema\t:\tNSH =\t" + this.getNSH() + "\n");
+            bw.write("Number of Shared Levels Within Dimensions\t:\tNSLWD =\t" + this.getNSLWD() + "\n");
+            bw.write("Number of Shared Levels between Dimensions within a Fact Scheme\t:\tNSLBD =\t" + getNSLBD() + "\n");
+            bw.write("Number of Shared Levels between Dimensions across Different Fact Schemes\t:\tNSLAF =\t" + this.getNSLAF() + "\n");
+            bw.write("Number of Non-Strict Hierarchies\t:\tNNSH =\t" + this.getNNSH() + "\n");
+            bw.write("Number of the classes which have interaction between the classes and their attributes in the multidimensional  the conceptual model\t:\t CM1 =\t" + this.getCM1() + "\n");
+            bw.write("Number of The classes which are related by inheritance form a hierarchy called the generalization hierarchy\t:\tCM2\tI =\t" + this.getCM2() + "\n");
+            bw.write("multidimensional model complexity metric\t:\tMMCM =\t" + this.getMMCM() + "\n");
+
+
+            bw.flush();
+        } catch (
+                IOException e) {
+            System.out.println("Impossible file creation");
+        } finally {
+
+            try {
+                bw.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        }
     }
 
     public static Dataset getDataset() {

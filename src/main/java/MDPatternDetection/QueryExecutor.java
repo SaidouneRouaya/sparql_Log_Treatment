@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import static MDfromLogQueries.Declarations.Declarations.logFile;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 public class QueryExecutor {
@@ -45,7 +46,8 @@ public class QueryExecutor {
         //int size=40;
         List<String> lines;
         Stopwatch stopwatch_consolidation = Stopwatch.createUnstarted();
-        Stopwatch stopwatch_persist = Stopwatch.createUnstarted();
+        Stopwatch stopwatch_persist1 = Stopwatch.createUnstarted();
+        Stopwatch stopwatch_persist2 = Stopwatch.createUnstarted();
         Stopwatch stopwatch_annotate = Stopwatch.createUnstarted();
 
 
@@ -75,7 +77,7 @@ public class QueryExecutor {
                 System.out.println("\nL'execution des requetes \n");
                 for (Query query : constructQueriesList) {
                     num++;
-                    // System.out.println("exeution req " + num + "\n");
+                    System.out.println("exeution req " + num + "\n");
                     Model model;
                     if ((model = queryExecutor.executeQueryConstruct(query, endPoint)) != null) results.add(model);
                 }
@@ -88,9 +90,9 @@ public class QueryExecutor {
 
                     // persist before annotate
                     System.out.println("\n le persisting 1  \n");
-                    stopwatch_persist = Stopwatch.createStarted();
+                    stopwatch_persist1 = Stopwatch.createStarted();
                     TdbOperation.persistNonAnnotated(modelHashMap);
-                    stopwatch_persist.stop();
+                    stopwatch_persist1.stop();
 
                     // annotation
 
@@ -101,34 +103,36 @@ public class QueryExecutor {
 
                     // persisting
                     System.out.println("\n le persisting 2 \n");
-                    stopwatch_persist = Stopwatch.createStarted();
+                    stopwatch_persist2 = Stopwatch.createStarted();
                     TdbOperation.persistAnnotatedHashMap(modelHashMap);
-                    stopwatch_persist.stop();
+                    stopwatch_persist2.stop();
                 }
                 lines = allLines.subList(0, cpt);
                 allLines.removeAll(lines);
             }
-            System.out.println("je suis apres l'exec ");
-            // consolidation
-
 
         } catch (Exception e) {
             e.printStackTrace();
         }
         System.out.println("\nTime elapsed for consolidation program is \t" + stopwatch_consolidation.elapsed(MILLISECONDS));
-        System.out.println("\nTime elapsed for persist program is \t" + stopwatch_persist.elapsed(MILLISECONDS));
+        System.out.println("\nTime elapsed for annotation program is \t" + stopwatch_annotate.elapsed(MILLISECONDS));
+        System.out.println("\nTime elapsed for persist program is \t" + stopwatch_persist1.elapsed(MILLISECONDS));
+        System.out.println("\nTime elapsed for persist program is \t" + stopwatch_persist2.elapsed(MILLISECONDS));
 
     }
 
     public boolean executeQueryAsk(String queryStr, String endpoint) {
         boolean results = false;
+
+        Query query = null;
         try {
-            Query query = QueryFactory.create(queryStr);
+            query = QueryFactory.create(queryStr);
             QueryExecution qexec = QueryExecutionFactory.sparqlService(endpoint, query);
             results = qexec.execAsk();
             /*  System.out.println("Result " + results.next());*/
         } catch (Exception e) {
             e.printStackTrace();
+            FileOperation.writeQueryInLog(logFile, "Ask", query);
         }
         return results;
     }
@@ -139,14 +143,16 @@ public class QueryExecutor {
     public ResultSet executeQuerySelect(String queryStr, String endpoint)
     {
         ResultSet results = null;
+        Query query = null;
         try{
-            Query query = QueryFactory.create(queryStr);
+            query = QueryFactory.create(queryStr);
             QueryExecution qexec = QueryExecutionFactory.sparqlService(endpoint, query);
             results = qexec.execSelect();
             /*  System.out.println("Result " + results.next());*/
         }
         catch (Exception e){
             e.printStackTrace();
+            FileOperation.writeQueryInLog(logFile, "Select", query);
         }
         return results;
     }
@@ -162,8 +168,7 @@ public class QueryExecutor {
             /* System.out.println("Result "+ results.toString());*/
         }
         catch (Exception e){
-            // e.printStackTrace();
-            System.out.println("failed error 400");
+            FileOperation.writeQueryInLog(logFile, "Construct", query);
         }
         return results;
     }

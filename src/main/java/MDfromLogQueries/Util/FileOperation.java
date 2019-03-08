@@ -1,5 +1,6 @@
 package MDfromLogQueries.Util;
 
+import org.apache.jena.query.Query;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Statement;
@@ -102,6 +103,30 @@ public class FileOperation {
 
         }
     }
+
+    public static void writeQueryInLog(String writingFilePath, String queryType, Query query) {
+
+        File file = new File(writingFilePath);
+        BufferedWriter bw = null;
+        try {
+            if (!file.isFile()) file.createNewFile();
+            bw = new BufferedWriter(new FileWriter(file, true));
+            bw.write(queryType + query.toString().replaceAll("[\n\r]", "\t") + "\n");
+            bw.flush();
+        } catch (IOException e) {
+            System.out.println("Impossible file creation");
+        } finally {
+
+            try {
+                bw.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        }
+    }
+
+
 
     public static void writeModelsInFile(String writingFilePath, ArrayList<Model> models) {
         System.out.println("RAni sdakhel Write\n");

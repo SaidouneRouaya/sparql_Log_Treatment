@@ -86,7 +86,6 @@ public class Queries2Graphes {
         try {
             /** Graph pattern extraction **/
 
-            System.out.println("je suis la 1");
             Iterator<String> it = lines.iterator();
 
             while (it.hasNext()) {
@@ -107,7 +106,6 @@ public class Queries2Graphes {
                     e.printStackTrace();
                     //Todo do something (++ nb for statistics)
                 }
-                //System.out.println("je suis la 2");
             }
         } catch (Exception e) {
             e.printStackTrace();

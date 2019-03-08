@@ -1,6 +1,8 @@
 package MDPatternDetection;
 
 
+import MDfromLogQueries.Declarations.Declarations;
+import Statistics.Statistis1;
 import com.google.common.base.Stopwatch;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Resource;
@@ -18,13 +20,34 @@ public class App {
 
     public static void main(String[] args) {
 
+
+        Stopwatch stopwatch_total = Stopwatch.createStarted();
+        Stopwatch stopwatch_exec = Stopwatch.createStarted();
+        String endPoint = "https://dbpedia.org/sparql";
+
+        // execution + annotation + persisting
+        QueryExecutor.executeQuiersInFile2(Declarations.syntaxValidFile, endPoint);
+        stopwatch_exec.stop();
+
+
+        HashMap<String, Model> modelHashMap;
         Stopwatch stopwatch_unpersist = Stopwatch.createStarted();
-        HashMap<String, Model> modelHashMap = TdbOperation.unpersistModelsMap();
+        modelHashMap = TdbOperation.unpersistModelsMap();
         stopwatch_unpersist.stop();
-        System.out.println("\nTime elapsed for unpersist program is \t" + stopwatch_unpersist.elapsed(MILLISECONDS) + "\n\n");
-        //Consolidation.afficherListInformations(modelHashMap);
-        System.out.println("taille du tdb " + modelHashMap.size());
-        System.out.println("\ntaille du tdb " + modelHashMap.keySet().size());
+
+        stopwatch_total.stop();
+
+        Stopwatch stopwatch_stat = Stopwatch.createStarted();
+        Statistis1 statistis1 = new Statistis1();
+        statistis1.stat(modelHashMap);
+        stopwatch_stat.stop();
+
+        System.out.println("\nTime elapsed for execution program is \t" + stopwatch_exec.elapsed(MILLISECONDS));
+        System.out.println("\nTime elapsed for unpersist program is \t" + stopwatch_unpersist.elapsed(MILLISECONDS));
+        System.out.println("\nTime elapsed for the statistics program is \t" + stopwatch_stat.elapsed(MILLISECONDS));
+        System.out.println("\nTime elapsed for the whole program is \t" + stopwatch_total.elapsed(MILLISECONDS));
+
+
 
     }
 

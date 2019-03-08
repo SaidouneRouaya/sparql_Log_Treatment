@@ -24,5 +24,8 @@ public class Declarations {
     public static String defaultOntologiesDir = "C:\\Users\\pc\\Desktop\\PFE\\Files\\Ontologies\\ontologies_namespaces";
     public static String tdbDirectory = "C:\\Users\\pc\\Desktop\\PFE\\Files\\tdbDirectory";
     public static String originalTdbDirectory = "C:\\Users\\pc\\Desktop\\PFE\\Files\\originalTdbDirectory";
+    public static String statisticsFile = "C:\\Users\\pc\\Desktop\\PFE\\Files\\ProgramOutput\\Fichier_statistique.txt";
+    public static String logFile = "C:\\Users\\pc\\Desktop\\PFE\\Files\\ProgramOutput\\Fichier_log.txt";
+
 
 }
