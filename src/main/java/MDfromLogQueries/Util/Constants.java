@@ -10,7 +10,6 @@ import org.apache.jena.query.*;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Property;
-import org.apache.jena.rdf.model.impl.PropertyImpl;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -20,8 +19,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-import static MDfromLogQueries.Util.FileOperation.writeModelInFile;
 
 
 public class Constants {
@@ -46,6 +43,7 @@ public class Constants {
         initObjectProperties();
         initDatatypeProperties();
         initDefaultProperties();
+        System.out.println("\n" + otherProperties.size() + "*****************************");
     }
 
     /**
@@ -127,7 +125,10 @@ public class Constants {
      **/
     //à changer probablement en créant un nouveau type contenant la datatypeProperty et son ou ses range
     public static Node getRangeofProperty(Property property) {
-        if (currentProperty.getURI().matches(property.getURI())) {
+        if (currentProperty.
+                getURI()
+                .matches(property
+                        .getURI())) {
             if (currentProperty.getRange() != null)
                 return currentProperty.getRange().asNode();
         }
@@ -249,14 +250,16 @@ public class Constants {
 
     public static void persistModel()
     {
-        writeModelInFile(Declarations.propertiesOntology,addedPropertiesOntology);
+        //writeModelInFile(Declarations.propertiesOntology,addedPropertiesOntology);
     }
 
     /** Verify if the property is contained in other properties **/
     private static boolean setContains(Property property, HashSet<OntProperty> set)
     {
         for (OntProperty prop : set) {
-            if (prop.getURI().matches(property.getURI())) {
+            if (prop.getURI()
+                    .matches(property
+                            .getURI())) {
                 currentProperty = prop;
                 return true;
             }

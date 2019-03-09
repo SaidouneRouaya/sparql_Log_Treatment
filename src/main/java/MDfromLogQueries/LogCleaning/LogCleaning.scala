@@ -16,7 +16,7 @@ object Main extends App {
   /** This class reads the log files and extract queries **/
 
   val t1 = System.currentTimeMillis()
-
+  print("je suis dans log cleaning")
 
   /* Directory that coontains the log files 's Path */
   val dirPath = Declarations.directoryPath
@@ -74,13 +74,13 @@ object Main extends App {
 
   def queryFromRequest(requestStr: String): String = {
     val pairs = URLEncodedUtils.parse(requestStr, StandardCharsets.UTF_8)
-    /*
-        for (pair <- pairs) {
-         // if ("query" == pair.getName) {
-           // return pair.getValue
-          //}
-        }
-       */
+
+    /*for (pair <- pairs) {
+   /*   if ("query" == pair.getName) {
+      return pair.getValue
+     }*/
+    }*/
+
     null
 
   }

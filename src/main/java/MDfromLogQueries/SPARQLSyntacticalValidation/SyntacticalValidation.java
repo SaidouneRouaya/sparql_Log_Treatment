@@ -28,6 +28,7 @@ public class SyntacticalValidation {
         String writingFile = syntaxValidFile;
 
         // Validate (Test_query);
+
         ValidateFile(sourceFile, writingFile);
 
         stopwatch.stop();
@@ -53,6 +54,7 @@ public class SyntacticalValidation {
         ArrayList<String> validQueryList = new ArrayList<>();
         String query;
         ArrayList<String> queryList;
+        int nb = 0;
         try {
 
             int nb_line = 0; //for statistical needs
@@ -66,12 +68,15 @@ public class SyntacticalValidation {
                 /* System.out.println( "line \t"+nb_line);*/
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            // e.printStackTrace();
+            System.out.println("erreur");
+            nb++;
         }
 
         /* System.out.println("Size of validQueryList : "+validQueryList.size());*/
         FileOperation.WriteInFile(destinationFilePath,validQueryList);
 
+        System.out.println("\n\n nombre d'erruer \t" + nb);
     }
 
 }

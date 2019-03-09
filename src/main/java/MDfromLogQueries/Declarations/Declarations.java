@@ -19,6 +19,7 @@ public class Declarations {
 
     public static String syntaxValidFile = "C:\\Users\\pc\\Desktop\\PFE\\Files\\ProgramOutput\\Fichier_Syntaxe_Valide.txt";
     public static String syntaxValidFileTest = "C:\\Users\\pc\\Desktop\\PFE\\Files\\ProgramOutput\\Fichier_Syntaxe_Valide_Test.txt";
+    public static String constructQueriesFile = "C:\\Users\\pc\\Desktop\\PFE\\Files\\ProgramOutput\\Fichier_Construct_Queries.txt";
 
     public static String dbPediaOntologyPath = "C:\\Users\\pc\\Desktop\\PFE\\Files\\Ontologies\\dbpedia_2014.owl";
     public static String defaultOntologiesDir = "C:\\Users\\pc\\Desktop\\PFE\\Files\\Ontologies\\ontologies_namespaces";

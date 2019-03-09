@@ -104,6 +104,32 @@ public class FileOperation {
         }
     }
 
+    public static void WriteConstructQueriesInFile(String writingFilePath, ArrayList<Query> constructQueries) {
+        File file = new File(writingFilePath);
+        BufferedWriter bw = null;
+        try {
+            if (!file.isFile()) file.createNewFile();
+            bw = new BufferedWriter(new FileWriter(file, true));
+
+            for (Query query : constructQueries) {
+
+                bw.write(query.toString().replaceAll("[\n\r]", "\t") + "\n");
+
+                bw.flush();
+            }
+        } catch (IOException e) {
+            System.out.println("Impossible file creation");
+        } finally {
+
+            try {
+                bw.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        }
+    }
+
     public static void writeQueryInLog(String writingFilePath, String queryType, Query query) {
 
         File file = new File(writingFilePath);
@@ -212,7 +238,6 @@ public class FileOperation {
 
         }
     }
-
 
 
     public static ArrayList<Model> readModelsFromFile(String filePath) {
