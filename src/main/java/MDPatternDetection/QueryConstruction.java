@@ -177,11 +177,11 @@ public class QueryConstruction {
 
                         }
                         //TODO voir si ça ne pose pas de problème par rapport aux literaux typés : xsd:String, xsd:int
-                        else if (!objectRDFTypeValue.getURI().matches("http://www.w3.org/2000/01/rdf-schema#Literal"))
+                        /*else if (!subject.getProperty(property).getObject().isLiteral())
                         {
                             objectRDFTypeValue = verifyRDFTypeProperty(subject.getProperty(property).getObject().asResource(), j, rdfTypeProp, "ob");
                             j++;
-                        }
+                        }*/
                     }
                     break;
                     case ("notFound"):

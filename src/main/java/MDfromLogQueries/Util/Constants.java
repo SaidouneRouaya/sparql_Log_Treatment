@@ -20,6 +20,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static MDfromLogQueries.Util.FileOperation.writeModelInFile;
+
 
 public class Constants {
 
@@ -125,24 +127,25 @@ public class Constants {
      **/
     //à changer probablement en créant un nouveau type contenant la datatypeProperty et son ou ses range
     public static Node getRangeofProperty(Property property) {
-        if (currentProperty.
-                getURI()
-                .matches(property
-                        .getURI())) {
-            if (currentProperty.getRange() != null)
-                return currentProperty.getRange().asNode();
-        }
-        else {
-            Set<OntProperty> verificationSet= datatypeProperties;
-            verificationSet.addAll(otherProperties);
-            Node range;
-            for (OntProperty ontProperty : verificationSet)
-            {
-                if (ontProperty.getURI().matches(property.getURI())) {
-                    range = ontProperty.getRange().asNode();
-                    return range;
+        try {
+
+
+            if (currentProperty.getURI().matches(property.getURI())) {
+                if (currentProperty.getRange() != null)
+                    return currentProperty.getRange().asNode();
+            } else {
+                Set<OntProperty> verificationSet= datatypeProperties;
+                verificationSet.addAll(otherProperties);
+                Node range;
+                for (OntProperty ontProperty : verificationSet) {
+                    if (ontProperty.getURI().matches(property.getURI())) {
+                        range = ontProperty.getRange().asNode();
+                        return range;
+                    }
                 }
+
             }
+        } catch (Exception e) {
 
         }
         return null;
@@ -250,7 +253,7 @@ public class Constants {
 
     public static void persistModel()
     {
-        //writeModelInFile(Declarations.propertiesOntology,addedPropertiesOntology);
+        writeModelInFile(Declarations.propertiesOntology, addedPropertiesOntology);
     }
 
     /** Verify if the property is contained in other properties **/
