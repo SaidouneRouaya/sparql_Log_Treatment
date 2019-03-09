@@ -6,6 +6,7 @@ import MDfromLogQueries.Declarations.Declarations;
 import org.apache.jena.graph.Node;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.ontology.OntProperty;
+import org.apache.jena.ontology.OntResource;
 import org.apache.jena.query.*;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
@@ -129,8 +130,11 @@ public class Constants {
                 getURI()
                 .matches(property
                         .getURI())) {
-            if (currentProperty.getRange() != null)
-                return currentProperty.getRange().asNode();
+            OntResource range = currentProperty.getRange();
+            System.out.println("the range :"+range);
+            if (range != null) {
+                return range.asNode();
+            }
         }
         else {
             Set<OntProperty> verificationSet= datatypeProperties;

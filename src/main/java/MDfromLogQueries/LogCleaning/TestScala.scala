@@ -3,7 +3,7 @@ package MDfromLogQueries.LogCleaning
 import java.io.{File, PrintWriter}
 import java.util
 
-import MDPatternDetection.QueryUpdate
+import MDPatternDetection.{App, QueryUpdate}
 import MDfromLogQueries.Declarations.Declarations
 import MDfromLogQueries.Declarations.Declarations.{constructQueriesFile, syntaxValidFile}
 import MDfromLogQueries.Util.{Constants, FileOperation}
