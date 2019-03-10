@@ -28,7 +28,7 @@ public class ConstantsUtil {
                 .matches(property
                         .getURI())) {
             OntResource range = currentProperty.getRange();
-            System.out.println("the range :"+range);
+           // System.out.println("the range :"+range);
             if (range != null) {
                 return range.asNode();
             }

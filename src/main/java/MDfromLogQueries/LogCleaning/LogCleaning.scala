@@ -47,7 +47,7 @@ object Main extends App {
 
     var nb_line = 0 // for statistical matters
 
-    try {
+
 
       /** Graph pattern extraction **/
 
@@ -55,6 +55,7 @@ object Main extends App {
 
       lines.par.map {
         line => {
+          try {
           nb_line += 1
           System.out.println("*  " + nb_line)
           var query = QueryFactory.create(line)
@@ -63,10 +64,12 @@ object Main extends App {
           constructQueriesList.add(query)
 
         }
+          catch {
+            case ex : Exception => ex.printStackTrace
+          }
       }
-
-      constructQueriesListFinal
     }
+    constructQueriesList
   }
 
   println(duration)
