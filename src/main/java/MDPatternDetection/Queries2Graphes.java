@@ -70,7 +70,7 @@ public class Queries2Graphes {
                     }
 
                 } catch (Exception e) {
-                    //e.printStackTrace();
+                    e.printStackTrace();
                     //Todo do something (++ nb for statistics)
                 }
 

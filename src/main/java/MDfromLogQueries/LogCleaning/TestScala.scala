@@ -6,7 +6,7 @@ import java.util
 import MDPatternDetection.{App, QueryUpdate}
 import MDfromLogQueries.Declarations.Declarations
 import MDfromLogQueries.Declarations.Declarations.{constructQueriesFile, syntaxValidFile}
-import MDfromLogQueries.Util.{Constants, FileOperation}
+import MDfromLogQueries.Util.{Constants2, FileOperation}
 import org.apache.jena.query.{Query, QueryFactory}
 
 import scala.collection.JavaConverters
@@ -19,10 +19,24 @@ object TestScala extends App {
   val t1 = System.currentTimeMillis()
   val duration = System.currentTimeMillis() - t1
 
+  def writeFiles(destinationfilePath: String) = {
+
+    println("je suis dans la fct d'ecriture")
+    val writer = new PrintWriter(new FileOutputStream(new File(destinationfilePath), true))
+
+
+    val queries = TransformQueriesInFile(syntaxValidFile)
+
+
+    queries.forEach(x => writer.write(x.toString().replaceAll("[\n\r]", "\t") + "\n"))
+
+    writer.close()
+  }
+
   def TransformQueriesInFile(filePath: String): util.ArrayList[Query] = {
     println("je suis dans la fct de transf")
 
-    new Constants(Declarations.dbPediaOntologyPath)
+    new Constants2(Declarations.dbPediaOntologyPath)
     val constructQueriesList = new util.ArrayList[Query]
     val constructQueriesListFinal = new util.ArrayList[Query]
 
@@ -30,12 +44,7 @@ object TestScala extends App {
 
     //  val lines = FileOperation.ReadFile(filePath).asInstanceOf[util.ArrayList[String]]
 
-
-
-
     var nb_line = 0 // for statistical matters
-
-    try {
 
       /** Graph pattern extraction **/
 
@@ -53,34 +62,22 @@ object TestScala extends App {
           constructQueriesList.add(query)
 
         }
-          if (nb_line == 10000) {
-            writeFiles(constructQueriesFile, constructQueriesList)
-            constructQueriesListFinal.addAll(constructQueriesList)
-            nb_line = 0
-            constructQueriesList.clear()
-          }
+        /*   if (nb_line == 10000) {
+             nb_line = 0
+             constructQueriesListFinal.addAll(constructQueriesList)
 
+             constructQueriesList.clear()
+           }
+ */
       }
+    constructQueriesList
 
-      constructQueriesList
-    }
+
   }
 
-  def writeFiles(destinationfilePath: String, queries: util.ArrayList[Query]) = {
+  //TransformQueriesInFile("")
 
-    println("je suis dans la fct d'ecriture")
-    val writer = new PrintWriter(new FileOutputStream(new File(destinationfilePath), true))
-
-
-    // val queries = TransformQueriesInFile(syntaxValidFile)
-
-
-    queries.forEach(x => writer.write(x.toString().replaceAll("[\n\r]", "\t") + "\n"))
-
-    writer.close()
-  }
-
-  TransformQueriesInFile("")
+  writeFiles(constructQueriesFile)
   println(duration)
 
 }
