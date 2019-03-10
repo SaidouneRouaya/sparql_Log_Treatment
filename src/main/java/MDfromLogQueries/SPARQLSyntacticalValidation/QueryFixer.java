@@ -115,7 +115,7 @@ public class QueryFixer {
         try {
             maybeQuery = QueryFactory.create(queryStr);
         } catch (Exception e) {
-            e.printStackTrace();
+           // e.printStackTrace();
         }
         return maybeQuery;
     }

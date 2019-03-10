@@ -55,28 +55,29 @@ public class SyntacticalValidation {
         String query;
         ArrayList<String> queryList;
         int nb = 0;
-        try {
 
             int nb_line = 0; //for statistical needs
             queryList = (ArrayList<String>) FileOperation.ReadFile(filePath);
             for (String line : queryList){
+                try {
                 nb_line++;
                 query = Validate(line);
                 if (query!=null) {
                     validQueryList.add(query);
                 }
-                /* System.out.println( "line \t"+nb_line);*/
+                 System.out.println( "line \t"+nb_line);
+                } catch (Exception e) {
+                    // e.printStackTrace();
+                    System.out.println("erreur");
+                    nb++;
+                }
             }
-        } catch (Exception e) {
-            // e.printStackTrace();
-            System.out.println("erreur");
-            nb++;
-        }
+
 
         /* System.out.println("Size of validQueryList : "+validQueryList.size());*/
         FileOperation.WriteInFile(destinationFilePath,validQueryList);
 
-        System.out.println("\n\n nombre d'erruer \t" + nb);
+        System.out.println("\n\n nombre d'erreur \t" + nb);
     }
 
 }
