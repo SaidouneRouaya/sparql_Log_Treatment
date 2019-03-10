@@ -90,7 +90,7 @@ public class ConstantsUtil {
 
         }
         else
-            return selectPropertyFromEnpoint(property,endpoint);
+            return "notFound";//selectPropertyFromEnpoint(property,endpoint);
     }
 
     private boolean findProperty(Property property)
@@ -145,13 +145,19 @@ public class ConstantsUtil {
     /** Verify if the property is contained in other properties **/
     private boolean setContains(Property property, HashSet<OntProperty> set)
     {
-        for (OntProperty prop : set) {
-            if (prop.getURI()
-                    .matches(property
-                            .getURI())) {
-                currentProperty = prop;
-                return true;
+        if (set.contains(property)) {
+            for (OntProperty prop : set) {
+                if (prop.getURI()
+                        .matches(property
+                                .getURI())) {
+                    currentProperty = prop;
+                    return true;
+                }
             }
+        }
+        else
+        {
+            return false;
         }
         return false;
     }
