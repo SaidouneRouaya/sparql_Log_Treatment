@@ -15,6 +15,9 @@ public class QueryUpdate {
 
     private QueryConstruction queryConstruction = new QueryConstruction();
 
+    public QueryUpdate() {
+    }
+
     public QueryUpdate(Query query)
     {
         addGP2Query(query);

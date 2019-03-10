@@ -1,7 +1,5 @@
 package MDPatternDetection;
 
-import MDfromLogQueries.Util.Constants;
-import MDfromLogQueries.Util.Constants2;
 import MDfromLogQueries.Util.ConstantsUtil;
 import org.apache.jena.graph.*;
 import org.apache.jena.graph.impl.CollectionGraph;
@@ -32,6 +30,8 @@ public class QueryConstruction {
     private Set<Triple> existingTriples = new HashSet<>();
     private int i = 1; //Number of subject variables
     private int j = 1; // Number of predicate variables
+    public static int nb_prop = 0;
+    public static int nb_prop_total = 0;
     ConstantsUtil constantsUtil = new ConstantsUtil();
 
     public BasicPattern getBpConstruct() {
@@ -129,7 +129,9 @@ public class QueryConstruction {
         Iterator propertyIterator = subject.listProperties();
         Triple newTriple;
         String propertyType;
+
         while (propertyIterator.hasNext()) {
+            nb_prop_total++;
             Node objectRDFTypeValue = NodeFactory.createBlankNode();
             property = ((Statement) propertyIterator.next()).getPredicate();
             if (property.asNode().isVariable() || !property.getNameSpace().matches(rdfTypeProp.getNameSpace())) {
@@ -176,6 +178,7 @@ public class QueryConstruction {
                             else {
                                 objectRDFTypeValue = verifyRDFTypeProperty(subject.getProperty(property).getObject().asResource(), j, rdfTypeProp, "ob");
                                 j++;
+
                             }
 
                         }
@@ -189,6 +192,7 @@ public class QueryConstruction {
                     break;
                     case ("notFound"):
                     {
+                        nb_prop++;
                         if (subject.getProperty(property).getObject().isLiteral())
                         {
                             objectRDFTypeValue = NodeFactory.createURI("http://www.w3.org/2000/01/rdf-schema#Literal");

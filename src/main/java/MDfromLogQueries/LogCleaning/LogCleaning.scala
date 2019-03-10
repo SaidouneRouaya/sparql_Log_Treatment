@@ -1,18 +1,16 @@
 package MDfromLogQueries.LogCleaning
 
-import java.io.{File, PrintWriter}
-import java.nio.charset.StandardCharsets
+import java.io.{File, FileOutputStream, PrintWriter}
 import java.util
-import java.util.regex.Pattern
 
-import MDPatternDetection.QueryUpdate
+import MDPatternDetection.{QueryConstruction, QueryUpdate}
 import MDfromLogQueries.Declarations.Declarations
 import MDfromLogQueries.Declarations.Declarations.{constructQueriesFile, syntaxValidFile}
-import MDfromLogQueries.Util.{Constants, Constants2, FileOperation}
-import org.apache.http.client.utils.URLEncodedUtils
+import MDfromLogQueries.Util.{Constants2, FileOperation}
 import org.apache.jena.query.{Query, QueryFactory}
 
 import scala.collection.JavaConverters
+
 
 
 object Main extends App {
@@ -21,10 +19,12 @@ object Main extends App {
   val t1 = System.currentTimeMillis()
   val duration = System.currentTimeMillis() - t1
 
+  //, queries: util.ArrayList[Query]
   def writeFiles(destinationfilePath: String) = {
 
     println("je suis dans la fct d'ecriture")
-    val writer = new PrintWriter(new File(destinationfilePath))
+    val writer = new PrintWriter(new FileOutputStream(new File(destinationfilePath), true))
+
 
     val queries = TransformQueriesInFile(syntaxValidFile)
 
@@ -33,44 +33,67 @@ object Main extends App {
     writer.close()
   }
 
-  writeFiles(constructQueriesFile)
-
-  def TransformQueriesInFile(filePath: String): util.ArrayList[Query] = {
+  //: util.ArrayList[Query]
+  def TransformQueriesInFile(filePath: String) = {
     println("je suis dans la fct de transf")
-    //new Constants(Declarations.dbPediaOntologyPath)
-    new Constants2(Declarations.dbPediaOntologyPath);
+
+    new Constants2(Declarations.dbPediaOntologyPath)
     val constructQueriesList = new util.ArrayList[Query]
     val constructQueriesListFinal = new util.ArrayList[Query]
 
-    val lines = FileOperation.ReadFile(filePath).asInstanceOf[util.ArrayList[String]]
+    val lines = JavaConverters.collectionAsScalaIterable(FileOperation.ReadFile(syntaxValidFile))
+    var queryUpdate = new QueryUpdate()
+    //  val lines = FileOperation.ReadFile(filePath).asInstanceOf[util.ArrayList[String]]
 
 
     var nb_line = 0 // for statistical matters
+    var query = QueryFactory.create()
 
-    try {
 
-      /** Graph pattern extraction **/
+    /** Graph pattern extraction **/
 
-      import scala.collection.JavaConversions._
+    lines.par.map {
 
-      lines.par.map {
-        line => {
+      //lines.par.map
+      //lines.par.foreach {
+      //lines.foreach {
+      line => {
+        try {
+
           nb_line += 1
           System.out.println("*  " + nb_line)
-          var query = QueryFactory.create(line)
-          val queryUpdate = new QueryUpdate(query)
+          query = QueryFactory.create(line)
+          queryUpdate = new QueryUpdate(query)
           query = queryUpdate.toConstruct(query)
-          constructQueriesList.add(query)
+        } catch {
+          case e: Exception => e.printStackTrace()
 
+          case unknown => println("-----" + unknown)
         }
-      }
 
-      constructQueriesListFinal
+        constructQueriesList.add(query)
+        /*  if (nb_line == 10000) {
+            nb_line = 0
+            writeFiles(Declarations.constructQueriesFile, constructQueriesList)
+            println(" ************** nouveau lot **************")
+            // constructQueriesListFinal.addAll(constructQueriesList)
+
+            constructQueriesList.clear()
+          }*/
+      }
     }
+
+    println(" Le nombre de requetes not Found \t" + QueryConstruction.nb_prop + "\tsur \t" + QueryConstruction.nb_prop_total)
+
+    constructQueriesList
+
   }
 
-  println(duration)
+  //TransformQueriesInFile("")
+  //TransformQueriesInFile(syntaxValidFile)
 
+  writeFiles(constructQueriesFile)
+  println(duration)
 
 }
 

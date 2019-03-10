@@ -3,11 +3,12 @@ package MDfromLogQueries.Util;
 import MDPatternDetection.OntologyFactory;
 import MDPatternDetection.QueryExecutor;
 import MDfromLogQueries.Declarations.Declarations;
-import org.apache.jena.graph.Node;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.ontology.OntProperty;
-import org.apache.jena.ontology.OntResource;
-import org.apache.jena.query.*;
+import org.apache.jena.query.Query;
+import org.apache.jena.query.QueryExecution;
+import org.apache.jena.query.QueryExecutionFactory;
+import org.apache.jena.query.ResultSet;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Property;
@@ -18,7 +19,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 
@@ -69,22 +69,22 @@ public class Constants2 {
         datatypeProperties.addAll(ontologie.listDatatypeProperties().toList());
     }
 
-    /** Initialize a list of Object properties **/
+    /**
+     * Initialize a list of Object properties
+     **/
     private static void initObjectProperties() {
         OntModel ontologie = ModelFactory.createOntologyModel();
         OntologyFactory.readOntology(ontologyPath, ontologie);
         objectProperties.addAll(ontologie.listObjectProperties().toList());
     }
+
     public static void main(String[] args) {
         new Constants2(Declarations.dbPediaOntologyPath);
         initDefaultProperties();
-        for (OntProperty ontProperty : otherProperties)
-        {
+        for (OntProperty ontProperty : otherProperties) {
             try {
-                System.out.println("the range : "+ontProperty.getRange());
-            }
-            catch (Exception e)
-            {
+                System.out.println("the range : " + ontProperty.getRange());
+            } catch (Exception e) {
                 System.out.println("erreur");
             }
         }
@@ -113,19 +113,17 @@ public class Constants2 {
         }
     }
 
-    private static void addPropertiesToList(OntModel ontology)
-    {
-        int datatypePropertiesSize =ontology.listDatatypeProperties().toList().size();
+    private static void addPropertiesToList(OntModel ontology) {
+        int datatypePropertiesSize = ontology.listDatatypeProperties().toList().size();
         int objectPropertiesSize = ontology.listObjectProperties().toList().size();
         otherProperties.addAll(ontology.listOntProperties().toList());
-        if ( datatypePropertiesSize > 0 || objectPropertiesSize >0 )
-        {
-            if (objectPropertiesSize >0 ) {
+        if (datatypePropertiesSize > 0 || objectPropertiesSize > 0) {
+            if (objectPropertiesSize > 0) {
                 objectProperties.addAll(ontology.listObjectProperties().toList());
                 otherProperties.removeAll(ontology.listObjectProperties().toList());
             }
 
-            if (datatypePropertiesSize> 0) {
+            if (datatypePropertiesSize > 0) {
                 datatypeProperties.addAll(ontology.listDatatypeProperties().toList());
                 otherProperties.removeAll(ontology.listDatatypeProperties().toList());
             }
@@ -144,18 +142,15 @@ public class Constants2 {
     }
 
 
-
-
-    public static void persistModel()
-    {
+    public static void persistModel() {
         //writeModelInFile(Declarations.propertiesOntology,addedPropertiesOntology);
     }
 
 
-
-    /** Execute a query onto an ontology **/
-    private static HashSet<String> simpleExecution(Query query, OntModel ontologie)
-    {
+    /**
+     * Execute a query onto an ontology
+     **/
+    private static HashSet<String> simpleExecution(Query query, OntModel ontologie) {
         HashSet<String> propertySet = new HashSet<>();
         try (QueryExecution qexec = QueryExecutionFactory.create(query, ontologie)) {
             ResultSet results = qexec.execSelect();
@@ -175,24 +170,21 @@ public class Constants2 {
         return addedPropertiesOntology;
     }
 
-    public static void addModeltoOntology(Model model)
-    {
+    public static void addModeltoOntology(Model model) {
         addedPropertiesOntology.add(model);
     }
 
-    public static void addDatatypesProperties(List<OntProperty> propertyList)
-    {
+    public static void addDatatypesProperties(List<OntProperty> propertyList) {
         datatypeProperties.addAll(propertyList);
     }
-    public static void addObjectProperties(List<OntProperty> propertyList)
-    {
+
+    public static void addObjectProperties(List<OntProperty> propertyList) {
         objectProperties.addAll(propertyList);
     }
-    public static void addOtherProperties(List<OntProperty> propertyList)
-    {
+
+    public static void addOtherProperties(List<OntProperty> propertyList) {
         otherProperties.addAll(propertyList);
     }
-
 
 
 }

@@ -131,17 +131,15 @@ public class Constants {
                 .matches(property
                         .getURI())) {
             OntResource range = currentProperty.getRange();
-            System.out.println("the range :"+range);
+            System.out.println("the range :" + range);
             if (range != null) {
                 return range.asNode();
             }
-        }
-        else {
-            Set<OntProperty> verificationSet= datatypeProperties;
+        } else {
+            Set<OntProperty> verificationSet = datatypeProperties;
             verificationSet.addAll(otherProperties);
             Node range;
-            for (OntProperty ontProperty : verificationSet)
-            {
+            for (OntProperty ontProperty : verificationSet) {
                 if (ontProperty.getURI().matches(property.getURI())) {
                     range = ontProperty.getRange().asNode();
                     return range;
