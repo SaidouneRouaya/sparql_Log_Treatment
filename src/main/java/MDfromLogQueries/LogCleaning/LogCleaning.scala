@@ -2,88 +2,73 @@ package MDfromLogQueries.LogCleaning
 
 import java.io.{File, PrintWriter}
 import java.nio.charset.StandardCharsets
+import java.util
 import java.util.regex.Pattern
 
+import MDPatternDetection.QueryUpdate
 import MDfromLogQueries.Declarations.Declarations
-import MDfromLogQueries.Util.FileOperation
+import MDfromLogQueries.Declarations.Declarations.{constructQueriesFile, syntaxValidFile}
+import MDfromLogQueries.Util.{Constants, Constants2, FileOperation}
 import org.apache.http.client.utils.URLEncodedUtils
+import org.apache.jena.query.{Query, QueryFactory}
 
 import scala.collection.JavaConverters
 
 
 object Main extends App {
 
-  /** This class reads the log files and extract queries **/
-
+  println("je suis dans la transformation ")
   val t1 = System.currentTimeMillis()
-  print("je suis dans log cleaning")
+  val duration = System.currentTimeMillis() - t1
 
-  /* Directory that coontains the log files 's Path */
-  val dirPath = Declarations.directoryPath
+  def writeFiles(destinationfilePath: String) = {
 
-  /* Result (cleaned queries)'s file path */
-  val filePath = Declarations.cleanedQueriesFileCopie
-
-  /* Regex on wich is based the algorithm to extract the queries */
-  private val PATTERN = Pattern.compile("[^\"]*\"(?:GET )?/sparql/?\\?([^\"\\s\\n]*)[^\"]*\".*")
-
-  /* Statistical variables*/
-  var nb_queries = 0
-
-
-  /** Write the cleaned queries in the destination file path **/
-  def writeFiles(directoryPath: String, destinationfilePath: String) = {
-    val dir = new File(directoryPath)
-    val logs = dir.listFiles().toList.par.flatMap(x => extractQueries(x))
-
+    println("je suis dans la fct d'ecriture")
     val writer = new PrintWriter(new File(destinationfilePath))
-    logs.foreach(x => if(x != null) writer.write(x.replaceAll("[\n\r]","\t")+"\n"))
+
+    val queries = TransformQueriesInFile(syntaxValidFile)
+
+    queries.forEach(x => writer.write(x.toString().replaceAll("[\n\r]", "\t") + "\n"))
+
     writer.close()
   }
 
-  /** Read lines of log file passed as parameter **/
+  writeFiles(constructQueriesFile)
 
-  def extractQueries(file: File) = {
+  def TransformQueriesInFile(filePath: String): util.ArrayList[Query] = {
+    println("je suis dans la fct de transf")
+    //new Constants(Declarations.dbPediaOntologyPath)
+    new Constants2(Declarations.dbPediaOntologyPath);
+    val constructQueriesList = new util.ArrayList[Query]
+    val constructQueriesListFinal = new util.ArrayList[Query]
 
-    val iterable = JavaConverters.collectionAsScalaIterable(FileOperation.ReadFile(file.toString))
-    iterable.par.map {
-      line => {
-        nb_queries += 1
-        queryFromLogLine(line)
+    val lines = FileOperation.ReadFile(filePath).asInstanceOf[util.ArrayList[String]]
+
+
+    var nb_line = 0 // for statistical matters
+
+    try {
+
+      /** Graph pattern extraction **/
+
+      import scala.collection.JavaConversions._
+
+      lines.par.map {
+        line => {
+          nb_line += 1
+          System.out.println("*  " + nb_line)
+          var query = QueryFactory.create(line)
+          val queryUpdate = new QueryUpdate(query)
+          query = queryUpdate.toConstruct(query)
+          constructQueriesList.add(query)
+
+        }
       }
+
+      constructQueriesListFinal
     }
   }
 
-
-  val duration = System.currentTimeMillis() - t1
-
-  /** match the line passed as parameter with the Regex to extract the query and return the query **/
-  def queryFromLogLine(line: String) = {
-    val matcher = PATTERN.matcher(line)
-
-    if (matcher.find) {
-      val requestStr = matcher.group(1)
-      val queryStr = queryFromRequest(requestStr)
-      if (queryStr != null) queryStr
-      else requestStr
-    }
-    else null
-  }
-
-  writeFiles(dirPath, filePath)
-
-  def queryFromRequest(requestStr: String): String = {
-    val pairs = URLEncodedUtils.parse(requestStr, StandardCharsets.UTF_8)
-
-    /*for (pair <- pairs) {
-   /*   if ("query" == pair.getName) {
-      return pair.getValue
-     }*/
-    }*/
-
-    null
-
-  }
   println(duration)
 
 

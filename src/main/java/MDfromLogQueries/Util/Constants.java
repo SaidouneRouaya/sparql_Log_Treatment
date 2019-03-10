@@ -6,6 +6,7 @@ import MDfromLogQueries.Declarations.Declarations;
 import org.apache.jena.graph.Node;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.ontology.OntProperty;
+import org.apache.jena.ontology.OntResource;
 import org.apache.jena.query.*;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
@@ -19,8 +20,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-import static MDfromLogQueries.Util.FileOperation.writeModelInFile;
 
 
 public class Constants {
@@ -127,25 +126,27 @@ public class Constants {
      **/
     //à changer probablement en créant un nouveau type contenant la datatypeProperty et son ou ses range
     public static Node getRangeofProperty(Property property) {
-        try {
-
-
-            if (currentProperty.getURI().matches(property.getURI())) {
-                if (currentProperty.getRange() != null)
-                    return currentProperty.getRange().asNode();
-            } else {
-                Set<OntProperty> verificationSet= datatypeProperties;
-                verificationSet.addAll(otherProperties);
-                Node range;
-                for (OntProperty ontProperty : verificationSet) {
-                    if (ontProperty.getURI().matches(property.getURI())) {
-                        range = ontProperty.getRange().asNode();
-                        return range;
-                    }
-                }
-
+        if (currentProperty.
+                getURI()
+                .matches(property
+                        .getURI())) {
+            OntResource range = currentProperty.getRange();
+            System.out.println("the range :"+range);
+            if (range != null) {
+                return range.asNode();
             }
-        } catch (Exception e) {
+        }
+        else {
+            Set<OntProperty> verificationSet= datatypeProperties;
+            verificationSet.addAll(otherProperties);
+            Node range;
+            for (OntProperty ontProperty : verificationSet)
+            {
+                if (ontProperty.getURI().matches(property.getURI())) {
+                    range = ontProperty.getRange().asNode();
+                    return range;
+                }
+            }
 
         }
         return null;
@@ -253,7 +254,7 @@ public class Constants {
 
     public static void persistModel()
     {
-        writeModelInFile(Declarations.propertiesOntology, addedPropertiesOntology);
+        //writeModelInFile(Declarations.propertiesOntology,addedPropertiesOntology);
     }
 
     /** Verify if the property is contained in other properties **/

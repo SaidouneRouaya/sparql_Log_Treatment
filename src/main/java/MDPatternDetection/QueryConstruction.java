@@ -1,6 +1,8 @@
 package MDPatternDetection;
 
 import MDfromLogQueries.Util.Constants;
+import MDfromLogQueries.Util.Constants2;
+import MDfromLogQueries.Util.ConstantsUtil;
 import org.apache.jena.graph.*;
 import org.apache.jena.graph.impl.CollectionGraph;
 import org.apache.jena.rdf.model.Model;
@@ -30,6 +32,7 @@ public class QueryConstruction {
     private Set<Triple> existingTriples = new HashSet<>();
     private int i = 1; //Number of subject variables
     private int j = 1; // Number of predicate variables
+    ConstantsUtil constantsUtil = new ConstantsUtil();
 
     public BasicPattern getBpConstruct() {
         return bpConstruct;
@@ -130,7 +133,7 @@ public class QueryConstruction {
             Node objectRDFTypeValue = NodeFactory.createBlankNode();
             property = ((Statement) propertyIterator.next()).getPredicate();
             if (property.asNode().isVariable() || !property.getNameSpace().matches(rdfTypeProp.getNameSpace())) {
-                propertyType = Constants.getPropertyType(property);
+                propertyType = constantsUtil.getPropertyType(property);
                 switch (propertyType)
                 {
                     case ("variable"):
@@ -149,7 +152,7 @@ public class QueryConstruction {
                     {
                         // if it's a datatype property it searches for its range (type of object) and sets
                         // the triple of the construct with it
-                        objectRDFTypeValue = Constants.getRangeofProperty(property);
+                        objectRDFTypeValue = constantsUtil.getRangeofProperty(property);
                         if (objectRDFTypeValue==null)
                         {
                             objectRDFTypeValue = NodeFactory.createURI("http://www.w3.org/2000/01/rdf-schema#Literal");
@@ -165,7 +168,7 @@ public class QueryConstruction {
                     break;
                     case ("otherProperty"):
                     {
-                        objectRDFTypeValue = Constants.getRangeofProperty(property);
+                        objectRDFTypeValue = constantsUtil.getRangeofProperty(property);
                         if (objectRDFTypeValue==null)
                         {
                             if(subject.getProperty(property).getObject().isLiteral())
