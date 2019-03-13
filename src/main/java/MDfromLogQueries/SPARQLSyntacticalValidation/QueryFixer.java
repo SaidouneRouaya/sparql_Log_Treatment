@@ -3,14 +3,14 @@ package MDfromLogQueries.SPARQLSyntacticalValidation;
 
 import org.apache.jena.query.Query;
 import org.apache.jena.query.QueryFactory;
+import org.apache.jena.query.QueryParseException;
+import org.apache.jena.query.Syntax;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.Map;
-import java.util.Set;
+import java.lang.reflect.Array;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -91,6 +91,70 @@ public class QueryFixer {
         return queryStr.replace(select, repl);
     }
 
+    private static String fixAggregators(String queryStr)
+    {
+        Pattern ps = Pattern.compile("(?i:SELECT(?: DISTINCT)? (.*\n*)WHERE)");
+        Matcher ms = ps.matcher(queryStr);
+        if (!ms.find()) {
+            return queryStr;
+        }
+        String select = ms.group(1);
+        Pattern aggregPattern = Pattern.compile("(( |[(])(COUNT|SUM|AVG|MIN|MAX)( |[(]))",Pattern.CASE_INSENSITIVE);
+        Matcher mv = aggregPattern.matcher(queryStr);
+        if (mv.find()) {
+            /* Put the aggregator ex : COUNT(?var) as ?var2 between brackets to respect Jena Syntax */
+            queryStr = aggregatorBetweenBrackets(queryStr);
+            /* Adds all variables that are in the select clause to the group by clause */
+            Pattern variablesPattern = Pattern.compile("(\\?[\\w_-]+)");
+            Matcher matcherVariables = variablesPattern.matcher(select);
+            String concatStr="";
+            if (matcherVariables.find())
+            {
+                /*finds the variable associated to the aggregation */
+                ArrayList<String> stringArrayList = asVariables(select);
+                 concatStr = " GROUP BY ";
+                concatStr = concatStr+" "+matcherVariables.group(0);
+                while (matcherVariables.find())
+                {
+                    if (!stringArrayList.contains(matcherVariables.group(0)))
+                        concatStr = concatStr+" "+matcherVariables.group(0)+" ";
+                }
+                //queryStr= queryStr+concatStr;
+            }
+            Pattern endOfRequestPattern = Pattern.compile("((.*})(([^{}]*)$))");
+            Matcher matcherEndOfRequest = endOfRequestPattern.matcher(queryStr);
+            if (matcherEndOfRequest.find())
+            {
+                String endofRequestStr = concatStr+matcherEndOfRequest.group(4);
+                queryStr =  matcherEndOfRequest.group(2)+endofRequestStr;
+            }
+        }
+        return queryStr;
+    }
+
+    private static String aggregatorBetweenBrackets(String queryStr)
+    {
+        Pattern aggregatorPattern = Pattern.compile("((COUNT|SUM|AVG|MIN|MAX)([\\(])(\\?[\\w_-]+)(\\))( as )+(\\?[\\w_-]+))",Pattern.CASE_INSENSITIVE);
+        Matcher mv = aggregatorPattern.matcher(queryStr);
+        while (mv.find())
+        {
+            String str = mv.group(0);
+            queryStr = queryStr.replace(str,"("+str+")");
+        }
+        return queryStr;
+    }
+
+    private static ArrayList<String> asVariables(String select)
+    {
+        ArrayList<String> stringList = new ArrayList<>();
+        Pattern asPattern = Pattern.compile("((as )(\\?[\\w_-]+))");
+        Matcher matcherAs = asPattern.matcher(select);
+        while (matcherAs.find())
+        {
+            stringList.add(matcherAs.group(3));
+        }
+        return stringList;
+    }
     /** Finds the undeclared prefixes **/
     private static Set<String> findUndeclared(String queryStr) {
         Matcher m = PREFIX_PATTERN.matcher(queryStr);
@@ -113,9 +177,15 @@ public class QueryFixer {
     public static Query toQuery(String queryStr) {
         Query maybeQuery = null;
         try {
-            maybeQuery = QueryFactory.create(queryStr);
-        } catch (Exception e) {
-           // e.printStackTrace();
+            maybeQuery = QueryFactory.create(queryStr, Syntax.syntaxARQ);
+        }catch (QueryParseException queryParseException)
+        {
+            System.out.println(queryStr);
+            System.out.println("+++++-*+++++*-+"+queryParseException.getMessage());
+        }
+        catch (Exception e) {
+            System.out.println("*****+-+-+-+-*****"+queryStr);
+            e.printStackTrace();
         }
         return maybeQuery;
     }
@@ -153,6 +223,7 @@ public class QueryFixer {
      **/
     public String fix(String queryStr) {
         queryStr = fixSelectWithCommas(queryStr);
+        queryStr = fixAggregators(queryStr);
         Set<String> undeclared = findUndeclared(queryStr);
         if (undeclared.isEmpty()) {
             return queryStr;
