@@ -180,8 +180,8 @@ public class QueryFixer {
             maybeQuery = QueryFactory.create(queryStr, Syntax.syntaxARQ);
         }catch (QueryParseException queryParseException)
         {
-            System.out.println(queryStr);
-            System.out.println("+++++-*+++++*-+"+queryParseException.getMessage());
+           // System.out.println(queryStr);
+            //System.out.println("+++++-*+++++*-+"+queryParseException.getMessage());
         }
         catch (Exception e) {
             System.out.println("*****+-+-+-+-*****"+queryStr);
