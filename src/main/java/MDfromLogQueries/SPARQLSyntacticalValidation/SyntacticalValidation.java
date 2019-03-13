@@ -1,5 +1,6 @@
 package MDfromLogQueries.SPARQLSyntacticalValidation;
 
+import MDfromLogQueries.Declarations.Declarations;
 import MDfromLogQueries.Util.FileOperation;
 import com.google.common.base.Stopwatch;
 
@@ -52,6 +53,7 @@ public class SyntacticalValidation {
     public static void ValidateFile(String filePath, String destinationFilePath) {
 
         ArrayList<String> validQueryList = new ArrayList<>();
+        ArrayList<String> nonValidQueryList = new ArrayList<>();
         String query;
         ArrayList<String> queryList;
         int nb = 0;
@@ -65,10 +67,18 @@ public class SyntacticalValidation {
                 if (query!=null) {
                     validQueryList.add(query);
                 }
+                if (nb_line == 10000)
+                {
+                    FileOperation.WriteInFile(destinationFilePath,validQueryList);
+                    FileOperation.WriteInFile(Declarations.syntaxNonValidFile,nonValidQueryList);
+                    return;
+                }
+
                  System.out.println( "line \t"+nb_line);
                 } catch (Exception e) {
                     // e.printStackTrace();
                     System.out.println("erreur");
+                    nonValidQueryList.add(line);
                     nb++;
                 }
             }
@@ -76,7 +86,7 @@ public class SyntacticalValidation {
 
         /* System.out.println("Size of validQueryList : "+validQueryList.size());*/
         FileOperation.WriteInFile(destinationFilePath,validQueryList);
-
+        FileOperation.WriteInFile(Declarations.syntaxNonValidFile,nonValidQueryList);
         System.out.println("\n\n nombre d'erreur \t" + nb);
     }
 
