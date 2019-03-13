@@ -14,8 +14,31 @@ import scala.io.Source
 object Main2 extends App {
 
   val t1 = System.currentTimeMillis()
+
+
   val duration = System.currentTimeMillis() - t1
 
+  /** Function that writes into destinationFilePath the list passed as parameter **/
+  def writeInFile(destinationFilePath: String, queries: ParSeq[Query]) = {
+
+
+    val writer = new PrintWriter(new FileOutputStream(new File(destinationFilePath), true))
+
+    queries.foreach(query => writer.write(query.toString().replaceAll("[\n\r]", "\t") + "\n"))
+
+    writer.close()
+  }
+
+  def writeInLogFile(destinationFilePath: String, query: Query) = {
+
+    val writer = new PrintWriter(new FileOutputStream(new File(destinationFilePath), true))
+
+    writer.write(query.toString().replaceAll("[\n\r]", "\t") + "\n")
+
+    writer.close()
+  }
+
+  TransformQueriesInFile(syntaxValidFile)
 
   //: util.ArrayList[Query]
   def TransformQueriesInFile(filePath: String) = {
@@ -46,7 +69,7 @@ object Main2 extends App {
 
             } catch {
               case unknown => {
-                println("une erreur")
+                println("une erreur\n\n\n\n\n\n\n\n\n")
                 writeInLogFile(logFile, constructedQuery)
                 None
               }
@@ -63,29 +86,6 @@ object Main2 extends App {
     }
 
   }
-
-  /** Function that writes into destinationFilePath the list passed as parameter **/
-  def writeInFile(destinationFilePath: String, queries: ParSeq[Query]) = {
-
-
-    val writer = new PrintWriter(new FileOutputStream(new File(destinationFilePath), true))
-
-    queries.foreach(query => writer.write(query.toString().replaceAll("[\n\r]", "\t") + "\n"))
-
-    writer.close()
-  }
-
-  def writeInLogFile(destinationFilePath: String, query: Query) = {
-
-    val writer = new PrintWriter(new FileOutputStream(new File(destinationFilePath), true))
-
-    writer.write(query.toString().replaceAll("[\n\r]", "\t") + "\n")
-
-    writer.close()
-  }
-
-  TransformQueriesInFile(syntaxValidFile)
-
   println(duration)
 
 }

@@ -20,11 +20,14 @@ public class Declarations {
     public static String syntaxValidFile = "C:\\Users\\pc\\Desktop\\PFE\\Files\\ProgramOutput\\Fichier_Syntaxe_Valide.txt";
     public static String logFile = "C:\\Users\\pc\\Desktop\\PFE\\Files\\ProgramOutput\\Fichier_log.txt";
     public static String syntaxValidFileTest = "C:\\Users\\pc\\Desktop\\PFE\\Files\\ProgramOutput\\Fichier_Syntaxe_Valide_Test.txt";
+    public static String constructQueriesFile = "C:\\Users\\pc\\Desktop\\PFE\\Files\\ProgramOutput\\Fichier_Construct_scala.txt";
+    public static String statisticsFile = "C:\\Users\\pc\\Desktop\\PFE\\Files\\ProgramOutput\\Fichier_Statistiques.txt";
 
 
     public static String dbPediaOntologyPath = "C:\\Users\\pc\\Desktop\\PFE\\Files\\Ontologies\\onthology dbpedia\\dbpedia_2014.owl";
     public static String defaultOntologiesDir = "C:\\Users\\pc\\Desktop\\PFE\\Files\\Ontologies\\ontologies_namespaces";
     public static String tdbDirectory = "C:\\Users\\pc\\Desktop\\PFE\\Files\\tdbDirectory";
+    public static String originalTdbDirectory = "C:\\Users\\pc\\Desktop\\PFE\\Files\\originalTdbDirectory";
     public static String propertiesOntology = "C:\\Users\\pc\\Desktop\\PFE\\Files\\Ontologies\\ontologies_namespaces\\addedOntology.ttl";
 
 
