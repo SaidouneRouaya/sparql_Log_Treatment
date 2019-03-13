@@ -17,14 +17,15 @@ public class Declarations {
     public static String writingDedupFilePath = "C:\\Users\\pc\\Desktop\\PFE\\Files\\ProgramOutput\\Fichier_log_dedup_Nettoye.txt";
     public static String modelsFilePath = "C:\\Users\\pc\\Desktop\\PFE\\Files\\ProgramOutput\\Fichier_models.rdf";
 
-    public static String syntaxValidFile = "C:\\Users\\pc\\Desktop\\PFE\\Files\\ProgramOutput\\Fichier_Syntaxe_Valide.txt";
-    public static String syntaxValidFile2 = "C:\\Users\\pc\\Desktop\\PFE\\Files\\ProgramOutput\\Fichier_Syntaxe_Valide2.txt";
+    public static String syntaxValidFile = "C:\\Users\\pc\\Desktop\\PFE\\Files\\ProgramOutput\\Fichier_Syntaxe_Valide_java.txt";
+    public static String syntaxValidFile2 = "C:\\Users\\pc\\Desktop\\PFE\\Files\\ProgramOutput\\Fichier_Syntaxe_Valide_scala.txt";
     public static String logFile = "C:\\Users\\pc\\Desktop\\PFE\\Files\\ProgramOutput\\Fichier_log.txt";
     public static String syntaxValidFileTest = "C:\\Users\\pc\\Desktop\\PFE\\Files\\ProgramOutput\\Fichier_Syntaxe_Valide_Test.txt";
     public static String constructQueriesFile = "C:\\Users\\pc\\Desktop\\PFE\\Files\\ProgramOutput\\Fichier_Construct_scala.txt";
     public static String statisticsFile = "C:\\Users\\pc\\Desktop\\PFE\\Files\\ProgramOutput\\Fichier_Statistiques.txt";
 
-    public static String syntaxNonValidFile = "C:\\Users\\pc\\Desktop\\PFE\\Files\\ProgramOutput\\Fichier_Syntaxe_Non_Valide.txt";
+    public static String syntaxNonValidFile = "C:\\Users\\pc\\Desktop\\PFE\\Files\\ProgramOutput\\Fichier_Syntaxe_Non_Valide_java.txt";
+    public static String syntaxNonValidFile2 = "C:\\Users\\pc\\Desktop\\PFE\\Files\\ProgramOutput\\Fichier_Syntaxe_Non_Valide_scala.txt";
 
     public static String dbPediaOntologyPath = "C:\\Users\\pc\\Desktop\\PFE\\Files\\Ontologies\\onthology dbpedia\\dbpedia_2014.owl";
     public static String defaultOntologiesDir = "C:\\Users\\pc\\Desktop\\PFE\\Files\\Ontologies\\ontologies_namespaces";
