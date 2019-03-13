@@ -134,7 +134,7 @@ public class QueryFixer {
 
     private static String aggregatorBetweenBrackets(String queryStr)
     {
-        Pattern aggregatorPattern = Pattern.compile("((COUNT|SUM|AVG|MIN|MAX)([\\(])(\\?[\\w_-]+)(\\))( as )+(\\?[\\w_-]+))",Pattern.CASE_INSENSITIVE);
+        Pattern aggregatorPattern = Pattern.compile("((COUNT|SUM|AVG|MIN|MAX)([\\(])([a-zA-Z ]*\\?[\\w_-]+)(\\))( as )+(\\?[\\w_-]+))",Pattern.CASE_INSENSITIVE);
         Matcher mv = aggregatorPattern.matcher(queryStr);
         while (mv.find())
         {
@@ -147,7 +147,7 @@ public class QueryFixer {
     private static ArrayList<String> asVariables(String select)
     {
         ArrayList<String> stringList = new ArrayList<>();
-        Pattern asPattern = Pattern.compile("((as )(\\?[\\w_-]+))");
+        Pattern asPattern = Pattern.compile("((as )(\\?[\\w_-]+))",Pattern.CASE_INSENSITIVE);
         Matcher matcherAs = asPattern.matcher(select);
         while (matcherAs.find())
         {
