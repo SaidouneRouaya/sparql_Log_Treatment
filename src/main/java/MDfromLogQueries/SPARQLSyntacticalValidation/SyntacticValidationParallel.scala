@@ -15,7 +15,7 @@ object SyntacticValidationParallel extends App {
   val t1 = System.currentTimeMillis()
 
 
-  val duration = System.currentTimeMillis() - t1
+
 
   //: util.ArrayList[Query]
   def valideQueriesInFile(filePath: String) = {
@@ -72,7 +72,6 @@ object SyntacticValidationParallel extends App {
   }
 
 
-  valideQueriesInFile(writingDedupFilePath)
 
   private def Validate(queryStr: String) = {
     val queryStr2 = QueryFixer.get.fix(queryStr)
@@ -80,6 +79,9 @@ object SyntacticValidationParallel extends App {
 
     QueryFixer.toQuery(queryStr2).toString
   }
+
+  valideQueriesInFile(writingDedupFilePath)
+  val duration = System.currentTimeMillis() - t1
   println(duration)
 
 
