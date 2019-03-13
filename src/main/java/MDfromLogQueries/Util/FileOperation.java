@@ -1,5 +1,6 @@
 package MDfromLogQueries.Util;
 
+import MDfromLogQueries.Declarations.Declarations;
 import org.apache.jena.query.Query;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
@@ -49,32 +50,66 @@ public class FileOperation {
         return collection;
     }
 
-   /* public static CopyOnWriteArrayList ReadFileParallel (String readingFilePath) {
+
+    public static ArrayList<ArrayList<String>> ReadFile4Transform(String readingFilePath) {
 
         File file = new File(readingFilePath);
-        String line = "";
-        Collection<Object> collection = null;
+        String line;
+
+
+        ArrayList<ArrayList<String>> collections = new ArrayList<>();
+
+
+        ArrayList<String> collection = new ArrayList<>();
+
         BufferedReader br = null;
+        int linesNumbers = 0; // for statistical matters
         try {
             if (!file.isFile()) file.createNewFile();
-
+            boolean finish = false;
             br = new BufferedReader(new FileReader(file));
 
-            while ((line = br.readLine()) != null) {
-                collection.add(line);
+            while (!finish) {
+
+
+                while ((line = br.readLine()) != null && linesNumbers < 100000) {
+
+                    collection.add(line);
+
+                    linesNumbers++;
+                }
+
+                System.out.println("la taille avant le if " + collection.size());
+                if (linesNumbers >= 100000) {
+                    linesNumbers = 0;
+                    collections.add(collection);
+
+                    collection.clear();
+                } else {
+                    collections.add(collection);
+                    finish = true;
+                }
             }
+
+
         } catch (IOException e) {
             e.printStackTrace();
         }finally {
             try {
                 br.close();
+
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
-        return collection;
+
+
+        //nbTotalLines+=linesNumbers;
+        /*System.out.println("number of lines in the file  :   "+linesNumbers );*/
+
+        return collections;
     }
-*/
+
 
 
     public static  void WriteInFile (String writingFilePath, Collection<String> collection)
@@ -103,6 +138,7 @@ public class FileOperation {
 
         }
     }
+
 
     public static void WriteConstructQueriesInFile(String writingFilePath, ArrayList<Query> constructQueries) {
         File file = new File(writingFilePath);
@@ -357,6 +393,58 @@ public class FileOperation {
     }
 
 
+    public static void main(String[] args) {
+
+        ArrayList<ArrayList<String>> listt = ReadFile4Transform(Declarations.syntaxValidFile);
+
+
+        for (ArrayList<String> a : listt) {
+
+            System.out.println("taille : " + a.size());
+
+
+        }
+
+    }
+     /* BufferedWriter bw = null;
+
+        try {
+        File file =new File("C:\\Users\\pc\\Desktop\\PFE\\Files\\Fichier_Syntaxe_Valide_Test.txt");
+
+
+        if (!file.isFile()) file.createNewFile();
+
+        for (int i=0; i<65; i++)
+        {
+
+            bw = new BufferedWriter(new FileWriter(file, true));
+
+
+
+            bw.write(i+"\n");
+
+            bw.flush();
+        }
+    }        catch (IOException e) {
+        System.out.println("Impossible file creation");
+    }finally {
+
+        try {
+            bw.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+}*/
 
 
 }
+
+
+
+
+
+
+
+

@@ -1,83 +1,19 @@
 package MDfromLogQueries.LogCleaning
 
-import java.io.{File, FileOutputStream, PrintWriter}
-import java.util
-
-import MDPatternDetection.{App, QueryUpdate}
-import MDfromLogQueries.Declarations.Declarations
-import MDfromLogQueries.Declarations.Declarations.{constructQueriesFile, syntaxValidFile}
-import MDfromLogQueries.Util.{Constants2, FileOperation}
-import org.apache.jena.query.{Query, QueryFactory}
-
-import scala.collection.JavaConverters
+import MDPatternDetection.App
 
 
 object TestScala extends App {
 
 
-  println("je suis dans la transformation ")
   val t1 = System.currentTimeMillis()
   val duration = System.currentTimeMillis() - t1
 
-  def writeFiles(destinationfilePath: String) = {
-
-    println("je suis dans la fct d'ecriture")
-    val writer = new PrintWriter(new FileOutputStream(new File(destinationfilePath), true))
+  
+  //ur code here
 
 
-    val queries = TransformQueriesInFile(syntaxValidFile)
 
-
-    queries.forEach(x => writer.write(x.toString().replaceAll("[\n\r]", "\t") + "\n"))
-
-    writer.close()
-  }
-
-  def TransformQueriesInFile(filePath: String): util.ArrayList[Query] = {
-    println("je suis dans la fct de transf")
-
-    new Constants2(Declarations.dbPediaOntologyPath)
-    val constructQueriesList = new util.ArrayList[Query]
-    val constructQueriesListFinal = new util.ArrayList[Query]
-
-    val lines = JavaConverters.collectionAsScalaIterable(FileOperation.ReadFile(syntaxValidFile))
-
-    //  val lines = FileOperation.ReadFile(filePath).asInstanceOf[util.ArrayList[String]]
-
-    var nb_line = 0 // for statistical matters
-
-      /** Graph pattern extraction **/
-
-      lines.par.foreach {
-
-        //lines.par.map
-        //lines.par.foreach {
-        //lines.foreach {
-        line => {
-          nb_line += 1
-          System.out.println("*  " + nb_line)
-          var query = QueryFactory.create(line)
-          val queryUpdate = new QueryUpdate(query)
-          query = queryUpdate.toConstruct(query)
-          constructQueriesList.add(query)
-
-        }
-        /*   if (nb_line == 10000) {
-             nb_line = 0
-             constructQueriesListFinal.addAll(constructQueriesList)
-
-             constructQueriesList.clear()
-           }
- */
-      }
-    constructQueriesList
-
-
-  }
-
-  //TransformQueriesInFile("")
-
-  writeFiles(constructQueriesFile)
   println(duration)
 
 }

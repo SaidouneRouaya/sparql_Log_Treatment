@@ -12,7 +12,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import static MDfromLogQueries.Declarations.Declarations.constructQueriesFile;
-import static MDfromLogQueries.Declarations.Declarations.syntaxValidFile;
 import static java.util.concurrent.TimeUnit.SECONDS;
 
 public class Queries2Graphes {
@@ -32,6 +31,7 @@ public class Queries2Graphes {
 
     public static ArrayList<Query> TransformQueriesinFile(String filePath) {
         new Constants(Declarations.dbPediaOntologyPath);
+        //  ArrayList<Query> constructQueriesList = new ArrayList<>();
         ArrayList<Query> constructQueriesList = new ArrayList<>();
         ArrayList<Query> constructQueriesListFinal = new ArrayList<>();
         ArrayList<String> lines;
@@ -48,6 +48,7 @@ public class Queries2Graphes {
             for (String line : lines) {
 
                 try {
+
 
                     // String line = lines.get(nb_line);
                     nb_line++;
@@ -88,8 +89,8 @@ public class Queries2Graphes {
 
         new Constants(Declarations.dbPediaOntologyPath);
 
+        //ArrayList<Query> constructQueriesList = new ArrayList<>();
         ArrayList<Query> constructQueriesList = new ArrayList<>();
-
 
         int nb_line = 0; // for statistical matters
 
@@ -130,7 +131,7 @@ public class Queries2Graphes {
     public static void main(String[] args)  {
         Stopwatch stopwatch = Stopwatch.createStarted();
 
-        Queries2GraphesParallel.TransformQueriesInFile(syntaxValidFile);
+        // Queries2GraphesParallel.TransformQueriesInFile(syntaxValidFile);
 
         stopwatch.stop();
 
