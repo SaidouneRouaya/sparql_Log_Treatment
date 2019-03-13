@@ -59,7 +59,7 @@ object Main2 extends App {
             var constructedQuery = QueryFactory.create()
             try {
               val query = QueryFactory.create(line)
-              val queryUpdate = new QueryUpdate()
+              val queryUpdate = new QueryUpdate(query)
               constructedQuery = queryUpdate.toConstruct(query)
 
               /* Some meaning if there is a result != null */

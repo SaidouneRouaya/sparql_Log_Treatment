@@ -26,27 +26,33 @@ object SyntacticValidationParallel extends App {
       groupOfLines => {
         var nb_req = 0
         val treatedGroupOfLines = groupOfLines.par.map {
+
           line => {
             nb_req = nb_req + 1
-            //println("* " + nb_req)
-            var verifiedQuery = ""
-            try {
-              verifiedQuery = Validate(line)
-              if (verifiedQuery != null) println("not null")
 
-              /* Some meaning if there is a result != null */
-              Some(verifiedQuery)
+            try {
+              val verifiedQuery = Validate(line)
+              if (verifiedQuery != null) {
+                println("not null")
+                Right(Some(verifiedQuery))
+              } else Right(None)
+
             } catch {
               case unknown => {
                 println("une erreur\n\n\n\n\n\n\n\n\n")
-                writeInLogFile(Declarations.syntaxNonValidFile, verifiedQuery)
-                None
+                Left(line)
               }
             }
           }
         }
         println("--------------------- un group finished ---------------------------------- ")
-        writeInFile(syntaxValidFile2, treatedGroupOfLines.collect { case Some(x) => x })
+
+        println("--------------------- un group finished ---------------------------------- ")
+
+        val (correct, errors) = treatedGroupOfLines.partition(_.isRight)
+        writeInFile(syntaxValidFile2, correct.collect { case Right(Some(x)) => x })
+        writeInLogFile(Declarations.syntaxNonValidFile, errors.collect { case Left(line) => line })
+
       }
     }
   }
@@ -62,11 +68,11 @@ object SyntacticValidationParallel extends App {
     writer.close()
   }
 
-  def writeInLogFile(destinationFilePath: String, query: String) = {
+  def writeInLogFile(destinationFilePath: String, queries: ParSeq[String]) = {
 
     val writer = new PrintWriter(new FileOutputStream(new File(destinationFilePath), true))
 
-    writer.write(query.replaceAll("[\n\r]", "\t") + "\n")
+    queries.foreach(query => writer.write(query.replaceAll("[\n\r]", "\t") + "\n"))
 
     writer.close()
   }
