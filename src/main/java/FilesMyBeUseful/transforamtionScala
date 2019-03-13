@@ -1,0 +1,65 @@
+ /*println("je suis dans la fct de transf")
+
+    new Constants2(Declarations.dbPediaOntologyPath)
+    val queriesList = ReadFile4Transform(Declarations.syntaxValidFile)
+    var queryUpdate = new QueryUpdate()
+    var query = QueryFactory.create()
+    var nb_line = 0
+    val constructQueriesListFinal = new util.ArrayList[Query]()
+
+    println("la taille toltal: " + queriesList.size)
+
+    queriesList.foreach {
+      list => {
+        nb_line = 0
+        println(list.size)
+
+        list.par.map {
+
+          val constructQueriesList = new util.ArrayList[Query]()
+
+          line => {
+            try {
+              val query = QueryFactory.create(line)
+              val queryUpdate = new QueryUpdate(query)
+              val constructedQuery = queryUpdate.toConstruct(query)
+              Some(constructedQuery)
+            } catch {
+
+              case unknown => {
+                println("une erreur")
+                None
+              }
+            }
+
+          }
+            println("------------------------------ " + nb_line + " ----------s-------------------------")
+            FileOperation.WriteConstructQueriesInFile(Declarations.constructQueriesFile, constructQueriesListFinal)
+
+        }
+
+
+      }
+    }
+    val file_path = ""
+    val pw = new PrintWriter(new File(file_path))
+    treatedGroupOfLines.filter(x => !x.isEmpty)
+    pw.close
+
+    FileOperation.WriteConstructQueriesInFile(Declarations.constructQueriesFile, constructQueriesList)
+
+
+
+    println(" Le nombre de requetes not Found \t" + QueryConstruction.nb_prop + "\tsur \t" + QueryConstruction.nb_prop_total)
+    constructQueriesListFinal
+
+  }
+
+  def ReadFile4Transform(readingFilePath: String)= {
+
+    val fileContents = Source.fromFile(readingFilePath).getLines()
+    val collection= fileContents.grouped(100000).toList
+
+    collection*/
+
+

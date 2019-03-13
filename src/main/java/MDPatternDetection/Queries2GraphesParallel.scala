@@ -1,70 +1,92 @@
-package MDPatternDetection
+package MDfromLogQueries.LogCleaning
 
-import java.io.{File, PrintWriter}
-import java.util
+import java.io._
 
-import MDfromLogQueries.Declarations.Declarations
-import MDfromLogQueries.Declarations.Declarations.syntaxValidFile
-import MDfromLogQueries.Util.{Constants, FileOperation}
+import MDPatternDetection.QueryUpdate
+import MDfromLogQueries.Declarations.Declarations._
+import MDfromLogQueries.Util.Constants2
 import org.apache.jena.query.{Query, QueryFactory}
 
-object Queries2GraphesParallel extends App {
+import scala.collection.parallel.ParSeq
+import scala.io.Source
 
+
+object Main2 extends App {
 
   val t1 = System.currentTimeMillis()
   val duration = System.currentTimeMillis() - t1
 
-  def writeFiles(destinationfilePath: String) = {
 
-    val writer = new PrintWriter(new File(destinationfilePath))
+  //: util.ArrayList[Query]
+  def TransformQueriesInFile(filePath: String) = {
 
-    val queries = TransformQueriesInFile(destinationfilePath)
 
-    queries.forEach(x => writer.write(x.toString().replaceAll("[\n\r]", "\t") + "\n"))
+    new Constants2(dbPediaOntologyPath)
+
+    val lines = Source.fromFile(filePath).getLines
+
+    lines.grouped(100000).foreach {
+
+      groupOfLines => {
+
+        var nb_req = 0
+
+        val treatedGroupOfLines = groupOfLines.par.map {
+          line => {
+            nb_req = nb_req + 1
+            println("* " + nb_req)
+            var constructedQuery = QueryFactory.create()
+            try {
+              val query = QueryFactory.create(line)
+              val queryUpdate = new QueryUpdate()
+              constructedQuery = queryUpdate.toConstruct(query)
+
+              /* Some meaning if there is a result != null */
+              Some(constructedQuery)
+
+            } catch {
+              case unknown => {
+                println("une erreur")
+                writeInLogFile(logFile, constructedQuery)
+                None
+              }
+            }
+
+          }
+
+        }
+
+        println("--------------------- un group finished ---------------------------------- ")
+
+        writeInFile(constructQueriesFile, treatedGroupOfLines.collect { case Some(x) => x })
+      }
+    }
+
+  }
+
+  /** Function that writes into destinationFilePath the list passed as parameter **/
+  def writeInFile(destinationFilePath: String, queries: ParSeq[Query]) = {
+
+
+    val writer = new PrintWriter(new FileOutputStream(new File(destinationFilePath), true))
+
+    queries.foreach(query => writer.write(query.toString().replaceAll("[\n\r]", "\t") + "\n"))
 
     writer.close()
   }
 
-  writeFiles(syntaxValidFile)
+  def writeInLogFile(destinationFilePath: String, query: Query) = {
 
-  def TransformQueriesInFile(filePath: String): util.ArrayList[Query] = {
-    new Constants(Declarations.dbPediaOntologyPath)
-    val constructQueriesList = new util.ArrayList[Query]
-    val constructQueriesListFinal = new util.ArrayList[Query]
+    val writer = new PrintWriter(new FileOutputStream(new File(destinationFilePath), true))
 
-    val lines = FileOperation.ReadFile(filePath).asInstanceOf[util.ArrayList[String]]
+    writer.write(query.toString().replaceAll("[\n\r]", "\t") + "\n")
 
-    var nb_line = 0 // for statistical matters
-
-    try {
-
-      /** Graph pattern extraction **/
-
-      import scala.collection.JavaConversions._
-
-
-      lines.par.map {
-        line => {
-          nb_line += 1
-          System.out.println("*  " + nb_line)
-          var query = QueryFactory.create(line)
-          val queryUpdate = new QueryUpdate(query)
-          query = queryUpdate.toConstruct(query)
-          constructQueriesList.add(query)
-
-
-          /* if (nb_line == 10000) {
-              constructQueriesListFinal.addAll(constructQueriesList)
-              FileOperation.WriteConstructQueriesInFile(constructQueriesFile, constructQueriesList)
-              nb_line = 0
-              constructQueriesList.clear()
-            }*/
-        }
-      }
-
-      constructQueriesListFinal
-    }
+    writer.close()
   }
 
+  TransformQueriesInFile(syntaxValidFile)
+
   println(duration)
+
 }
+
