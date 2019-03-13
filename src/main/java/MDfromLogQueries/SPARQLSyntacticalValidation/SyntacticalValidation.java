@@ -67,13 +67,6 @@ public class SyntacticalValidation {
                 if (query!=null) {
                     validQueryList.add(query);
                 }
-                if (nb_line == 10000)
-                {
-                    FileOperation.WriteInFile(destinationFilePath,validQueryList);
-                    FileOperation.WriteInFile(Declarations.syntaxNonValidFile,nonValidQueryList);
-                    return;
-                }
-
                  System.out.println( "line \t"+nb_line);
                 } catch (Exception e) {
                     // e.printStackTrace();
