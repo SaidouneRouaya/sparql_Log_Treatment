@@ -32,7 +32,7 @@ object SyntacticValidationParallel extends App {
             var verifiedQuery = ""
             try {
               verifiedQuery = Validate(line)
-              if (verifiedQuery != null) println("not null")
+              if (verifiedQuery != null) println("not null "+nb_req)
 
               /* Some meaning if there is a result != null */
               Some(verifiedQuery)
@@ -46,7 +46,7 @@ object SyntacticValidationParallel extends App {
           }
         }
         println("--------------------- un group finished ---------------------------------- ")
-        writeInFile(syntaxValidFile2, treatedGroupOfLines.collect { case Some(x) => x })
+        writeInFile(syntaxValidFile, treatedGroupOfLines.collect { case Some(x) => x })
       }
     }
   }
