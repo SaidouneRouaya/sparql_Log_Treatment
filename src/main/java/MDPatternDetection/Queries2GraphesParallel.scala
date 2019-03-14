@@ -7,7 +7,7 @@ import MDfromLogQueries.Declarations.Declarations._
 import MDfromLogQueries.Util.Constants2
 import org.apache.jena.query.{Query, QueryFactory}
 
-import scala.collection.parallel.ParSeq
+import scala.collection.parallel.{ParSeq, SeqSplitter}
 import scala.io.Source
 
 
@@ -49,9 +49,8 @@ object Main2 extends App {
     lines.grouped(100000).foreach {
 
       groupOfLines => {
-
         var nb_req = 0
-
+        var nonValidQueries : ParSeq[Query] = ParSeq()
         val treatedGroupOfLines = groupOfLines.par.map {
           line => {
             nb_req = nb_req + 1
@@ -68,7 +67,8 @@ object Main2 extends App {
             } catch {
               case unknown => {
                 println("une erreur\n\n\n\n\n\n\n\n\n")
-                writeInLogFile(logFile, constructedQuery)
+                nonValidQueries.+:(constructedQuery)
+                //writeInLogFile(logFile, constructedQuery)
                 None
               }
             }
@@ -80,6 +80,7 @@ object Main2 extends App {
         println("--------------------- un group finished ---------------------------------- ")
 
         writeInFile(constructQueriesFile, treatedGroupOfLines.collect { case Some(x) => x })
+        writeInFile(logFile,nonValidQueries)
       }
     }
 
