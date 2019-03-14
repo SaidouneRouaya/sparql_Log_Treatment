@@ -31,16 +31,15 @@ object SyntacticValidationParallel extends App {
             nb_req = nb_req + 1
 
             try {
-              val verifiedQuery =Validate(line)
+              val verifiedQuery = Validate(line)
               if (verifiedQuery != null) {
-                println("* "+nb_req)
+                println("not null")
                 Right(Some(verifiedQuery))
-              }else Right(None)
+              } else Right(None)
 
             } catch {
               case unknown => {
-                println("une erreur")
-                //println(line)
+                println("une erreur\n\n\n\n\n\n\n\n\n")
                 Left(line)
               }
             }
@@ -48,10 +47,11 @@ object SyntacticValidationParallel extends App {
         }
         println("--------------------- un group finished ---------------------------------- ")
 
+        println("--------------------- un group finished ---------------------------------- ")
 
         val (correct, errors) = treatedGroupOfLines.partition(_.isRight)
-        writeInFile(syntaxValidFile2, correct.collect { case Right(Some(x))=> x })
-        writeInLogFile(Declarations.syntaxNonValidFile2 , errors.collect{case Left(line) => line})
+        writeInFile(syntaxValidFile2, correct.collect { case Right(Some(x)) => x })
+        writeInLogFile(Declarations.syntaxNonValidFile, errors.collect { case Left(line) => line })
 
       }
     }
@@ -68,11 +68,11 @@ object SyntacticValidationParallel extends App {
     writer.close()
   }
 
-  def writeInLogFile(destinationFilePath: String,  queries: ParSeq[String]) = {
+  def writeInLogFile(destinationFilePath: String, queries: ParSeq[String]) = {
 
     val writer = new PrintWriter(new FileOutputStream(new File(destinationFilePath), true))
 
-    queries.foreach(query =>  writer.write(query.replaceAll("[\n\r]", "\t") + "\n"))
+    queries.foreach(query => writer.write(query.replaceAll("[\n\r]", "\t") + "\n"))
 
     writer.close()
   }
