@@ -24,7 +24,7 @@ public class QueryExecutor {
 
         try {
             QueryExecutor queryExecutor = new QueryExecutor();
-            ArrayList<Query> constructQueriesList = Queries2Graphes.TransformQueriesinFile(filePath);
+            ArrayList<Query> constructQueriesList = Queries2Graphes.TransformQueriesInFile(filePath);
             // Execution of each CONSTRUCT query
             for (Query query : constructQueriesList) {
                 System.out.println("exeution req ");

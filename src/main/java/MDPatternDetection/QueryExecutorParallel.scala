@@ -19,7 +19,7 @@ object QueryExecutorParallel extends App {
     val queryExecutor = new QueryExecutor
 
 
-    val constructQueriesList = Queries2Graphes.TransformQueriesinFile(filePath)
+    val constructQueriesList = Queries2Graphes.TransformQueriesInFile(filePath)
 
 
     val results = new util.ArrayList[Model]

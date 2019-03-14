@@ -36,7 +36,6 @@ object Main2 extends App {
     writer.close()
   }
 
-  TransformQueriesInFile(syntaxValidFile)
 
   //: util.ArrayList[Query]
   def TransformQueriesInFile(filePath: String) = {
@@ -68,7 +67,7 @@ object Main2 extends App {
             } catch {
               case unknown => {
                 println("une erreur\n\n\n\n\n\n\n\n\n")
-                writeInLogFile(logFile, constructedQuery)
+                writeInLogFile(logFile2, constructedQuery)
                 None
               }
             }
@@ -79,11 +78,13 @@ object Main2 extends App {
 
         println("--------------------- un group finished ---------------------------------- ")
 
-        writeInFile(constructQueriesFile, treatedGroupOfLines.collect { case Some(x) => x })
+        writeInFile(constructQueriesFile2, treatedGroupOfLines.collect { case Some(x) => x })
       }
     }
 
   }
+
+  TransformQueriesInFile(syntaxValidFile2)
 
 
   val duration = System.currentTimeMillis() - t1
