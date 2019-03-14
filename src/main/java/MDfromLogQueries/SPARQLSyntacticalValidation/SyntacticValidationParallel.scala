@@ -19,7 +19,6 @@ object SyntacticValidationParallel extends App {
 
   //: util.ArrayList[Query]
   def valideQueriesInFile(filePath: String) = {
-    new Constants2(dbPediaOntologyPath)
     var queryList = Source.fromFile(filePath).getLines
 
     queryList.grouped(100000).foreach {

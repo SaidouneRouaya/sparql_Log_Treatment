@@ -36,7 +36,7 @@ object Main2 extends App {
     writer.close()
   }
 
-  TransformQueriesInFile(syntaxValidFile)
+  TransformQueriesInFile(syntaxValidFile2)
 
   //: util.ArrayList[Query]
   def TransformQueriesInFile(filePath: String) = {
@@ -79,8 +79,8 @@ object Main2 extends App {
 
         println("--------------------- un group finished ---------------------------------- ")
 
-        writeInFile(constructQueriesFile, treatedGroupOfLines.collect { case Some(x) => x })
-        writeInFile(logFile,nonValidQueries)
+        writeInFile(constructQueriesFile2, treatedGroupOfLines.collect { case Some(x) => x })
+        writeInFile(logFile2,nonValidQueries)
       }
     }
 

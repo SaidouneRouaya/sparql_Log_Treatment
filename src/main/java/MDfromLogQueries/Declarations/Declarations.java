@@ -30,6 +30,8 @@ public class Declarations {
     public static String statisticsFile = "C:\\Users\\KamilaB\\Desktop\\3CS\\Prototypage\\Step_1\\Support_Files\\Resulting_Files\\Fichier_statistique.txt";
     public static String logFile = "C:\\Users\\KamilaB\\Desktop\\3CS\\Prototypage\\Step_1\\Support_Files\\Resulting_Files\\Fichier_log.txt";
     public static String constructQueriesFile= "C:\\Users\\KamilaB\\Desktop\\3CS\\Prototypage\\Step_1\\Support_Files\\Resulting_Files\\Fichier_Construct_Queries.txt";
+   public static String logFile2 = "C:\\Users\\KamilaB\\Desktop\\3CS\\Prototypage\\Step_1\\Support_Files\\Resulting_Files\\Fichier_log_scala.txt";
+    public static String constructQueriesFile2= "C:\\Users\\KamilaB\\Desktop\\3CS\\Prototypage\\Step_1\\Support_Files\\Resulting_Files\\Fichier_Construct_Queries_scala.txt";
     public static String AnalyticQueriesFile = "C:\\Users\\KamilaB\\Desktop\\3CS\\Prototypage\\Step_1\\Support_Files\\Resulting_Files\\Fichier_Analytic_Queries.txt";
 
 
