@@ -9,7 +9,6 @@ import org.yaml.snakeyaml.Yaml;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Array;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -134,7 +133,7 @@ public class QueryFixer {
 
     private static String aggregatorBetweenBrackets(String queryStr)
     {
-        Pattern aggregatorPattern = Pattern.compile("((COUNT|SUM|AVG|MIN|MAX)([\\(])([a-zA-Z ]*\\?[\\w_-]+)(\\))( as )+(\\?[\\w_-]+))",Pattern.CASE_INSENSITIVE);
+        Pattern aggregatorPattern = Pattern.compile("((COUNT|SUM|AVG|MIN|MAX)([\\(])([a-zA-Z ]*\\?[\\w_-]+)(\\))( as )+(\\?[\\w_-]+))", Pattern.CASE_INSENSITIVE);
         Matcher mv = aggregatorPattern.matcher(queryStr);
         while (mv.find())
         {
@@ -147,7 +146,7 @@ public class QueryFixer {
     private static ArrayList<String> asVariables(String select)
     {
         ArrayList<String> stringList = new ArrayList<>();
-        Pattern asPattern = Pattern.compile("((as )(\\?[\\w_-]+))",Pattern.CASE_INSENSITIVE);
+        Pattern asPattern = Pattern.compile("((as )(\\?[\\w_-]+))", Pattern.CASE_INSENSITIVE);
         Matcher matcherAs = asPattern.matcher(select);
         while (matcherAs.find())
         {
@@ -180,11 +179,11 @@ public class QueryFixer {
             maybeQuery = QueryFactory.create(queryStr, Syntax.syntaxARQ);
         }catch (QueryParseException queryParseException)
         {
-           System.out.println("erreur 2");
+            System.out.println("erreur 2");
             //System.out.println("+++++-*+++++*-+"+queryParseException.getMessage());
         }
         catch (Exception e) {
-          //  System.out.println("*****+-+-+-+-*****"+queryStr);
+            //  System.out.println("*****+-+-+-+-*****"+queryStr);
             System.out.println("*****+-+-+-+-*****");
             e.printStackTrace();
         }

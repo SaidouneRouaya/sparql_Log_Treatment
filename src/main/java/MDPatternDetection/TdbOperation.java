@@ -7,6 +7,7 @@ import org.apache.jena.rdf.model.StmtIterator;
 import org.apache.jena.tdb.TDB;
 import org.apache.jena.tdb.TDBFactory;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -17,7 +18,8 @@ import static MDfromLogQueries.Declarations.Declarations.tdbDirectory;
 
 public class TdbOperation {
     private static Dataset dataset = TDBFactory.createDataset(tdbDirectory);
-    private static Dataset originalDataDet = TDBFactory.createDataset(originalTdbDirectory);
+    public static Dataset originalDataSet = TDBFactory.createDataset(originalTdbDirectory);
+    private static Dataset originalDataSet2 = TDBFactory.createDataset(originalTdbDirectory);
 
     public static void main(String... argv) {
 
@@ -56,10 +58,10 @@ public class TdbOperation {
 
                 Map.Entry<String, Model> pair = (Map.Entry) it.next();
 
-                if (exists(pair.getKey(), originalDataDet)) {
-                    originalDataDet.getNamedModel(pair.getKey()).add(pair.getValue());
+                if (exists(pair.getKey(), originalDataSet2)) {
+                    originalDataSet2.getNamedModel(pair.getKey()).add(pair.getValue());
                 } else {
-                    originalDataDet.addNamedModel(pair.getKey(), pair.getValue());
+                    originalDataSet2.addNamedModel(pair.getKey(), pair.getValue());
 
 
                 }
@@ -99,16 +101,23 @@ public class TdbOperation {
     }
 
 
-/*
-    public Iterator<Triple> find (Node s, Node p, Node o)
-    {
-        Iterator<Tuple<NodeId>> iter = table.findAsNodeIds(s, p, o) ;
-        if ( iter == null )
-            return new NullIterator<>() ;
-        Iterator<Triple> iter2 = TupleLib.convertToTriples(table.getNodeTable(), iter) ;
-        return iter2 ;
+    public static void persist(ArrayList<Model> models) {
+
+
+        try {
+
+            for (Model m : models) {
+
+                originalDataSet.addNamedModel(m.listSubjects().next().toString(), m);
+            }
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
-  */
+
+
 
     public static HashMap<String, Model> unpersistModelsMap() {
         HashMap<String, Model> results = new HashMap<>();

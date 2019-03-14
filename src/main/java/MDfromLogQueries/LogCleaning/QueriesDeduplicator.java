@@ -9,7 +9,6 @@ import java.io.FileReader;
 import java.util.HashSet;
 import java.util.Set;
 
-import static MDfromLogQueries.Declarations.Declarations.cleanedQueriesFile;
 import static MDfromLogQueries.Declarations.Declarations.cleanedQueriesFileCopie;
 import static MDfromLogQueries.Declarations.Declarations.writingDedupFilePath;
 import static java.util.concurrent.TimeUnit.SECONDS;
