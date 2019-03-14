@@ -7,7 +7,7 @@ import MDfromLogQueries.Declarations.Declarations._
 import MDfromLogQueries.Util.Constants2
 import org.apache.jena.query.{Query, QueryFactory}
 
-import scala.collection.parallel.{ParSeq, SeqSplitter}
+import scala.collection.parallel.ParSeq
 import scala.io.Source
 
 
@@ -50,14 +50,15 @@ object Main2 extends App {
 
       groupOfLines => {
         var nb_req = 0
-        var nonValidQueries : ParSeq[Query] = ParSeq()
+        //var nonValidQueries : ParSeq[Query] = ParSeq()
         val treatedGroupOfLines = groupOfLines.par.map {
           line => {
             nb_req = nb_req + 1
             println("* " + nb_req)
+            var query = QueryFactory.create()
             var constructedQuery = QueryFactory.create()
             try {
-              val query = QueryFactory.create(line)
+              query = QueryFactory.create(line)
               val queryUpdate = new QueryUpdate(query)
               constructedQuery = queryUpdate.toConstruct(query)
 
@@ -67,8 +68,8 @@ object Main2 extends App {
             } catch {
               case unknown => {
                 println("une erreur\n\n\n\n\n\n\n\n\n")
-                nonValidQueries.+:(constructedQuery)
-                //writeInLogFile(logFile, constructedQuery)
+                //nonValidQueries.+:(constructedQuery)
+                writeInLogFile(logFile, query)
                 None
               }
             }
@@ -79,8 +80,8 @@ object Main2 extends App {
 
         println("--------------------- un group finished ---------------------------------- ")
 
-        writeInFile(constructQueriesFile2, treatedGroupOfLines.collect { case Some(x) => x })
-        writeInFile(logFile2,nonValidQueries)
+        writeInFile(constructQueriesFile, treatedGroupOfLines.collect { case Some(x) => x })
+        //writeInFile(logFile,nonValidQueries)
       }
     }
 

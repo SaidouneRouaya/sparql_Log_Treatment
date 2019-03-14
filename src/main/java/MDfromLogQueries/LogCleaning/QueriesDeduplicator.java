@@ -10,6 +10,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import static MDfromLogQueries.Declarations.Declarations.cleanedQueriesFile;
+import static MDfromLogQueries.Declarations.Declarations.cleanedQueriesFileCopie;
 import static MDfromLogQueries.Declarations.Declarations.writingDedupFilePath;
 import static java.util.concurrent.TimeUnit.SECONDS;
 
@@ -23,7 +24,7 @@ public class QueriesDeduplicator {
 
     public static void main(String[] args) {
         Stopwatch stopwatch = Stopwatch.createStarted();
-        DeduplicateQueriesInFile(cleanedQueriesFile);
+        DeduplicateQueriesInFile(cleanedQueriesFileCopie);
         stopwatch.stop();
         System.out.println("Time elapsed for the program is " + stopwatch.elapsed(SECONDS));
     }
