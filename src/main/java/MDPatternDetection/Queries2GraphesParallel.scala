@@ -16,8 +16,6 @@ object Main2 extends App {
   val t1 = System.currentTimeMillis()
 
 
-  val duration = System.currentTimeMillis() - t1
-
   /** Function that writes into destinationFilePath the list passed as parameter **/
   def writeInFile(destinationFilePath: String, queries: ParSeq[Query]) = {
 
@@ -86,6 +84,9 @@ object Main2 extends App {
     }
 
   }
+
+
+  val duration = System.currentTimeMillis() - t1
   println(duration)
 
 }
