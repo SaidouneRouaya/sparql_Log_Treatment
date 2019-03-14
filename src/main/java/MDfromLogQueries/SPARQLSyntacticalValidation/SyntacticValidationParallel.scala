@@ -4,7 +4,6 @@ import java.io.{File, FileOutputStream, PrintWriter}
 
 import MDfromLogQueries.Declarations.Declarations
 import MDfromLogQueries.Declarations.Declarations._
-import MDfromLogQueries.Util.Constants2
 
 import scala.collection.parallel.ParSeq
 import scala.io.Source
@@ -19,7 +18,7 @@ object SyntacticValidationParallel extends App {
 
   //: util.ArrayList[Query]
   def valideQueriesInFile(filePath: String) = {
-    new Constants2(dbPediaOntologyPath)
+    //new Constants2(dbPediaOntologyPath)
     var queryList = Source.fromFile(filePath).getLines
 
     queryList.grouped(100000).foreach {

@@ -1,13 +1,17 @@
 package MDPatternDetection
 
+import java.io.{File, FileOutputStream, PrintWriter}
 import java.util
 
 import MDfromLogQueries.Declarations.Declarations
+import MDfromLogQueries.Declarations.Declarations.syntaxValidFile2
+import MDfromLogQueries.SPARQLSyntacticalValidation.SyntacticValidationParallel.{writeInFile, writeInLogFile}
 import MDfromLogQueries.Util.{Constants, FileOperation}
 import org.apache.jena.query.{Query, QueryFactory}
 import org.apache.jena.rdf.model.Model
 
-import scala.collection.JavaConverters
+import scala.collection.parallel.ParSeq
+import scala.io.Source
 
 
 //class  QueryExecutorParallel {
@@ -19,21 +23,40 @@ object QueryExecutorParallel extends App {
     val queryExecutor = new QueryExecutor
 
 
-    val constructQueriesList = Queries2Graphes.TransformQueriesinFile(filePath)
-
-
+    val constructQueriesList = Source.fromFile(filePath).getLines
     val results = new util.ArrayList[Model]
-    val iterable = JavaConverters.collectionAsScalaIterable(constructQueriesList)
-    println("execution")
-    iterable.par.map {
-      query => {
-        nb = nb + 1
-        println("Requete\t" + nb)
-        val model = queryExecutor.executeQueryConstruct(query, endPoint)
-        if (model != null) results.add(model)
-        // results.add(queryExecutor.executeQueryConstruct(query, endPoint))
-      }
+    constructQueriesList.grouped(100000).foreach {
+      groupOfLines => {
+        var nb_req = 0
+        //var nonValidQueries : ParSeq[Query] = ParSeq()
+        val treatedGroupOfLines = groupOfLines.par.map {
+          line => {
+            nb_req+=1
+            println("Requete\t" + nb)
+            val query =QueryFactory.create(line)
+            try {
+              val model = queryExecutor.executeQueryConstruct(query, endPoint)
+              if (model != null) {
+                Some(model)
+                //results.add(model)
+              }
+            }
+            catch {
+              case  exp : Exception =>
+                {
+                  println("une erreur\n\n\n\n\n\n\n\n\n")
+                  //nonValidQueries.+:(constructedQuery)
+                  writeInLogFile(ExecutionLogFile, line)
+                  None
+                }
+            }
+          }
+        }
 
+        println("--------------------- un group finished ---------------------------------- ")
+
+        writeInFile(constructQueriesFile, treatedGroupOfLines.collect { case Some(x) => x })
+      }
     }
 
     val duration = System.currentTimeMillis() - t1
@@ -42,8 +65,25 @@ object QueryExecutorParallel extends App {
     return results
   }
 
+  def writeInLogFile(destinationFilePath: String, query: Query) = {
 
-  def TransformQueriesInFile(filePath: String): util.ArrayList[Query] = {
+    val writer = new PrintWriter(new FileOutputStream(new File(destinationFilePath), true))
+
+    writer.write(query.toString().replaceAll("[\n\r]", "\t") + "\n")
+
+    writer.close()
+  }
+
+  def writeInTdb(destinationFilePath: String, queries: ParSeq[Query]) = {
+
+
+    val writer = new PrintWriter(new FileOutputStream(new File(destinationFilePath), true))
+
+    queries.foreach(query => writer.write(query.toString().replaceAll("[\n\r]", "\t") + "\n"))
+
+    writer.close()
+  }
+  /*def TransformQueriesInFile(filePath: String): util.ArrayList[Query] = {
     new Constants(Declarations.dbPediaOntologyPath)
     val constructQueriesList = new util.ArrayList[Query]
 
@@ -78,9 +118,9 @@ object QueryExecutorParallel extends App {
         e.printStackTrace()
     }
     constructQueriesList
-  }
+  }*/
 
-  //executeQueriesInFile(Declarations.syntaxValidFileTest, "https://dbpedia.org/sparql")
+  executeQueriesInFile(Declarations.constructQueriesFile, "https://dbpedia.org/sparql")
 
 
 }

@@ -69,7 +69,13 @@ object Main extends App {
 
   def queryFromRequest(requestStr: String): String = {
     val pairs = URLEncodedUtils.parse(requestStr, StandardCharsets.UTF_8)
-
+    pairs.forEach {
+      pair => {
+        if (pair.getName == "query") {
+          return pair.getValue
+        }
+      }
+    }
     /*for (pair <- pairs) {
    /*   if ("query" == pair.getName) {
       return pair.getValue
