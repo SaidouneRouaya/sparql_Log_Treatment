@@ -33,7 +33,7 @@ object SyntacticValidationParallel extends App {
             try {
               val verifiedQuery = Validate(line)
               if (verifiedQuery != null) {
-                println("not null")
+                println("* " + nb_req)
                 Right(Some(verifiedQuery))
               } else Right(None)
 
@@ -47,11 +47,9 @@ object SyntacticValidationParallel extends App {
         }
         println("--------------------- un group finished ---------------------------------- ")
 
-        println("--------------------- un group finished ---------------------------------- ")
-
         val (correct, errors) = treatedGroupOfLines.partition(_.isRight)
         writeInFile(syntaxValidFile2, correct.collect { case Right(Some(x)) => x })
-        writeInLogFile(Declarations.syntaxNonValidFile, errors.collect { case Left(line) => line })
+        writeInLogFile(Declarations.syntaxNonValidFile2, errors.collect { case Left(line) => line })
 
       }
     }
