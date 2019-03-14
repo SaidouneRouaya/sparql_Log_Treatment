@@ -1,7 +1,7 @@
 package MDfromLogQueries.Declarations;
 
 public class Declarations {
-    public static String cleanedQueriesFile = "C:\\Users\\roaya\\Desktop\\PFE\\Files\\ProgramOutput\\Fichier_log_Nettoye_Complet_Parallel_Scala.txt";
+    public static String cleanedQueriesFile = "C:\\Users\\roaya\\Desktop\\PFE\\Files\\ProgramOutput\\Fichier_log_Nettoye_Complet_Parallel.txt";
     public static String cleanedQueriesFileCopie = "C:\\Users\\roaya\\Desktop\\PFE\\Files\\ProgramOutput\\FFichier_log_Nettoye_Complet_Parallel_Scala_Copie.txt";
 
     public static String LogDirectory = "C:\\Users\\roaya\\Desktop\\PFE\\Files\\ProgramOutput\\Data log\\dbp351logs\\";
@@ -15,7 +15,7 @@ public class Declarations {
     public static String writingFilePathCopie = "C:\\Users\\roaya\\Desktop\\PFE\\Files\\ProgramOutput\\Fichier_log_Nettoye_Complet_Parallel_Java_Copie.txt";
 
 
-    public static String writingDedupFilePath = "C:\\Users\\roaya\\Desktop\\PFE\\Files\\ProgramOutput\\Fichier_log_Nettoye_Complet_Parallel.txt";
+    public static String writingDedupFilePath = "C:\\Users\\roaya\\Desktop\\PFE\\Files\\ProgramOutput\\Fichier_log_Dedup_Nettoye.txt";
 
     public static String modelsFilePath = "C:\\Users\\roaya\\Desktop\\PFE\\Files\\ProgramOutput\\Fichier_models.rdf";
 

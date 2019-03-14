@@ -47,7 +47,6 @@ object SyntacticValidationParallel extends App {
         }
         println("--------------------- un group finished ---------------------------------- ")
 
-        println("--------------------- un group finished ---------------------------------- ")
 
         val (correct, errors) = treatedGroupOfLines.partition(_.isRight)
         writeInFile(syntaxValidFile2, correct.collect { case Right(Some(x)) => x })
