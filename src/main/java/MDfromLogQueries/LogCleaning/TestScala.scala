@@ -1,9 +1,9 @@
 package MDfromLogQueries.LogCleaning
 
-import MDPatternDetection.App
+import MDPatternDetection.AppTest
 
 
-object TestScala extends App {
+object TestScala extends AppTest {
 
 
   val t1 = System.currentTimeMillis()

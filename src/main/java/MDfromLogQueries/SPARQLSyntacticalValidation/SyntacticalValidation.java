@@ -70,7 +70,7 @@ public class SyntacticalValidation {
                  System.out.println( "line \t"+nb_line);
                 } catch (Exception e) {
                     // e.printStackTrace();
-                    System.out.println("erreur");
+                    System.out.println("erreur 1");
                     nonValidQueryList.add(line);
                     nb++;
                 }

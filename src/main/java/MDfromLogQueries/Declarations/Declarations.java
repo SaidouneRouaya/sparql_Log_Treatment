@@ -29,7 +29,7 @@ public class Declarations {
     public static String constructQueriesFile2 = "C:\\Users\\pc\\Desktop\\PFE\\Files\\ProgramOutput\\Fichier_Construct_scala.txt";
     public static String constructQueriesFile = "C:\\Users\\pc\\Desktop\\PFE\\Files\\ProgramOutput\\Fichier_Construct_java.txt";
 
-
+    public  static String executionLogFile = "C:\\Users\\pc\\Desktop\\PFE\\Files\\ProgramOutput\\Fichier_Log_Execution_scala.txt";
 
     public static String statisticsFile = "C:\\Users\\pc\\Desktop\\PFE\\Files\\ProgramOutput\\Fichier_Statistiques.txt";
 
