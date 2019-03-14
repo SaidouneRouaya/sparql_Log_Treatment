@@ -33,6 +33,5 @@ public class Declarations {
    public static String logFile2 = "C:\\Users\\KamilaB\\Desktop\\3CS\\Prototypage\\Step_1\\Support_Files\\Resulting_Files\\Fichier_log_scala.txt";
     public static String constructQueriesFile2= "C:\\Users\\KamilaB\\Desktop\\3CS\\Prototypage\\Step_1\\Support_Files\\Resulting_Files\\Fichier_Construct_Queries_scala.txt";
     public static String AnalyticQueriesFile = "C:\\Users\\KamilaB\\Desktop\\3CS\\Prototypage\\Step_1\\Support_Files\\Resulting_Files\\Fichier_Analytic_Queries.txt";
-
-
+    public static String ExecutionLogFile = "C:\\Users\\KamilaB\\Desktop\\3CS\\Prototypage\\Step_1\\Support_Files\\Resulting_Files\\Fichier_not_Executed_queries.txt";
 }

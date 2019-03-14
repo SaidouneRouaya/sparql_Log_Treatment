@@ -4,9 +4,7 @@ import java.io.{File, FileOutputStream, PrintWriter}
 import java.util
 
 import MDfromLogQueries.Declarations.Declarations
-import MDfromLogQueries.Declarations.Declarations.syntaxValidFile2
-import MDfromLogQueries.SPARQLSyntacticalValidation.SyntacticValidationParallel.{writeInFile, writeInLogFile}
-import MDfromLogQueries.Util.{Constants, FileOperation}
+import com.google.common.base.Stopwatch
 import org.apache.jena.query.{Query, QueryFactory}
 import org.apache.jena.rdf.model.Model
 
@@ -14,8 +12,10 @@ import scala.collection.parallel.ParSeq
 import scala.io.Source
 
 
-//class  QueryExecutorParallel {
 object QueryExecutorParallel extends App {
+
+
+  val t1 = System.currentTimeMillis()
 
   def executeQueriesInFile(filePath: String, endPoint: String): util.ArrayList[Model] = {
     val t1 = System.currentTimeMillis()
@@ -32,13 +32,14 @@ object QueryExecutorParallel extends App {
         val treatedGroupOfLines = groupOfLines.par.map {
           line => {
             nb_req+=1
-            println("Requete\t" + nb)
-            val query =QueryFactory.create(line)
+            println("Requete\t" + nb_req)
+
             try {
+              val query =QueryFactory.create(line)
               val model = queryExecutor.executeQueryConstruct(query, endPoint)
               if (model != null) {
                 Some(model)
-                //results.add(model)
+                results.add(model)
               }
             }
             catch {
@@ -46,7 +47,7 @@ object QueryExecutorParallel extends App {
                 {
                   println("une erreur\n\n\n\n\n\n\n\n\n")
                   //nonValidQueries.+:(constructedQuery)
-                  writeInLogFile(ExecutionLogFile, line)
+                  writeInLogFile(Declarations.ExecutionLogFile, line)
                   None
                 }
             }
@@ -54,8 +55,22 @@ object QueryExecutorParallel extends App {
         }
 
         println("--------------------- un group finished ---------------------------------- ")
-
-        writeInFile(constructQueriesFile, treatedGroupOfLines.collect { case Some(x) => x })
+        var stopwatch_consolidation = Stopwatch.createUnstarted
+        var stopwatch_persist1 = Stopwatch.createUnstarted
+        var stopwatch_persist2 = Stopwatch.createUnstarted
+        var stopwatch_annotate = Stopwatch.createUnstarted
+        System.out.println("\nLa consolidation \n")
+        if (!results.isEmpty) {
+          stopwatch_consolidation = Stopwatch.createStarted
+          val modelHashMap = Consolidation.consolidate(results)
+          stopwatch_consolidation.stop
+          // persist before annotate
+          System.out.println("\n le persisting 1  \n")
+          stopwatch_persist1 = Stopwatch.createStarted
+          TdbOperation.persistNonAnnotated(modelHashMap)
+          stopwatch_persist1.stop
+        }
+        //results.addAll(treatedGroupOfLines.collect { case Some(x) => x }).toList)
       }
     }
 
@@ -65,16 +80,16 @@ object QueryExecutorParallel extends App {
     return results
   }
 
-  def writeInLogFile(destinationFilePath: String, query: Query) = {
+  def writeInLogFile(destinationFilePath: String, query: String) = {
 
     val writer = new PrintWriter(new FileOutputStream(new File(destinationFilePath), true))
 
-    writer.write(query.toString().replaceAll("[\n\r]", "\t") + "\n")
+    writer.write(query.replaceAll("[\n\r]", "\t") + "\n")
 
     writer.close()
   }
 
-  def writeInTdb(destinationFilePath: String, queries: ParSeq[Query]) = {
+  def writeInTdb(destinationFilePath: String, queries: ParSeq[Model]) = {
 
 
     val writer = new PrintWriter(new FileOutputStream(new File(destinationFilePath), true))
@@ -121,6 +136,6 @@ object QueryExecutorParallel extends App {
   }*/
 
   executeQueriesInFile(Declarations.constructQueriesFile, "https://dbpedia.org/sparql")
-
-
+  val duration = System.currentTimeMillis() - t1
+  println(duration)
 }

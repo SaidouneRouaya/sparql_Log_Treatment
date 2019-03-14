@@ -13,7 +13,7 @@ public class Consolidation {
 
         String endPoint = "https://dbpedia.org/sparql";
         ArrayList<Model> results = QueryExecutor.executeQuiersInFile(syntaxValidFileTest, endPoint);
-        App.afficherModels(results);
+        AppTest.afficherModels(results);
 
         System.out.println("\n\n ------------------ consolidation Results -------------------\n\n");
         HashMap<String, Model> map = consolidate(results);

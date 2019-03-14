@@ -15,7 +15,7 @@ import java.util.Iterator;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 //TODO delete this class
 
-public class App {
+public class AppTest {
 
 
     public static void main(String[] args) {
