@@ -17,7 +17,9 @@ public class Declarations {
     public static String modelsFilePath = "C:\\Users\\KamilaB\\Desktop\\3CS\\Prototypage\\Step_1\\Support_Files\\Resulting_Files\\Fichier_models.rdf";
 
     public static String syntaxValidFile = "C:\\Users\\KamilaB\\Desktop\\3CS\\Prototypage\\Step_1\\Support_Files\\Resulting_Files\\Fichier_Syntaxe_Valide.txt";
+    public static String syntaxValidFile2 = "C:\\Users\\KamilaB\\Desktop\\3CS\\Prototypage\\Step_1\\Support_Files\\Resulting_Files\\Fichier_Syntaxe_Valide_scala.txt";
     public static String syntaxNonValidFile = "C:\\Users\\KamilaB\\Desktop\\3CS\\Prototypage\\Step_1\\Support_Files\\Resulting_Files\\Fichier_Syntaxe_Non_Valide.txt";
+    public static String syntaxNonValidFile2 = "C:\\Users\\KamilaB\\Desktop\\3CS\\Prototypage\\Step_1\\Support_Files\\Resulting_Files\\Fichier_Syntaxe_Non_Valide_scala.txt";
     public static String syntaxValidFileTest = "C:\\Users\\KamilaB\\Desktop\\3CS\\Prototypage\\Step_1\\Support_Files\\Resulting_Files\\Fichier_Syntaxe_Valide_Test.txt";
 
     public static String dbPediaOntologyPath = "C:\\Users\\KamilaB\\Desktop\\3CS\\Prototypage\\Step_1\\Support_Files\\dbpedia_2014.owl";
