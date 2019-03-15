@@ -24,10 +24,11 @@ object QueryExecutorParallel extends App {
 
 
     val constructQueriesList = Source.fromFile(filePath).getLines
-    val results = new util.ArrayList[Model]
+    var results = new util.ArrayList[Model]
     constructQueriesList.grouped(100000).foreach {
       groupOfLines => {
         var nb_req = 0
+        results = new util.ArrayList[Model]
         //var nonValidQueries : ParSeq[Query] = ParSeq()
         val treatedGroupOfLines = groupOfLines.par.map {
           line => {
@@ -38,7 +39,7 @@ object QueryExecutorParallel extends App {
               val query =QueryFactory.create(line)
               val model = queryExecutor.executeQueryConstruct(query, endPoint)
               if (model != null) {
-                Some(model)
+               // Some(model)
                 results.add(model)
               }
             }
@@ -69,6 +70,17 @@ object QueryExecutorParallel extends App {
           stopwatch_persist1 = Stopwatch.createStarted
           TdbOperation.persistNonAnnotated(modelHashMap)
           stopwatch_persist1.stop
+          // annotation
+          System.out.println("\n L'annotation \n")
+          stopwatch_annotate = Stopwatch.createStarted
+          MDGraphAnnotated.constructMDGraphs(modelHashMap)
+          stopwatch_annotate.stop
+
+          // persisting
+          System.out.println("\n le persisting 2 \n")
+          stopwatch_persist2 = Stopwatch.createStarted
+          TdbOperation.persistAnnotatedHashMap(modelHashMap)
+          stopwatch_persist2.stop
         }
         //results.addAll(treatedGroupOfLines.collect { case Some(x) => x }).toList)
       }
