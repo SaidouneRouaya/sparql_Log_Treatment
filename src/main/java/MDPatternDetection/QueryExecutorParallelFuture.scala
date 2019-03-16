@@ -72,7 +72,7 @@ object QueryExecutionParallelFuture extends App {
     }
   }
 
-  executeQueriesInFile()
+  executeQueriesInFile(Declarations.constructQueriesFile2, "https://dbpedia.org/sparql")
 
   def runQuery(endPoint: String, queryExecutor: QueryExecutor, query: Query): Future[Model] = future {
     val model = queryExecutor.executeQueryConstruct(query, endPoint)
