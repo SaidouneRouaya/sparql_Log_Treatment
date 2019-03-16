@@ -29,7 +29,7 @@ public class Consolidation {
     }*/
     public static void main(String[] args) {
 
-        String endPoint = "https://dbpedia.org/sparql";
+        /*String endPoint = "https://dbpedia.org/sparql";
         ArrayList<String> allLines = (ArrayList<String>) FileOperation.ReadFile(Declarations.constructQueriesFile);
         int size = allLines.size();
         int count = 0;
@@ -60,7 +60,7 @@ public class Consolidation {
                 System.out.println("****************************************");
                 }
 
-        }/*
+        }*/
         Model model = ModelFactory.createDefaultModel();
         Resource resourceCommune = new ResourceImpl("o1");
         model.add(new ResourceImpl("s1"),new PropertyImpl("p1"), resourceCommune);
@@ -69,7 +69,7 @@ public class Consolidation {
         model.add(resourceCommune,new PropertyImpl("p1"),new ResourceImpl("o4"));
         model.add(new ResourceImpl("s2"),new PropertyImpl("p2"),new ResourceImpl("o5"));
         model.add(new ResourceImpl("s2"),new PropertyImpl("p3"),new ResourceImpl("o3"));
-        //model.add(new ResourceImpl("o4"),new PropertyImpl("p3"),new ResourceImpl("s1"));
+        model.add(new ResourceImpl("o4"),new PropertyImpl("p3"),new ResourceImpl("o1"));
 
         HashMap<String,Model>  modelHashMap = Consolidation.getModelsofModel(model);
         Set<String> stringSet = modelHashMap.keySet();
@@ -81,8 +81,7 @@ public class Consolidation {
                 System.out.println(listStatements.next().toString());
 
             }
-        }*/
-
+        }
 
 
     }
@@ -190,9 +189,17 @@ public class Consolidation {
         {
             //System.out.println("je rentre ici");
             //System.out.println(" modeeel "+model);
-            if (!model.listSubjects().toList().contains(statement.getObject().asResource()))
+            boolean contains  = model.listSubjects().toList().contains(statement.getObject().asResource());
+            System.out.println("le contains "+contains);
+            if (!contains)
             //if (model.getResource(rdfNode.toString()))
-                internModel.add(getModelOfResource(statement.getObject().asResource(),internModel));
+            {
+                internModel.add(getModelOfResource(statement.getObject().asResource(), internModel));
+                return internModel;
+            }
+            else{
+                internModel = ModelFactory.createDefaultModel();
+            }
                 //internModel = internModel.union(getModelOfResource(statement.getObject().asResource(),internModel));
             //model.add();
         }
