@@ -64,6 +64,15 @@ object QueryExecutorParallel extends App {
   }
 
   def writeInLogFile(destinationFilePath: String, queries: ParSeq[String]) = {
+    val writer = new PrintWriter(new FileOutputStream(new File(destinationFilePath), true))
+
+    queries.foreach(query => writer.write(query.replaceAll("[\n\r]", "\t") + "\n"))
+
+    writer.close()
+  }
+
+
+  def writeInLogFile(destinationFilePath: String, queries: Vector[String]) = {
 
     val writer = new PrintWriter(new FileOutputStream(new File(destinationFilePath), true))
 
@@ -75,9 +84,29 @@ object QueryExecutorParallel extends App {
   executeQueriesInFile(Declarations.constructQueriesFile2, "https://dbpedia.org/sparql")
 
   def writeInTdb(models: ParSeq[Model]) = {
+    val tdb = new TdbOperation()
+    var nb_model = 0
+
+
+
 
     models.foreach(m => {
-      TdbOperation.originalDataSet.addNamedModel(m.listSubjects.next.toString, m)
+      nb_model += 1
+      TdbOperation.originalDataSet.addNamedModel("model_" + nb_model, m)
+    })
+
+
+  }
+
+  def writeInTdb(models: Vector[Model]) = {
+
+    val tdb = new TdbOperation()
+    var nb_model = 0
+
+
+    models.foreach(m => {
+      nb_model += 1
+      TdbOperation.originalDataSet.addNamedModel("model_" + nb_model, m)
     })
 
 
