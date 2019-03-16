@@ -36,6 +36,7 @@ object QueryExecutionParallelFuture extends App {
         val treatedGroupOfLines = groupOfLines.par.map {
 
           line => {
+            try {
             nb_req += 1
             println("Requete\t" + nb_req)
 
@@ -46,7 +47,9 @@ object QueryExecutionParallelFuture extends App {
               case null => Left(line)
 
             }.recover { case e: Exception => Left(line) }
-
+            } catch {
+              case ex: Exception => Future.successful(Left(line))
+            }
 
           }
 
