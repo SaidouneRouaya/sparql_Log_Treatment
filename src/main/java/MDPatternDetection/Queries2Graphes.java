@@ -12,6 +12,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import static MDfromLogQueries.Declarations.Declarations.constructQueriesFile;
+import static MDfromLogQueries.Declarations.Declarations.syntaxValidFile;
 import static java.util.concurrent.TimeUnit.SECONDS;
 
 public class Queries2Graphes {
@@ -29,7 +30,7 @@ public class Queries2Graphes {
      * to get the graph corresponding to each query
      **/
 
-    public static ArrayList<Query> TransformQueriesinFile(String filePath) {
+    public static ArrayList<Query> TransformQueriesInFile(String filePath) {
         new Constants(Declarations.dbPediaOntologyPath);
         //  ArrayList<Query> constructQueriesList = new ArrayList<>();
         ArrayList<Query> constructQueriesList = new ArrayList<>();
@@ -63,12 +64,12 @@ public class Queries2Graphes {
 
                     System.out.println("*  " + nb_line);
 
-                    if (nb_line == 10000) {
+                  /*  if (nb_line == 10000) {
                         constructQueriesListFinal.addAll(constructQueriesList);
-                        FileOperation.WriteConstructQueriesInFile(constructQueriesFile, constructQueriesList);
+
                         nb_line = 0;
                         constructQueriesList.clear();
-                    }
+                    }*/
 
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -76,13 +77,14 @@ public class Queries2Graphes {
                 }
 
             }
+            FileOperation.WriteConstructQueriesInFile(constructQueriesFile, constructQueriesList);
 
 
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        return constructQueriesListFinal;
+        return constructQueriesList;
     }
 
     public static ArrayList<Query> TransformQueriesinFile2(List<String> lines) {
@@ -131,7 +133,7 @@ public class Queries2Graphes {
     public static void main(String[] args)  {
         Stopwatch stopwatch = Stopwatch.createStarted();
 
-        // Queries2GraphesParallel.TransformQueriesInFile(syntaxValidFile);
+        Queries2Graphes.TransformQueriesInFile(syntaxValidFile);
 
         stopwatch.stop();
 

@@ -36,7 +36,6 @@ object Main2 extends App {
     writer.close()
   }
 
-  TransformQueriesInFile(syntaxValidFile2)
 
   //: util.ArrayList[Query]
   def TransformQueriesInFile(filePath: String) = {
@@ -49,16 +48,16 @@ object Main2 extends App {
     lines.grouped(100000).foreach {
 
       groupOfLines => {
+
         var nb_req = 0
-        //var nonValidQueries : ParSeq[Query] = ParSeq()
+
         val treatedGroupOfLines = groupOfLines.par.map {
           line => {
             nb_req = nb_req + 1
             println("* " + nb_req)
-            var query = QueryFactory.create()
             var constructedQuery = QueryFactory.create()
             try {
-              query = QueryFactory.create(line)
+              val query = QueryFactory.create(line)
               val queryUpdate = new QueryUpdate(query)
               constructedQuery = queryUpdate.toConstruct(query)
 
@@ -68,8 +67,7 @@ object Main2 extends App {
             } catch {
               case unknown => {
                 println("une erreur\n\n\n\n\n\n\n\n\n")
-                //nonValidQueries.+:(constructedQuery)
-                writeInLogFile(logFile, query)
+                writeInLogFile(logFile2, constructedQuery)
                 None
               }
             }
@@ -80,12 +78,13 @@ object Main2 extends App {
 
         println("--------------------- un group finished ---------------------------------- ")
 
-        writeInFile(constructQueriesFile, treatedGroupOfLines.collect { case Some(x) => x })
-        //writeInFile(logFile,nonValidQueries)
+        writeInFile(constructQueriesFile2, treatedGroupOfLines.collect { case Some(x) => x })
       }
     }
 
   }
+
+  TransformQueriesInFile(syntaxValidFile2)
 
 
   val duration = System.currentTimeMillis() - t1
