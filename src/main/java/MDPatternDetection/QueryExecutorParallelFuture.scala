@@ -8,13 +8,23 @@ import org.apache.jena.query.{Query, QueryFactory}
 import org.apache.jena.rdf.model.Model
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.{Future, future}
+import scala.concurrent.duration.Duration
+import scala.concurrent.{Await, Future, future}
 import scala.io.Source
 
 object QueryExecutionParallelFuture extends App {
 
   val t1 = System.currentTimeMillis()
+
+
   val duration = System.currentTimeMillis() - t1
+
+  executeQueriesInFile(Declarations.constructQueriesFile2, "https://dbpedia.org/sparql")
+
+  def runQuery(endPoint: String, queryExecutor: QueryExecutor, query: Query): Future[Model] = future {
+    val model = queryExecutor.executeQueryConstruct(query, endPoint)
+    model
+  }
 
   def executeQueriesInFile(filePath: String, endPoint: String) = {
 
@@ -24,14 +34,18 @@ object QueryExecutionParallelFuture extends App {
 
     val constructQueriesList = Source.fromFile(filePath).getLines
     val results = new util.ArrayList[Model]
+    var nb_req = 0
 
-
-    constructQueriesList.grouped(100000).foreach {
+    constructQueriesList.grouped(10000).foreach {
       groupOfLines => {
-        var nb_req = 0
+
+        if (nb_req < 1) {
+
+
         val timeFor100000 = System.currentTimeMillis()
 
         //var nonValidQueries : ParSeq[Query] = ParSeq()
+
 
         val treatedGroupOfLines = groupOfLines.par.map {
 
@@ -58,30 +72,20 @@ object QueryExecutionParallelFuture extends App {
 
         println("--------------------- un group finished ---------------------------------- ")
 
-        val seq = Future.sequence(treatedGroupOfLines)
-        seq.foreach(
-          listOfModels => {
-            val (correct, errors) = listOfModels.partition(_.isRight)
+          val seq = Await.result(Future.sequence(treatedGroupOfLines), Duration.Inf)
+          val (correct, errors) = seq.partition(_.isRight)
 
             writeInTdb(correct.collect { case Right(x) => x })
             writeInLogFile(Declarations.executionLogFile, errors.collect { case Left(line) => line })
-          }
-        )
-        val finish = System.currentTimeMillis() - timeFor100000
+
+          val finish = System.currentTimeMillis() - timeFor100000
         println("time for 100 000 req is   " + finish)
 
+      }
       }
 
     }
   }
-
-  executeQueriesInFile(Declarations.constructQueriesFile2, "https://dbpedia.org/sparql")
-
-  def runQuery(endPoint: String, queryExecutor: QueryExecutor, query: Query): Future[Model] = future {
-    val model = queryExecutor.executeQueryConstruct(query, endPoint)
-    model
-  }
-
   println(duration)
 
 }
