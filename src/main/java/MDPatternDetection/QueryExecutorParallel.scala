@@ -89,7 +89,7 @@ object QueryExecutorParallel extends App {
 
 
 
-
+    // je suis un commentaire
     models.foreach(m => {
       nb_model += 1
       TdbOperation.originalDataSet.addNamedModel("model_" + nb_model, m)
