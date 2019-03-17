@@ -4,6 +4,7 @@ import java.io.{File, FileOutputStream, PrintWriter}
 
 import MDfromLogQueries.Declarations.Declarations
 import MDfromLogQueries.Declarations.Declarations._
+import MDfromLogQueries.Util.Constants2
 
 import scala.collection.parallel.ParSeq
 import scala.io.Source
@@ -36,7 +37,7 @@ object SyntacticValidationParallel extends App {
               } else Right(None)
 
             } catch {
-              case unknown => {
+              case e : Exception => {
                 println("une erreur\n\n\n\n\n\n\n\n\n")
                 Left(line)
               }

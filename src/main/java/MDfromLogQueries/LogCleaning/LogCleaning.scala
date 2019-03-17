@@ -26,6 +26,7 @@ object Main extends App {
   val duration = System.currentTimeMillis() - t1
   /* Regex on wich is based the algorithm to extract the queries */
   private val PATTERN = Pattern.compile("[^\"]*\"(?:GET )?/sparql/?\\?([^\"\\s\\n]*)[^\"]*\".*")
+  //private val PATTERN = Pattern.compile("(sparql)(.*)")
   /* Statistical variables*/
   var nb_queries = 0
 
@@ -57,7 +58,8 @@ object Main extends App {
     val matcher = PATTERN.matcher(line)
 
     if (matcher.find) {
-      val requestStr = matcher.group(1)
+      val requestStr = matcher.group(1) //celui de dbpedia
+      //val requestStr = matcher.group(2) //Celui de british museum
       val queryStr = queryFromRequest(requestStr)
       if (queryStr != null) queryStr
       else requestStr

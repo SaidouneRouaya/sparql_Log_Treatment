@@ -1,13 +1,16 @@
 package MDPatternDetection;
 
+import MDfromLogQueries.Declarations.Declarations;
 import MDfromLogQueries.Util.FileOperation;
 import com.google.common.base.Stopwatch;
 import org.apache.jena.query.*;
 import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.sparql.engine.http.QueryEngineHTTP;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
 import static MDfromLogQueries.Declarations.Declarations.logFile;
@@ -37,7 +40,10 @@ public class QueryExecutor {
 
         return results;
     }
-
+    public static void main(String[] args) {
+        String endPoint = "https://dbpedia.org/sparql";
+        QueryExecutor.executeQuiersInFile2(Declarations.constructQueriesFile, endPoint);
+    }
     public static void executeQuiersInFile2(String filePath, String endPoint) {
         ArrayList<Model> results = new ArrayList<>();
 
@@ -70,16 +76,29 @@ public class QueryExecutor {
 
                 System.out.println("\nla transformation en construct \n");
 
-                ArrayList<Query> constructQueriesList = Queries2Graphes.TransformQueriesinFile2(allLines.subList(0, cpt));
+//                ArrayList<Query> constructQueriesList = Queries2Graphes.TransformQueriesinFile2(allLines.subList(0, cpt));
                 // Execution of each CONSTRUCT query
 
                 int num = 0;
+                Query query = QueryFactory.create();
                 System.out.println("\nL'execution des requetes \n");
-                for (Query query : constructQueriesList) {
+                for (String queryStr : allLines) {
                     num++;
+                    query=QueryFactory.create(queryStr);
                     System.out.println("exeution req " + num + "\n");
                     Model model;
                     if ((model = queryExecutor.executeQueryConstruct(query, endPoint)) != null) results.add(model);
+                    if (!model.isEmpty())
+                    {System.out.println("Le model :");
+                        Iterator<Statement> listStatements = model.listStatements();
+                        while (listStatements.hasNext()) {
+                            System.out.println(listStatements.next().toString());
+
+                        }
+                    System.out.println("Le sujet : "+model.listObjects().next().toString());}
+
+                    if (num ==10)
+                        return;
                 }
 
                 System.out.println("\nLa consolidation \n");
