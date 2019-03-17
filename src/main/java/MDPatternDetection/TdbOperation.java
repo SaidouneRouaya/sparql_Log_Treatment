@@ -25,6 +25,8 @@ public class TdbOperation {
 
     }
 
+    public TdbOperation() {
+    }
 
     public static boolean exists(String name, Dataset dt) {
 

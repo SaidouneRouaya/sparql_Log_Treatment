@@ -4,10 +4,8 @@ import java.io.{File, FileOutputStream, PrintWriter}
 import java.util
 
 import MDfromLogQueries.Declarations.Declarations
-import MDfromLogQueries.Declarations.Declarations.originalTdbDirectory
-import org.apache.jena.query.{Dataset, QueryFactory}
+import org.apache.jena.query.QueryFactory
 import org.apache.jena.rdf.model.{Model, ModelFactory}
-import org.apache.jena.tdb.TDBFactory
 
 import scala.collection.parallel.ParSeq
 import scala.io.Source
@@ -18,14 +16,12 @@ object QueryExecutorParallel extends App {
 
   val t1 = System.currentTimeMillis()
   val duration = System.currentTimeMillis() - t1
-  var i = 0
 
   def executeQueriesInFile(filePath: String, endPoint: String) = {
     val t1 = System.currentTimeMillis()
     var nb = 0
     val queryExecutor = new QueryExecutor
-    println(Declarations.tdbDirectory)
-    new TdbOperation
+
 
     val constructQueriesList = Source.fromFile(filePath).getLines
     val results = new util.ArrayList[Model]
@@ -43,9 +39,8 @@ object QueryExecutorParallel extends App {
               model = queryExecutor.executeQueryConstruct(query, endPoint)
               if (model != null) {
                 Right(Some(model))
-              } else {
-                Right(None)
-              }
+              } else Right(None)
+
             }
             catch {
               case exp: Exception => {
@@ -69,6 +64,15 @@ object QueryExecutorParallel extends App {
   }
 
   def writeInLogFile(destinationFilePath: String, queries: ParSeq[String]) = {
+    val writer = new PrintWriter(new FileOutputStream(new File(destinationFilePath), true))
+
+    queries.foreach(query => writer.write(query.replaceAll("[\n\r]", "\t") + "\n"))
+
+    writer.close()
+  }
+
+
+  def writeInLogFile(destinationFilePath: String, queries: Vector[String]) = {
 
     val writer = new PrintWriter(new FileOutputStream(new File(destinationFilePath), true))
 
@@ -77,13 +81,32 @@ object QueryExecutorParallel extends App {
     writer.close()
   }
 
-  executeQueriesInFile(Declarations.constructQueriesFile2, "http://bm.rkbexplorer.com/sparql/"/*"https://dbpedia.org/sparql"*/)
+  executeQueriesInFile(Declarations.constructQueriesFile2, "https://dbpedia.org/sparql")
 
   def writeInTdb(models: ParSeq[Model]) = {
+    val tdb = new TdbOperation()
+    var nb_model = 0
+
+
+
+    // je suis un commentaire
+    models.foreach(m => {
+      nb_model += 1
+      TdbOperation.originalDataSet.addNamedModel("model_" + nb_model, m)
+    })
+
+
+  }
+
+  def writeInTdb(models: Vector[Model]) = {
+
+    val tdb = new TdbOperation()
+    var nb_model = 0
+
 
     models.foreach(m => {
-      i+=1
-      TdbOperation.originalDataSet.addNamedModel("Result"+i, m)
+      nb_model += 1
+      TdbOperation.originalDataSet.addNamedModel("model_" + nb_model, m)
     })
 
 
