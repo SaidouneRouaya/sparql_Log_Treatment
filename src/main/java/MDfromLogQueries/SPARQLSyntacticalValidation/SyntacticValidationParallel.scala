@@ -37,7 +37,7 @@ object SyntacticValidationParallel extends App {
               } else Right(None)
 
             } catch {
-              case unknown => {
+              case e : Exception => {
                 println("une erreur\n\n\n\n\n\n\n\n\n")
                 Left(line)
               }

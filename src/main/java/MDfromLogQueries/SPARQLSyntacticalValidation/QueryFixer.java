@@ -125,7 +125,17 @@ public class QueryFixer {
             Matcher matcherEndOfRequest = endOfRequestPattern.matcher(queryStr);
             if (matcherEndOfRequest.find())
             {
-                String endofRequestStr = concatStr+matcherEndOfRequest.group(4);
+                String endofRequestStr = matcherEndOfRequest.group(4);
+                Pattern groupByPattern = Pattern.compile("(GROUP BY )");
+                Matcher matcherGroupBy = groupByPattern.matcher(endofRequestStr);
+                if(matcherGroupBy.find())
+                {
+                    endofRequestStr = endofRequestStr.replace(matcherGroupBy.group(0),concatStr);
+                }
+                else {
+                    endofRequestStr = concatStr+endofRequestStr;
+                }
+                endofRequestStr = endofRequestStr.replace(".","");
                 queryStr =  matcherEndOfRequest.group(2)+endofRequestStr;
             }
         }
@@ -134,7 +144,7 @@ public class QueryFixer {
 
     private static String aggregatorBetweenBrackets(String queryStr)
     {
-        Pattern aggregatorPattern = Pattern.compile("((COUNT|SUM|AVG|MIN|MAX)([\\(])([a-zA-Z ]*\\?[\\w_-]+)(\\))( as )+(\\?[\\w_-]+))",Pattern.CASE_INSENSITIVE);
+        Pattern aggregatorPattern = Pattern.compile("(COUNT|SUM|AVG|MIN|MAX)([ ]*[\\(])([* \\?\\w_-]*)(\\))( as )+(\\?[\\w_-]+)",Pattern.CASE_INSENSITIVE);
         Matcher mv = aggregatorPattern.matcher(queryStr);
         while (mv.find())
         {
@@ -181,7 +191,8 @@ public class QueryFixer {
         }catch (QueryParseException queryParseException)
         {
            System.out.println("erreur 2");
-            //System.out.println("+++++-*+++++*-+"+queryParseException.getMessage());
+            System.out.println("*****+-+-+-+-*****"+queryStr);
+            System.out.println("+++++-*+++++*-+"+queryParseException.getMessage());
         }
         catch (Exception e) {
           //  System.out.println("*****+-+-+-+-*****"+queryStr);

@@ -1,7 +1,7 @@
 package MDfromLogQueries.Declarations;
 
 public class Declarations {
-    public static String root = "C:\\Users\\KamilaB\\Desktop\\3CS\\Prototypage\\Step_1\\endpoints\\British_Museum\\Support_Files\\";
+    public static String root = "C:\\Users\\KamilaB\\Desktop\\3CS\\Prototypage\\Step_1\\endpoints\\Dihia\\Support_Files\\";
     public static String cleanedQueriesFile = root+"Resulting_Files\\FFichier_log_Nettoye_Complet_Parallel_Scala.txt";
     public static String cleanedQueriesFileCopie = root+"Resulting_Files\\Fichier_log_Nettoye_Complet_Parallel_Scala_Copie.txt";
 

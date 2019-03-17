@@ -44,7 +44,6 @@ object QueryExecutorParallel extends App {
               if (model != null) {
                 Right(Some(model))
               } else {
-
                 Right(None)
               }
             }
