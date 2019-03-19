@@ -29,14 +29,14 @@ public class Consolidation {
     }*/
     public static void main(String[] args) {
 
-        /*String endPoint = "https://dbpedia.org/sparql";
+        String endPoint = "https://dbpedia.org/sparql";
         ArrayList<String> allLines = (ArrayList<String>) FileOperation.ReadFile(Declarations.constructQueriesFile);
         int size = allLines.size();
         int count = 0;
         String queryStr;
         QueryExecutor queryExecutor = new QueryExecutor();
         ArrayList<Model> results = new ArrayList<>();
-        while (count <20)
+        while (count <6)
         {
             count++;
             queryStr = allLines.get(count);
@@ -60,7 +60,7 @@ public class Consolidation {
                 System.out.println("****************************************");
                 }
 
-        }*/
+        }/*
         Model model = ModelFactory.createDefaultModel();
         Resource resourceCommune = new ResourceImpl("o1");
         model.add(new ResourceImpl("s1"),new PropertyImpl("p1"), resourceCommune);
@@ -81,7 +81,7 @@ public class Consolidation {
                 System.out.println(listStatements.next().toString());
 
             }
-        }
+        }*/
 
 
     }
@@ -195,10 +195,9 @@ public class Consolidation {
             //if (model.getResource(rdfNode.toString()))
             {
                 internModel.add(getModelOfResource(statement.getObject().asResource(), internModel));
-                return internModel;
             }
             else{
-                internModel = ModelFactory.createDefaultModel();
+                internModel = internModel.remove(statement);
             }
                 //internModel = internModel.union(getModelOfResource(statement.getObject().asResource(),internModel));
             //model.add();

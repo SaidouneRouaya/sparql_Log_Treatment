@@ -7,6 +7,7 @@ import org.apache.jena.rdf.model.StmtIterator;
 import org.apache.jena.tdb.TDB;
 import org.apache.jena.tdb.TDBFactory;
 
+import javax.xml.crypto.Data;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -119,7 +120,19 @@ public class TdbOperation {
         }
     }
 
+    public static ArrayList<String> getDatasetNames(Dataset tdbDataset)
+    {
+        TDB.sync(tdbDataset);
+        ArrayList<String> namesList = new ArrayList<>();
+        // Model modell = dataset . getDefaultModel ();
+        Iterator<String> it = tdbDataset.listNames();
+        while (it.hasNext())
+        {
+            namesList.add(it.next());
+        }
 
+        return namesList;
+    }
 
     public static HashMap<String, Model> unpersistModelsMap() {
         HashMap<String, Model> results = new HashMap<>();
