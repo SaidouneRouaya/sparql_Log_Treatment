@@ -1,8 +1,6 @@
 package MDPatternDetection;
 
 
-import MDfromLogQueries.Declarations.Declarations;
-import Statistics.Statistis1;
 import com.google.common.base.Stopwatch;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Resource;
@@ -22,27 +20,36 @@ public class AppTest {
 
 
         Stopwatch stopwatch_total = Stopwatch.createStarted();
-        Stopwatch stopwatch_exec = Stopwatch.createStarted();
-        String endPoint = "https://dbpedia.org/sparql";
+        //Stopwatch stopwatch_exec = Stopwatch.createStarted();
+        // String endPoint = "https://dbpedia.org/sparql";
 
         // execution + annotation + persisting
-        QueryExecutor.executeQuiersInFile2(Declarations.syntaxValidFile, endPoint);
-        stopwatch_exec.stop();
+        //QueryExecutor.executeQuiersInFile2(Declarations.syntaxValidFile, endPoint);
+        //stopwatch_exec.stop();
+
+        HashMap<String, Model> results = TdbOperation.unpersistModelsMap(TdbOperation.originalDataSet);
+        ArrayList<Model> models = (ArrayList<Model>) results.values();
+
+
+        HashMap<String, Model> resultsHashMap = Consolidation.consolidate(models);
+
+        TdbOperation.persistNonAnnotated(resultsHashMap);
+
 
 
         HashMap<String, Model> modelHashMap;
         Stopwatch stopwatch_unpersist = Stopwatch.createStarted();
-        modelHashMap = TdbOperation.unpersistModelsMap();
+        //modelHashMap = TdbOperation.unpersistModelsMap();
         stopwatch_unpersist.stop();
 
         stopwatch_total.stop();
 
         Stopwatch stopwatch_stat = Stopwatch.createStarted();
-        Statistis1 statistis1 = new Statistis1();
-        statistis1.stat(modelHashMap);
+       /* Statistis1 statistis1 = new Statistis1();
+        statistis1.stat(modelHashMap);*/
         stopwatch_stat.stop();
 
-        System.out.println("\nTime elapsed for execution program is \t" + stopwatch_exec.elapsed(MILLISECONDS));
+        //System.out.println("\nTime elapsed for execution program is \t" + stopwatch_exec.elapsed(MILLISECONDS));
         System.out.println("\nTime elapsed for unpersist program is \t" + stopwatch_unpersist.elapsed(MILLISECONDS));
         System.out.println("\nTime elapsed for the statistics program is \t" + stopwatch_stat.elapsed(MILLISECONDS));
         System.out.println("\nTime elapsed for the whole program is \t" + stopwatch_total.elapsed(MILLISECONDS));
