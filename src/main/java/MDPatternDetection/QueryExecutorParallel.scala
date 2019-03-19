@@ -13,7 +13,7 @@ import scala.io.Source
 
 object QueryExecutorParallel extends App {
 
-
+  var nb_model = 0
   val t1 = System.currentTimeMillis()
   val duration = System.currentTimeMillis() - t1
 
@@ -100,15 +100,16 @@ object QueryExecutorParallel extends App {
 
   def writeInTdb(models: Vector[Model]) = {
 
-    val tdb = new TdbOperation()
-    var nb_model = 0
-
-
     models.foreach(m => {
-      nb_model += 1
-      TdbOperation.originalDataSet.addNamedModel("model_" + nb_model, m)
-    })
 
+      if (!m.isEmpty) {
+        nb_model += 1
+        TdbOperation
+          .originalDataSet
+          .addNamedModel("model_" + nb_model,
+            m)
+      }
+    })
 
   }
 
