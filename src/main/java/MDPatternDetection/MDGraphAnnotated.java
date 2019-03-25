@@ -2,6 +2,7 @@ package MDPatternDetection;
 
 import MDPatternDetection.AnnotationClasses.Annotations;
 import MDfromLogQueries.Util.Constants;
+import MDfromLogQueries.Util.ConstantsUtil;
 import com.google.common.base.Stopwatch;
 import org.apache.jena.query.Dataset;
 import org.apache.jena.rdf.model.Model;
@@ -31,7 +32,7 @@ public class MDGraphAnnotated {
     }
 
 
-    public static void constructMDGraphs(HashMap<String, Model> hashMapModels) {
+    public static HashMap<String, Model> constructMDGraphs(HashMap<String, Model> hashMapModels) {
         // HashMap<String , Model > results= new HashMap<>();
 
         Iterator it = hashMapModels.entrySet().iterator();
@@ -44,7 +45,7 @@ public class MDGraphAnnotated {
 
         }
 
-        //return hashMapModels;
+        return hashMapModels;
     }
 
 
@@ -53,6 +54,7 @@ public class MDGraphAnnotated {
         String propertyType;
         Statement statement;
         Property property;
+        ConstantsUtil constantsUtil = new ConstantsUtil();
         //Iterator<Resource> subjects = mdModel.listSubjects();
 
         subject = model.getResource(modelSubject);
@@ -105,7 +107,7 @@ public class MDGraphAnnotated {
             }
         }
 
-        // return model;
+         //return model;
     }
 
     public static void addDimensionLevels(Resource dimension) {
