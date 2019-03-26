@@ -6,6 +6,7 @@ import java.util
 import MDfromLogQueries.Declarations.Declarations
 import org.apache.jena.query.QueryFactory
 import org.apache.jena.rdf.model.{Model, ModelFactory}
+import org.apache.jena.tdb.TDB
 
 import scala.collection.parallel.ParSeq
 import scala.io.Source
@@ -102,14 +103,16 @@ object QueryExecutorParallel extends App {
 
     models.foreach(m => {
 
-      if (!m.isEmpty) {
+      if (m != null) {
         nb_model += 1
+        println("write "+nb_model)
         TdbOperation
           .originalDataSet
           .addNamedModel("model_" + nb_model,
             m)
       }
     })
+    TDB.sync(TdbOperation.originalDataSet)
 
   }
 

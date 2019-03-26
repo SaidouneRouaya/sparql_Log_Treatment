@@ -58,6 +58,8 @@ object Main2 extends App {
             var constructedQuery = QueryFactory.create()
             try {
               val query = QueryFactory.create(line)
+              if (query.isConstructType)
+                query.setQuerySelectType();
               val queryUpdate = new QueryUpdate(query)
               constructedQuery = queryUpdate.toConstruct(query)
 
@@ -67,7 +69,7 @@ object Main2 extends App {
             } catch {
               case unknown => {
                 println("une erreur\n\n\n\n\n\n\n\n\n")
-                writeInLogFile(logFile2, constructedQuery)
+                writeInLogFile(logFileConstruct, constructedQuery)
                 None
               }
             }

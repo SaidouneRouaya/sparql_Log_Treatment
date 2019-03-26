@@ -29,14 +29,14 @@ public class Consolidation {
     }*/
     public static void main(String[] args) {
 
-        String endPoint = "https://dbpedia.org/sparql";
-        ArrayList<String> allLines = (ArrayList<String>) FileOperation.ReadFile(Declarations.constructQueriesFile);
+        /*String endPoint = "https://dbpedia.org/sparql";
+        ArrayList<String> allLines = (ArrayList<String>) FileOperation.ReadFile(Declarations.constructQueriesFile2);
         int size = allLines.size();
-        int count = 0;
+        int count = 50;
         String queryStr;
         QueryExecutor queryExecutor = new QueryExecutor();
         ArrayList<Model> results = new ArrayList<>();
-        while (count <6)
+        while (count <100)
         {
             count++;
             queryStr = allLines.get(count);
@@ -44,7 +44,7 @@ public class Consolidation {
             Model model;
             System.out.println("req : "+count);
             if ((model = queryExecutor.executeQueryConstruct(query, endPoint)) != null) results.add(model);
-            if (!model.isEmpty())
+            if (model != null && !model.isEmpty())
             {
                 HashMap<String,Model>  modelHashMap = Consolidation.getModelsofModel(model);
                 Set<String> stringSet = modelHashMap.keySet();
@@ -60,7 +60,7 @@ public class Consolidation {
                 System.out.println("****************************************");
                 }
 
-        }/*
+        }*/
         Model model = ModelFactory.createDefaultModel();
         Resource resourceCommune = new ResourceImpl("o1");
         model.add(new ResourceImpl("s1"),new PropertyImpl("p1"), resourceCommune);
@@ -81,8 +81,7 @@ public class Consolidation {
                 System.out.println(listStatements.next().toString());
 
             }
-        }*/
-
+        }
 
     }
 
@@ -127,10 +126,12 @@ public class Consolidation {
         Statement statement;
         String subject;
         HashMap<String, Model> modelHashMap = new HashMap<>();
+        int nb =0;
         // create a pair <String, Model> where the key (String à is the subject of the statements that compose the model (value)
 
         // For every model in modelArrayList
         for (Model m : modelArrayList) {
+            try{
 
             Iterator<Statement> list = m.listStatements();
             // For every Statement in the model
@@ -147,6 +148,13 @@ public class Consolidation {
                     modelHashMap.get(subject).add(statement);
                 }
             }
+            nb++;
+                System.out.println("modele "+nb);
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+            }
 
         }
         return modelHashMap;
@@ -155,9 +163,21 @@ public class Consolidation {
     public static HashMap<String,Model> toStringModelsHashmap2(ArrayList<Model> modelArrayList)
     {
         HashMap<String,Model> modelHashMap = new HashMap<>();
+        HashMap<String,Model> modelsFromOneModel;
         for (Model m : modelArrayList)
         {
-            modelHashMap.putAll(getModelsofModel(m));
+            modelsFromOneModel =  getModelsofModel(m);
+            for (String key : modelsFromOneModel.keySet())
+            {
+                if(modelHashMap.containsKey(key))
+                {
+                    modelHashMap.replace(key,modelHashMap.get(key).union(modelsFromOneModel.get(key)));
+                }
+                else
+                {
+                    modelHashMap.put(key, modelsFromOneModel.get(key));
+                }
+            }
         }
         return modelHashMap;
     }
@@ -172,29 +192,32 @@ public class Consolidation {
             Model resourceModel = ModelFactory.createDefaultModel();
             if (!rdfNodeList.contains(resource))
             {
-                modelHashMap.put(resource.getURI(),getModelOfResource(resource,resourceModel));
+                ArrayList<RDFNode> visitedNodes = new ArrayList<>();
+                visitedNodes.add(resource);
+                modelHashMap.put(resource.getURI(),getModelOfResource(resource,resourceModel,visitedNodes));
             }
         }
         return modelHashMap;
     }
 
-    public static Model getModelOfResource(Resource resource, Model model)
+    public static Model getModelOfResource(Resource resource, Model model, ArrayList<RDFNode> visitedNodes )
     {
         StmtIterator stmtIterator = resource.listProperties();
         Model internModel = stmtIterator.toModel();
-        System.out.println(" le modele louwel "+resource+" "+internModel);
-        System.out.println(" modeeelddd "+model);
+        //System.out.println(" le modele louwel "+resource+" "+internModel);
+        //System.out.println(" modeeelddd "+model);
         List<Statement> list =resource.listProperties().toList();
         for(Statement statement : list)
         {
             //System.out.println("je rentre ici");
             //System.out.println(" modeeel "+model);
-            boolean contains  = model.listSubjects().toList().contains(statement.getObject().asResource());
-            System.out.println("le contains "+contains);
+            boolean contains  = visitedNodes.contains(statement.getObject().asResource());
+            //System.out.println("le contains "+contains);
             if (!contains)
             //if (model.getResource(rdfNode.toString()))
             {
-                internModel.add(getModelOfResource(statement.getObject().asResource(), internModel));
+                visitedNodes.add(statement.getObject());
+                internModel.add(getModelOfResource(statement.getObject().asResource(), internModel, visitedNodes));
             }
             else{
                 internModel = internModel.remove(statement);
