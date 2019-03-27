@@ -11,6 +11,8 @@ import org.apache.jena.rdf.model.StmtIterator;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 
@@ -486,13 +488,13 @@ public class FileOperation {
                 i++;
                 bw.write("*********************************Graph number "+i+" ************************************************\n");
 
-                StmtIterator stmtIterator = stat.getModel().listStatements();
+               /* StmtIterator stmtIterator = stat.getModel().listStatements();
                 int j = 0;
                 while (stmtIterator.hasNext())
                 {
                     j++;
                     bw.write(j+". "+stmtIterator.nextStatement()+"\n");
-                }
+                }*/
 
                 bw.write("------------------------------------------------------------------\n");
 
@@ -508,6 +510,43 @@ public class FileOperation {
                 bw.write("Number of hierarchy relationships of the star S\t:\tNH(S) =\t" + stat.getNH() + "\n");
                 bw.write("Maximum depth of the hierarchy relationships of the star S\t:\tDHP(S)  =\t" + stat.getDHP() + "\n");
                 bw.write("Ratio of attributes of the star S\t:\tRSA(S) =\t" + stat.getRSA() + "\n");
+                bw.write("*********************************************************************************\n");
+
+            }
+            bw.flush();
+        } catch (
+                IOException e) {
+            System.out.println("Impossible file creation");
+        } finally {
+
+            try {
+                bw.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        }
+    }
+    public static void writeModelsInFile(HashMap<String, Model> models, String writingFilePath) {
+        File file = new File(writingFilePath);
+        BufferedWriter bw = null;
+        try {
+            if (!file.isFile()) file.createNewFile();
+            bw = new BufferedWriter(new FileWriter(file, true));
+            int i =0;
+            Set<String> keys = models.keySet();
+            for (String key : keys) {
+                i++;
+                bw.write("*********************************Graph number "+i+" "+key +" ************************************************\n");
+
+                StmtIterator stmtIterator = models.get(key).listStatements();
+                int j = 0;
+                while (stmtIterator.hasNext())
+                {
+                    j++;
+                    bw.write(j+". "+stmtIterator.nextStatement()+"\n");
+                }
+
                 bw.write("*********************************************************************************\n");
 
             }
