@@ -6,13 +6,10 @@ import org.apache.jena.query.Query;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Statement;
-import org.apache.jena.rdf.model.StmtIterator;
 
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 
@@ -441,41 +438,43 @@ public class FileOperation {
 
     }
 }*/
-     public static void writeStatisticsInFile2(String writingFilePath, Statistics1 statistics1) {
-         File file = new File(writingFilePath);
-         BufferedWriter bw = null;
-         try {
-             if (!file.isFile()) file.createNewFile();
-             bw = new BufferedWriter(new FileWriter(file, true));
+
+    public static void writeStatisticsInFile2(Statistics1 statistics1, String typeStat, String writingFilePath) {
+        File file = new File(writingFilePath);
+        BufferedWriter bw = null;
+        try {
+            if (!file.isFile()) file.createNewFile();
+            bw = new BufferedWriter(new FileWriter(file, true));
 
 
-             bw.write("Total number of classes of the star S\t:\tNC(S) =\t" + statistics1.getNC() + "\n");
-             bw.write("Number of fact classes of the start S\t:\tNFC(S) =\t" + statistics1.getNFC() + "\n");
-             bw.write("Number of dimension classes of the star S \t:\tNDC(S) =\t" + statistics1.getNDC() + "\n");
-             bw.write("Number of base classes of the star S\t:\t =\tNBC(S) =\t" + statistics1.getNBC() + "\n");
-             bw.write("Ratio of base classes. Number of base classes per dimension class of the star S\t:\tRBC(S) =\t" + statistics1.getRBC() + "\n");
-             bw.write("Number of Fact Attributes attributes of the fact class of the star S\t:\tNAFC(S) =\t" + statistics1.getNAFC() + "\n");
-             bw.write("Number of Dimension and Dimension Attributes of the dimension classes of the star S\t:\tNADC(S) =\t" + statistics1.getNADC() + "\n");
-             bw.write("Number of  Dimension and Dimension Attributes of the base classes of the star S\t:\tNABC(S) =\t" + statistics1.getNABC() + "\n");
-             bw.write("Total number of Fact Attributes, Dimensions and Dimension attributes of the star S\t:\tNA(S) =\t" + statistics1.getNA() + "\n");
-             bw.write("Number of hierarchy relationships of the star S\t:\tNH(S) =\t" + statistics1.getNH() + "\n");
-             bw.write("Maximum depth of the hierarchy relationships of the star S\t:\tDHP(S)  =\t" + statistics1.getDHP() + "\n");
-             bw.write("Ratio of attributes of the star S\t:\tRSA(S) =\t" + statistics1.getRSA() + "\n");
+            bw.write("\n****************************** " + typeStat + " *******************************************");
+            bw.write("Total number of classes of the star S\t:\tNC(S) =\t" + statistics1.getNC() + "\n");
+            bw.write("Number of fact classes of the start S\t:\tNFC(S) =\t" + statistics1.getNFC() + "\n");
+            bw.write("Number of dimension classes of the star S \t:\tNDC(S) =\t" + statistics1.getNDC() + "\n");
+            bw.write("Number of base classes of the star S\t:\t =\tNBC(S) =\t" + statistics1.getNBC() + "\n");
+            bw.write("Ratio of base classes. Number of base classes per dimension class of the star S\t:\tRBC(S) =\t" + statistics1.getRBC() + "\n");
+            bw.write("Number of Fact Attributes attributes of the fact class of the star S\t:\tNAFC(S) =\t" + statistics1.getNAFC() + "\n");
+            bw.write("Number of Dimension and Dimension Attributes of the dimension classes of the star S\t:\tNADC(S) =\t" + statistics1.getNADC() + "\n");
+            bw.write("Number of  Dimension and Dimension Attributes of the base classes of the star S\t:\tNABC(S) =\t" + statistics1.getNABC() + "\n");
+            bw.write("Total number of Fact Attributes, Dimensions and Dimension attributes of the star S\t:\tNA(S) =\t" + statistics1.getNA() + "\n");
+            bw.write("Number of hierarchy relationships of the star S\t:\tNH(S) =\t" + statistics1.getNH() + "\n");
+            bw.write("Maximum depth of the hierarchy relationships of the star S\t:\tDHP(S)  =\t" + statistics1.getDHP() + "\n");
+            bw.write("Ratio of attributes of the star S\t:\tRSA(S) =\t" + statistics1.getRSA() + "\n");
+            bw.write("****************************** Fin de " + typeStat + " *******************************************\n");
+            bw.flush();
+        } catch (
+                IOException e) {
+            System.out.println("Impossible file creation");
+        } finally {
 
-             bw.flush();
-         } catch (
-                 IOException e) {
-             System.out.println("Impossible file creation");
-         } finally {
+            try {
+                bw.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
 
-             try {
-                 bw.close();
-             } catch (IOException e) {
-                 e.printStackTrace();
-             }
-
-         }
-     }
+        }
+    }
 
     public static void writeStatisticsListInFile(ArrayList<Statistics1> statistisArrayList, String writingFilePath) {
         File file = new File(writingFilePath);
@@ -483,10 +482,10 @@ public class FileOperation {
         try {
             if (!file.isFile()) file.createNewFile();
             bw = new BufferedWriter(new FileWriter(file, true));
-            int i =0;
+            int i = 0;
             for (Statistics1 stat : statistisArrayList) {
                 i++;
-                bw.write("*********************************Graph number "+i+" ************************************************\n");
+                bw.write("********************************* Graph number " + i + " ************************************************\n");
 
                /* StmtIterator stmtIterator = stat.getModel().listStatements();
                 int j = 0;
@@ -510,43 +509,6 @@ public class FileOperation {
                 bw.write("Number of hierarchy relationships of the star S\t:\tNH(S) =\t" + stat.getNH() + "\n");
                 bw.write("Maximum depth of the hierarchy relationships of the star S\t:\tDHP(S)  =\t" + stat.getDHP() + "\n");
                 bw.write("Ratio of attributes of the star S\t:\tRSA(S) =\t" + stat.getRSA() + "\n");
-                bw.write("*********************************************************************************\n");
-
-            }
-            bw.flush();
-        } catch (
-                IOException e) {
-            System.out.println("Impossible file creation");
-        } finally {
-
-            try {
-                bw.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-        }
-    }
-    public static void writeModelsInFile(HashMap<String, Model> models, String writingFilePath) {
-        File file = new File(writingFilePath);
-        BufferedWriter bw = null;
-        try {
-            if (!file.isFile()) file.createNewFile();
-            bw = new BufferedWriter(new FileWriter(file, true));
-            int i =0;
-            Set<String> keys = models.keySet();
-            for (String key : keys) {
-                i++;
-                bw.write("*********************************Graph number "+i+" "+key +" ************************************************\n");
-
-                StmtIterator stmtIterator = models.get(key).listStatements();
-                int j = 0;
-                while (stmtIterator.hasNext())
-                {
-                    j++;
-                    bw.write(j+". "+stmtIterator.nextStatement()+"\n");
-                }
-
                 bw.write("*********************************************************************************\n");
 
             }
@@ -613,7 +575,6 @@ public class FileOperation {
 
         }
     }
-
 }
 
 

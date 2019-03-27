@@ -25,7 +25,10 @@ object QueryExecutorParallel extends App {
 
 
     val constructQueriesList = Source.fromFile(filePath).getLines
+
+
     val results = new util.ArrayList[Model]
+
     constructQueriesList.grouped(100000).foreach {
       groupOfLines => {
         var nb_req = 0

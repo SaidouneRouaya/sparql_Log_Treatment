@@ -1,13 +1,6 @@
 package MDPatternDetection;
 
-import MDfromLogQueries.Declarations.Declarations;
-import MDfromLogQueries.Util.FileOperation;
-import org.apache.jena.graph.NodeFactory;
-import org.apache.jena.query.Query;
-import org.apache.jena.query.QueryFactory;
 import org.apache.jena.rdf.model.*;
-import org.apache.jena.rdf.model.impl.PropertyImpl;
-import org.apache.jena.rdf.model.impl.ResourceImpl;
 
 import java.util.*;
 
@@ -15,124 +8,56 @@ import java.util.*;
 public class Consolidation {
 
 
-    /*public static void main(String[] args) {
 
-        String endPoint = "https://dbpedia.org/sparql";
-        ArrayList<Model> results = QueryExecutor.executeQuiersInFile(syntaxValidFileTest, endPoint);
 
-        AppTest.afficherModels(results);
-
-        System.out.println("\n\n ------------------ consolidation Results -------------------\n\n");
-        HashMap<String, Model> map = consolidate(results);
-        afficherListInformations(map);
-
-    }*/
     public static void main(String[] args) {
+        HashMap<String, Model> modelHashMap = TdbOperation.unpersistModelsMap(TdbOperation.originalDataSet);
 
-        /*String endPoint = "https://dbpedia.org/sparql";
-        ArrayList<String> allLines = (ArrayList<String>) FileOperation.ReadFile(Declarations.constructQueriesFile2);
-        int size = allLines.size();
-        int count = 50;
-        String queryStr;
-        QueryExecutor queryExecutor = new QueryExecutor();
-        ArrayList<Model> results = new ArrayList<>();
-        while (count <100)
-        {
-            count++;
-            queryStr = allLines.get(count);
-            Query query = QueryFactory.create(queryStr);
-            Model model;
-            System.out.println("req : "+count);
-            if ((model = queryExecutor.executeQueryConstruct(query, endPoint)) != null) results.add(model);
-            if (model != null && !model.isEmpty())
-            {
-                HashMap<String,Model>  modelHashMap = Consolidation.getModelsofModel(model);
-                Set<String> stringSet = modelHashMap.keySet();
-                for (String key : stringSet)
-                {
-                    System.out.println("Le model :");
-                    Iterator<Statement> listStatements = modelHashMap.get(key).listStatements();
-                    while (listStatements.hasNext()) {
-                        System.out.println(listStatements.next().toString());
+        System.out.println("******************* taille de Hashmap : " + modelHashMap.size());
 
-                    }
-                }
-                System.out.println("****************************************");
-                }
+        HashMap<String, Model> modelHashMapResult = consolidate(modelHashMap.values());
 
-        }*/
-        Model model = ModelFactory.createDefaultModel();
-        Resource resourceCommune = new ResourceImpl("o1");
-        model.add(new ResourceImpl("s1"),new PropertyImpl("p1"), resourceCommune);
-        model.add(new ResourceImpl("s1"),new PropertyImpl("p2"),new ResourceImpl("o2"));
-        model.add(new ResourceImpl("s1"),new PropertyImpl("p3"),new ResourceImpl("o3"));
-        model.add(resourceCommune,new PropertyImpl("p1"),new ResourceImpl("o4"));
-        model.add(new ResourceImpl("s2"),new PropertyImpl("p2"),new ResourceImpl("o5"));
-        model.add(new ResourceImpl("s2"),new PropertyImpl("p3"),new ResourceImpl("o3"));
-        model.add(new ResourceImpl("o4"),new PropertyImpl("p3"),new ResourceImpl("o1"));
-
-        HashMap<String,Model>  modelHashMap = Consolidation.getModelsofModel(model);
-        Set<String> stringSet = modelHashMap.keySet();
-        for (String key : stringSet)
-        {
-            System.out.println("Le model :");
-            Iterator<Statement> listStatements = modelHashMap.get(key).listStatements();
-            while (listStatements.hasNext()) {
-                System.out.println(listStatements.next().toString());
-
-            }
-        }
+        System.out.println("******************* taille de Hashmap result : " + modelHashMapResult.size());
+        System.out.println(" ----------------------------- finish --------------------------------------");
 
     }
 
-    //TODO enlever cella
-    public static void afficherListInformations(HashMap<String, Model> listInfoNodes) {
 
-        Iterator it = listInfoNodes.entrySet().iterator();
+    public static HashMap<String, Model> consolidate(Collection<Model> modelArrayList) {
 
-        System.out.println(" Afichage des résultats \n");
-
-
-        while (it.hasNext()) {
-            Map.Entry<String, Model> pair = (Map.Entry) it.next();
-
-            System.out.println(" Subject: \t\t " + pair.getKey() + "\n");
-            Iterator<Statement> listStatements = pair.getValue().listStatements();
-            while (listStatements.hasNext()) {
-                System.out.println(listStatements.next().toString());
-
-            }
-
-            System.out.println("\n______________________________________________________________________\n");
-
-        }
-    }
-
-
-    public static HashMap<String, Model> consolidate(ArrayList<Model> modelArrayList) {
 
         if (modelArrayList.size() == 0) {
             System.out.println("\nresults vide\n");
             return null;
         }
-        return consolidate(toStringModelHashMap(modelArrayList));
+
+        toStringModelHashMap(modelArrayList);
+
+        HashMap<String, Model> resultsHashMap = TdbOperation.unpersistModelsMap(TdbOperation._toString);
+
+        return consolidate(resultsHashMap);
     }
+
 
     /** Transforms an Array list of models to a hashmap
      * where the key is a subject and the value is the corresponding model
      */
 
-    public static HashMap<String, Model> toStringModelHashMap(ArrayList<Model> modelArrayList) {
+    public static void toStringModelHashMap(Collection<Model> modelArrayList) {
         Statement statement;
         String subject;
+        int num = 0;
         HashMap<String, Model> modelHashMap = new HashMap<>();
-        int nb =0;
         // create a pair <String, Model> where the key (String à is the subject of the statements that compose the model (value)
 
         // For every model in modelArrayList
-        for (Model m : modelArrayList) {
-            try{
 
+        Iterator<Model> it = modelArrayList.iterator();
+
+        while (it.hasNext()) {
+            Model m = it.next();
+            num++;
+            System.out.println(" model num : " + num);
             Iterator<Statement> list = m.listStatements();
             // For every Statement in the model
             while (list.hasNext()) {
@@ -148,36 +73,26 @@ public class Consolidation {
                     modelHashMap.get(subject).add(statement);
                 }
             }
-            nb++;
-                System.out.println("modele "+nb);
-            }
-            catch (Exception e)
-            {
-                e.printStackTrace();
+            if (num == 10000) {
+                System.out.println("taille avant persist  " + modelHashMap.size());
+                TdbOperation.persistNonAnnotated(modelHashMap, TdbOperation._toString);
+                modelHashMap.clear();
+                num = 0;
             }
 
+            modelArrayList.remove(m);
+            it = modelArrayList.iterator();
         }
-        return modelHashMap;
+
+        // return modelHashMap;
     }
 
     public static HashMap<String,Model> toStringModelsHashmap2(ArrayList<Model> modelArrayList)
     {
         HashMap<String,Model> modelHashMap = new HashMap<>();
-        HashMap<String,Model> modelsFromOneModel;
         for (Model m : modelArrayList)
         {
-            modelsFromOneModel =  getModelsofModel(m);
-            for (String key : modelsFromOneModel.keySet())
-            {
-                if(modelHashMap.containsKey(key))
-                {
-                    modelHashMap.replace(key,modelHashMap.get(key).union(modelsFromOneModel.get(key)));
-                }
-                else
-                {
-                    modelHashMap.put(key, modelsFromOneModel.get(key));
-                }
-            }
+            modelHashMap.putAll(getModelsofModel(m));
         }
         return modelHashMap;
     }
@@ -192,35 +107,28 @@ public class Consolidation {
             Model resourceModel = ModelFactory.createDefaultModel();
             if (!rdfNodeList.contains(resource))
             {
-                ArrayList<RDFNode> visitedNodes = new ArrayList<>();
-                visitedNodes.add(resource);
-                modelHashMap.put(resource.getURI(),getModelOfResource(resource,resourceModel,visitedNodes));
+                modelHashMap.put(resource.getURI(),getModelOfResource(resource,resourceModel));
             }
         }
         return modelHashMap;
     }
 
-    public static Model getModelOfResource(Resource resource, Model model, ArrayList<RDFNode> visitedNodes )
+    public static Model getModelOfResource(Resource resource, Model model)
     {
         StmtIterator stmtIterator = resource.listProperties();
         Model internModel = stmtIterator.toModel();
-        //System.out.println(" le modele louwel "+resource+" "+internModel);
-        //System.out.println(" modeeelddd "+model);
         List<Statement> list =resource.listProperties().toList();
         for(Statement statement : list)
         {
-            //System.out.println("je rentre ici");
-            //System.out.println(" modeeel "+model);
-            boolean contains  = visitedNodes.contains(statement.getObject().asResource());
-            //System.out.println("le contains "+contains);
+
+            boolean contains  = model.listSubjects().toList().contains(statement.getObject().asResource());
             if (!contains)
-            //if (model.getResource(rdfNode.toString()))
             {
-                visitedNodes.add(statement.getObject());
-                internModel.add(getModelOfResource(statement.getObject().asResource(), internModel, visitedNodes));
+                internModel.add(getModelOfResource(statement.getObject().asResource(), internModel));
+                return internModel;
             }
             else{
-                internModel = internModel.remove(statement);
+                internModel = ModelFactory.createDefaultModel();
             }
                 //internModel = internModel.union(getModelOfResource(statement.getObject().asResource(),internModel));
             //model.add();
@@ -287,6 +195,30 @@ public class Consolidation {
         }
         return newResults;
     }
+
+    //TODO enlever cella
+    public static void afficherListInformations(HashMap<String, Model> listInfoNodes) {
+
+        Iterator it = listInfoNodes.entrySet().iterator();
+
+        System.out.println(" Afichage des résultats \n");
+
+
+        while (it.hasNext()) {
+            Map.Entry<String, Model> pair = (Map.Entry) it.next();
+
+            System.out.println(" Subject: \t\t " + pair.getKey() + "\n");
+            Iterator<Statement> listStatements = pair.getValue().listStatements();
+            while (listStatements.hasNext()) {
+                System.out.println(listStatements.next().toString());
+
+            }
+
+            System.out.println("\n______________________________________________________________________\n");
+
+        }
+    }
+
 
 
 

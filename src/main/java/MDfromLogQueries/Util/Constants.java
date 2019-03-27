@@ -184,14 +184,13 @@ public class Constants {
             return "objectProperty";
         }
 
-        /* if property is another property without type identified */
+        /* if property is another property without type identified
+         * */
         else if(isOtherProperty(property) || findProperty(property))
         {
             return "otherProperty";
-
-        }
-        else
-            return selectPropertyFromEnpoint(property,endpoint);
+        } else return "notFound";
+        //else return selectPropertyFromEnpoint(property,endpoint);
     }
 
     private static boolean findProperty(Property property)

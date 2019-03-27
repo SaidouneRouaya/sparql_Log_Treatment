@@ -110,7 +110,7 @@ public class QueryExecutor {
                     // persist before annotate
                     System.out.println("\n le persisting 1  \n");
                     stopwatch_persist1 = Stopwatch.createStarted();
-                    TdbOperation.persistNonAnnotated(modelHashMap);
+                    // TdbOperation.persistNonAnnotated(modelHashMap);
                     stopwatch_persist1.stop();
 
                     // annotation
@@ -123,7 +123,7 @@ public class QueryExecutor {
                     // persisting
                     System.out.println("\n le persisting 2 \n");
                     stopwatch_persist2 = Stopwatch.createStarted();
-                    TdbOperation.persistAnnotatedHashMap(modelHashMap);
+                    // TdbOperation.persistAnnotatedHashMap(modelHashMap);
                     stopwatch_persist2.stop();
                 }
                 lines = allLines.subList(0, cpt);
