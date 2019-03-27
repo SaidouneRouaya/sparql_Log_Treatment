@@ -1,9 +1,9 @@
 package MDPatternDetection;
 
+import MDfromLogQueries.Declarations.Declarations;
 import org.apache.jena.query.Dataset;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ResourceFactory;
-import org.apache.jena.rdf.model.StmtIterator;
 import org.apache.jena.tdb.TDB;
 import org.apache.jena.tdb.TDBFactory;
 
@@ -19,7 +19,10 @@ import static MDfromLogQueries.Declarations.Declarations.tdbDirectory;
 public class TdbOperation {
     private static Dataset dataset = TDBFactory.createDataset(tdbDirectory);
     public static Dataset originalDataSet = TDBFactory.createDataset(originalTdbDirectory);
-    private static Dataset originalDataSet2 = TDBFactory.createDataset(originalTdbDirectory);
+    public static Dataset _toString = TDBFactory.createDataset(Declarations._toString);
+    public static Dataset dataSetConsolidate = TDBFactory.createDataset(Declarations.dataSetConsolidated);
+    public static Dataset dataSetAnnotated = TDBFactory.createDataset(Declarations.dataSetAnnotated);
+
 
     public static void main(String... argv) {
 
@@ -50,22 +53,22 @@ public class TdbOperation {
     }
 
 
-    public static void persistNonAnnotated(HashMap<String, Model> modelHashMap) {
+    public static void persistNonAnnotated(HashMap<String, Model> modelHashMap, Dataset originalDataSetStringModel) {
         try {
             //Dataset dataset = DatasetFactory.create(model);
 
             Iterator it = modelHashMap.entrySet().iterator();
-
+            int nb = 0;
             while (it.hasNext()) {
-
+                nb++;
+                System.out.println(" next model " + nb);
                 Map.Entry<String, Model> pair = (Map.Entry) it.next();
 
-                if (exists(pair.getKey(), originalDataSet2)) {
-                    originalDataSet2.getNamedModel(pair.getKey()).add(pair.getValue());
+                if (exists(pair.getKey(), originalDataSetStringModel)) {
+                    originalDataSetStringModel.getNamedModel(pair.getKey()).add(pair.getValue());
+
                 } else {
-                    originalDataSet2.addNamedModel(pair.getKey(), pair.getValue());
-
-
+                    originalDataSetStringModel.addNamedModel(pair.getKey(), pair.getValue());
                 }
             }
 
@@ -74,21 +77,19 @@ public class TdbOperation {
         }
     }
 
-    public static void persistAnnotatedHashMap(HashMap<String, Model> modelHashMap) {
+    public static void persistAnnotatedHashMap(HashMap<String, Model> modelHashMap, Dataset dataset) {
 
 
         try {
 
-            //;
-            //Dataset dataset = DatasetFactory.create(model);
 
             Iterator it = modelHashMap.entrySet().iterator();
-
+            int nb = 0;
             while (it.hasNext()) {
+                nb++;
 
                 Map.Entry<String, Model> pair = (Map.Entry) it.next();
-
-                //Verify if the model exists already in the tdb
+                System.out.println("persist next model " + nb);
 
                 if (exists(pair.getKey(), dataset)) {
                     dataset.getNamedModel(pair.getKey()).add(pair.getValue());
@@ -120,40 +121,75 @@ public class TdbOperation {
     }
 
 
-
-    public static HashMap<String, Model> unpersistModelsMap() {
+    public static HashMap<String, Model> unpersistModelsMap(Dataset dataset) {
         HashMap<String, Model> results = new HashMap<>();
 
         //Dataset dataset = TDBFactory.createDataset(tdbDirectory);
 
 
         TDB.sync(dataset);
+        if (dataset == null) return null;
 
-
-        // Model modell = dataset . getDefaultModel ();
-
+        boolean finish = false;
         Iterator<String> it = dataset.listNames();
+
+
         String name;
-        // it.next();
 
         try {
+
             while (it.hasNext()) {
                 name = it.next();
-                // Model model = dataset.getNamedModel(name);
-                Model model = dataset.getNamedModel(name);
 
-                StmtIterator stmtIterator = model.listStatements();
-
-                while (stmtIterator.hasNext()) {
-                    System.out.println(stmtIterator.next() + "\n*\n");
+                while (name == null) {
+                    name = it.next();
                 }
 
-                results.put(name, model);
+                Model model = dataset.getNamedModel(name);
+
+                if (name != null && model != null) results.put(name, model);
             }
+
+
+
         } catch (Exception e) {
             e.printStackTrace();
         }
 
+
+        System.out.println("taille de la liste  " + results.size());
+        return results;
+    }
+
+
+    public static ArrayList<String> unpersistListOfNames(Dataset dataset) {
+
+        // dataset=originalDataSet;
+        TDB.sync(dataset);
+
+        if (dataset == null) return null;
+
+        ArrayList<String> results = new ArrayList<>();
+
+        Iterator<String> it = dataset.listNames();
+
+        try {
+
+            while (it.hasNext()) {
+                String name = it.next();
+                while (name == null) {
+                    name = it.next();
+                }
+
+                results.add(name);
+
+            }
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        System.out.println("taille de la liste  " + results.size());
         return results;
     }
 

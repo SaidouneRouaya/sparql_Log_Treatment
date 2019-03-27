@@ -24,7 +24,10 @@ object QueryExecutorParallel extends App {
 
 
     val constructQueriesList = Source.fromFile(filePath).getLines
+
+
     val results = new util.ArrayList[Model]
+
     constructQueriesList.grouped(100000).foreach {
       groupOfLines => {
         var nb_req = 0
@@ -102,7 +105,7 @@ object QueryExecutorParallel extends App {
 
     models.foreach(m => {
 
-      if (!m.isEmpty) {
+      if (m != null) {
         nb_model += 1
         TdbOperation
           .originalDataSet
