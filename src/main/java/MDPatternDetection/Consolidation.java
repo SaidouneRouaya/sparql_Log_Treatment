@@ -117,17 +117,12 @@ public class Consolidation {
     {
         StmtIterator stmtIterator = resource.listProperties();
         Model internModel = stmtIterator.toModel();
-        System.out.println(" le modele louwel "+resource+" "+internModel);
-        System.out.println(" modeeelddd "+model);
         List<Statement> list =resource.listProperties().toList();
         for(Statement statement : list)
         {
-            //System.out.println("je rentre ici");
-            //System.out.println(" modeeel "+model);
+
             boolean contains  = model.listSubjects().toList().contains(statement.getObject().asResource());
-            System.out.println("le contains "+contains);
             if (!contains)
-            //if (model.getResource(rdfNode.toString()))
             {
                 internModel.add(getModelOfResource(statement.getObject().asResource(), internModel));
                 return internModel;
