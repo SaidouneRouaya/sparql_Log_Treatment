@@ -33,7 +33,7 @@ public class Consolidation {
 
         toStringModelHashMap(modelArrayList);
 
-        HashMap<String, Model> resultsHashMap = TdbOperation.unpersistModelsMap(TdbOperation.originalDataSetStringModel);
+        HashMap<String, Model> resultsHashMap = TdbOperation.unpersistModelsMap(TdbOperation._toString);
 
         return consolidate(resultsHashMap);
     }
@@ -75,7 +75,7 @@ public class Consolidation {
             }
             if (num == 10000) {
                 System.out.println("taille avant persist  " + modelHashMap.size());
-                TdbOperation.persistNonAnnotated(modelHashMap, TdbOperation.originalDataSetStringModel);
+                TdbOperation.persistNonAnnotated(modelHashMap, TdbOperation._toString);
                 modelHashMap.clear();
                 num = 0;
             }
