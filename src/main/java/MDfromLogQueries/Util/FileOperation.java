@@ -6,10 +6,13 @@ import org.apache.jena.query.Query;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Statement;
+import org.apache.jena.rdf.model.StmtIterator;
 
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 
@@ -561,6 +564,43 @@ public class FileOperation {
             bw.write("multidimensional model complexity metric\t:\tMMCM =\t" + statistics1.getMMCM() + "\n");
 
 
+            bw.flush();
+        } catch (
+                IOException e) {
+            System.out.println("Impossible file creation");
+        } finally {
+
+            try {
+                bw.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        }
+    }
+    public static void writeModelsInFile(HashMap<String, Model> models, String writingFilePath) {
+        File file = new File(writingFilePath);
+        BufferedWriter bw = null;
+        try {
+            if (!file.isFile()) file.createNewFile();
+            bw = new BufferedWriter(new FileWriter(file, true));
+            int i =0;
+            Set<String> keys = models.keySet();
+            for (String key : keys) {
+                i++;
+                bw.write("*********************************Graph number "+i+" "+key +" ************************************************\n");
+
+                StmtIterator stmtIterator = models.get(key).listStatements();
+                int j = 0;
+                while (stmtIterator.hasNext())
+                {
+                    j++;
+                    bw.write(j+". "+stmtIterator.nextStatement()+"\n");
+                }
+
+                bw.write("*********************************************************************************\n");
+
+            }
             bw.flush();
         } catch (
                 IOException e) {

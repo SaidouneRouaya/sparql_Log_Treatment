@@ -181,10 +181,10 @@ public class Statistics1 {
             }*/
         }
         writeStatisticsListInFile(statistics1ArrayList,statisticsFile);
-        writeStatisticsInFile2(avgstatisticsFile,avgStatistics(statistics1ArrayList));
-        writeStatisticsInFile2(minstatisticsFile,minStatistics(statistics1ArrayList));
-        writeStatisticsInFile2(maxstatisticsFile,maxStatistics(statistics1ArrayList));
-        writeStatisticsInFile2(totalstatisticsFile,totalStatistics(statistics1ArrayList));
+        writeStatisticsInFile2(avgStatistics(statistics1ArrayList),"Average",avgstatisticsFile);
+        writeStatisticsInFile2(minStatistics(statistics1ArrayList),"Minimum",minstatisticsFile);
+        writeStatisticsInFile2(maxStatistics(statistics1ArrayList),"Maximum",maxstatisticsFile);
+        writeStatisticsInFile2(totalStatistics(statistics1ArrayList),"Total",totalstatisticsFile);
 
 
     }
