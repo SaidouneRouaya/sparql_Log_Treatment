@@ -78,11 +78,6 @@ object Main extends App {
         }
       }
     }
-    /*for (pair <- pairs) {
-   /*   if ("query" == pair.getName) {
-      return pair.getValue
-     }*/
-    }*/
 
     null
 
