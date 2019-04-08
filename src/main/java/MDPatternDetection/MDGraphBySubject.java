@@ -8,8 +8,15 @@ import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.impl.ResourceImpl;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Set;
+
+import static MDfromLogQueries.Declarations.Declarations.*;
+import static MDfromLogQueries.Declarations.Declarations.totalstatisticsFile;
+import static MDfromLogQueries.Util.FileOperation.writeStatisticsInFile2;
+import static MDfromLogQueries.Util.FileOperation.writeStatisticsListInFile;
+import static Statistics.Statistics1.*;
 
 public class MDGraphBySubject {
 
@@ -35,6 +42,15 @@ public class MDGraphBySubject {
 
     }
 
+    public static void  writeAllStats(ArrayList<Statistics1> statistics1ArrayList, String subject)
+    {
+        String path = Declarations.root+"stat_"+subject+".txt";
+        writeStatisticsListInFile(statistics1ArrayList,path);
+        writeStatisticsInFile2(avgStatistics(statistics1ArrayList),"Average",path);
+        writeStatisticsInFile2(minStatistics(statistics1ArrayList),"Minimum",path);
+        writeStatisticsInFile2(maxStatistics(statistics1ArrayList),"Maximum",path);
+        writeStatisticsInFile2(totalStatistics(statistics1ArrayList),"Total",path);
+    }
 
     public static HashMap<String, Model> getModelsOfSubject(String subject, HashMap<String,Model> models)
     {

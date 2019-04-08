@@ -115,7 +115,7 @@ public class Statistics1 {
 
     }
 
-    public void stat2(HashMap<String, Model> models) {
+    public ArrayList<Statistics1> stat2(HashMap<String, Model> models) {
 
         // = TdbOperation.unpersistModelsMap();
 
@@ -170,7 +170,8 @@ public class Statistics1 {
             if (statistics1.getNADC() >0 )
             statistics1.setRSA(statistics1.getNAFC()/(statistics1.getNADC()+ statistics1.getNABC()));
             statistics1.setModel(m);
-            statistics1ArrayList.add(statistics1);
+            if(statistics1.getNAFC()>0)
+                statistics1ArrayList.add(statistics1);
             //showStatistics(statistics1);
             /*try {
                 System.in.read();
@@ -180,14 +181,14 @@ public class Statistics1 {
 
             }*/
         }
-        writeStatisticsListInFile(statistics1ArrayList,statisticsFile);
-        writeStatisticsInFile2(avgStatistics(statistics1ArrayList),"Average",avgstatisticsFile);
-        writeStatisticsInFile2(minStatistics(statistics1ArrayList),"Minimum",minstatisticsFile);
-        writeStatisticsInFile2(maxStatistics(statistics1ArrayList),"Maximum",maxstatisticsFile);
-        writeStatisticsInFile2(totalStatistics(statistics1ArrayList),"Total",totalstatisticsFile);
+         return statistics1ArrayList;
+
 
 
     }
+
+
+
 
     public Statistics1 countLevels(Resource resource, Statistics1 statistics1, int nbLevels, ArrayList<RDFNode> visitedNodes)
     {
@@ -199,7 +200,7 @@ public class Statistics1 {
         {
             if (!statement.getPredicate().equals(RDF.type) && !visitedNodes.contains(statement.getObject())) {
                 object = statement.getObject();
-                System.out.println(statement);
+                //System.out.println(statement);
                 if (object.asResource().hasProperty(RDF.type, Annotations.NONFUNCTIONALDIMENSIONLEVEL.toString())) {
                     visitedNodes.add(object);
                     nbH++;
@@ -226,7 +227,7 @@ public class Statistics1 {
 
 
 
-    public Statistics1 avgStatistics(ArrayList<Statistics1> statistics1ArrayList)
+    public static Statistics1 avgStatistics(ArrayList<Statistics1> statistics1ArrayList)
     {
         int size = statistics1ArrayList.size();
         Statistics1 statistics1 = totalStatistics(statistics1ArrayList);
@@ -245,7 +246,7 @@ public class Statistics1 {
         return statistics1;
 
     }
-    public Statistics1 totalStatistics(ArrayList<Statistics1> statistics1ArrayList)
+    public static Statistics1 totalStatistics(ArrayList<Statistics1> statistics1ArrayList)
     {
         int size = statistics1ArrayList.size();
         Statistics1 statistics1 = new Statistics1();
@@ -268,7 +269,7 @@ public class Statistics1 {
 
     }
 
-    public Statistics1 minStatistics(ArrayList<Statistics1> statistics1ArrayList)
+    public static Statistics1 minStatistics(ArrayList<Statistics1> statistics1ArrayList)
     {
         int size = statistics1ArrayList.size();
         Statistics1 statistics1 = new Statistics1();
@@ -289,7 +290,7 @@ public class Statistics1 {
         return statistics1;
 
     }
-    public Statistics1 maxStatistics(ArrayList<Statistics1> statistics1ArrayList)
+    public static Statistics1 maxStatistics(ArrayList<Statistics1> statistics1ArrayList)
     {
         int size = statistics1ArrayList.size();
         Statistics1 statistics1 = new Statistics1();

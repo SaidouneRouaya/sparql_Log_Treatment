@@ -22,29 +22,32 @@ object MDGraphBySubjectScala extends App {
   var models = new mutable.HashMap[String, Model]
   var subjects = Vector[String]()
 
-  /** Book **/
+ /* /** Book **/
   println(" ---------------- book ")
   subjects = Vector("http://dbpedia.org/ontology/Book", "http://schema.org/Book", "http://purl.org/ontology/bibo/Book")
   models.clear()
   models = getModelsOfSubjectList(subjects, resultsScala)
   stat = statistics.stat2(convertToJavaMap(models))
   MDGraphBySubject.writeAllStats(stat, "book")
-
+*/
   /** university **/
   println(" ---------------- book ")
   models.clear()
   models = getModelsOfSubject("http://dbpedia.org/ontology/University", resultsScala)
-  stat = statistics.stat2(convertToJavaMap(models))
-  MDGraphBySubject.writeAllStats(stat, "university")
-
+  if (models.nonEmpty) {
+    stat = statistics.stat2(convertToJavaMap(models))
+    MDGraphBySubject.writeAllStats(stat, "university")
+  }
   /** Publication **/
 
   /** Media **/
   println(" ---------------- book ")
   models.clear()
   models = getModelsOfSubject("http://dbpedia.org/ontology/Media", resultsScala)
-  stat = statistics.stat2(convertToJavaMap(models))
-  MDGraphBySubject.writeAllStats(stat, "media")
+  if (models.nonEmpty) {
+    stat = statistics.stat2(convertToJavaMap(models))
+    MDGraphBySubject.writeAllStats(stat, "media")
+  }
 
   /** Software **/
   println(" ---------------- software ")
