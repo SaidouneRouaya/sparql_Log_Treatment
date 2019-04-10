@@ -5,9 +5,10 @@ import MDfromLogQueries.Util.FileOperation;
 import com.google.common.base.Stopwatch;
 
 import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-import static MDfromLogQueries.Declarations.Declarations.syntaxValidFile;
-import static MDfromLogQueries.Declarations.Declarations.writingDedupFilePath;
+import static MDfromLogQueries.Declarations.Declarations.*;
 import static java.util.concurrent.TimeUnit.SECONDS;
 
 public class SyntacticalValidation {
@@ -24,16 +25,34 @@ public class SyntacticalValidation {
             "}";
 
     public static void main(String[] args) {
-        Stopwatch stopwatch = Stopwatch.createStarted();
-        String sourceFile = writingDedupFilePath;
-        String writingFile = syntaxValidFile;
+        /*Stopwatch stopwatch = Stopwatch.createStarted();
+        String sourceFile = syntaxNonValidFile2;
+       // String writingFile = syntaxValidFile;
+        String writingFile = "C:\\Users\\KamilaB\\Desktop\\3CS\\Prototypage\\Step_1\\endpoints\\dbPedia\\Support_Files\\Resulting_Files\\syntaxValidReglage";
 
         // Validate (Test_query);
 
         ValidateFile(sourceFile, writingFile);
 
         stopwatch.stop();
-        System.out.println("Time elapsed for the program is " + stopwatch.elapsed(SECONDS));
+        System.out.println("Time elapsed for the program is " + stopwatch.elapsed(SECONDS));*/
+      /*  Validate("PREFIX dc: <http://purl.org/dc/elements/1.1/>" +
+                " PREFIX lgdp: <http://linkedgeodata.org/property/> " +
+                "PREFIX lgdo: <http://linkedgeodata.org/ontology/>\t" +
+                "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\t" +
+                "PREFIX gho: <http://ghodata/>" +
+                "\tPREFIX dbpedia-owl: <http://dbpedia.org/ontology/>" +
+                "\tPREFIX umbel-sc: <http://umbel.org/umbel/sc/>" +
+                "\tPREFIX linkedct: <http://data.linkedct.org/resource/linkedct/>" +
+                "\tPREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\t" +
+                "SELECT count distinct ?a WHERE {?a a dbpedia-owl:LightHouse} GROUP BY  ?a\n");    */
+        Validate("PREFIX lgd: <http://0.0.0.0/lgd/>  # GENERATED\n" +
+                "PREFIX lgdo: <http://0.0.0.0/lgdo/>  # GENERATED\n" +
+                "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>  # PREDEFINED\n" +
+                "Prefix lgd:<http://linkedgeodata.org/> \t\tPrefix lgdo:<http://linkedgeodata.org/ontology/> \t\t\t" +
+                "\tSelect ?s, ?l, lang(?l)\t\t{\t\t\t\t\t\t ?s a lgdo:Country ;\t\t         rdfs:label ?l .\t\t\t" +
+                "\t  filter( langMatches( lang(?l) , \"pt\") )\t\t\t\t}");
+
 
     }
 

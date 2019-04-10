@@ -1,7 +1,7 @@
 package MDfromLogQueries.Declarations;
 
 public class Declarations {
-    public static String root = "C:\\Users\\KamilaB\\Desktop\\3CS\\Prototypage\\Step_1\\endpoints\\dbPedia\\Support_Files\\";
+    public static String root = "C:\\Users\\KamilaB\\Desktop\\3CS\\Prototypage\\Step_1\\endpoints\\LinkedGeoData\\Support_Files\\";
 
 
     public static String directoryPath = root+"Data Log\\logs";

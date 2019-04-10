@@ -76,12 +76,15 @@ public class QueryFixer {
     /** Eliminates commas if present in the query **/
 
     private static String fixSelectWithCommas(String queryStr) {
-        Pattern ps = Pattern.compile("(?i:SELECT(?: DISTINCT)? (.*)WHERE)");
+        Pattern ps = Pattern.compile("(?i:SELECT(?: DISTINCT)? (.*)(WHERE|FROM|\\{))");
+        System.out.println("je rentre ici");
         Matcher ms = ps.matcher(queryStr);
         if (!ms.find()) {
+            System.out.println("je sors par la ");
             return queryStr;
         }
         String select = ms.group(1);
+        System.out.println(" the select : "+select);
         Pattern pv = Pattern.compile("(\\?[\\w_-]+)[\\s]*,\\s?");
         Matcher mv = pv.matcher(select);
         if (!mv.find()) {
@@ -93,17 +96,24 @@ public class QueryFixer {
 
     private static String fixAggregators(String queryStr)
     {
-        Pattern ps = Pattern.compile("(?i:SELECT(?: DISTINCT)? (.*\n*)WHERE)");
+        Pattern ps = Pattern.compile("(?i:SELECT(?: DISTINCT)? (.*\n*)(WHERE|FROM|\\{))");
         Matcher ms = ps.matcher(queryStr);
         if (!ms.find()) {
             return queryStr;
         }
         String select = ms.group(1);
-        Pattern aggregPattern = Pattern.compile("(( |[(])(COUNT|SUM|AVG|MIN|MAX)( |[(]))",Pattern.CASE_INSENSITIVE);
+ //       Pattern aggregPattern = Pattern.compile("(( |[(])(count|SUM|AVG|MIN|MAX)( distinct)?( |[(]))",Pattern.CASE_INSENSITIVE);
+        Pattern aggregPattern = Pattern.compile("( ([(]*)( )*(count|SUM|AVG|MIN|MAX)( distinct)?( |\\())",Pattern.CASE_INSENSITIVE);
         Matcher mv = aggregPattern.matcher(queryStr);
         if (mv.find()) {
             /* Put the aggregator ex : COUNT(?var) as ?var2 between brackets to respect Jena Syntax */
-            queryStr = aggregatorBetweenBrackets(queryStr);
+            System.out.println("groupe 2 "+mv.group(2));
+            if (mv.group(2).isEmpty())
+                queryStr = aggregatorBetweenBrackets(queryStr);
+            if (mv.group(4) != null)
+            {
+                queryStr = aggregatorDistinctBetweenBrackets(queryStr);
+            }
             /* Adds all variables that are in the select clause to the group by clause */
             Pattern variablesPattern = Pattern.compile("(\\?[\\w_-]+)");
             Matcher matcherVariables = variablesPattern.matcher(select);
@@ -154,6 +164,18 @@ public class QueryFixer {
         return queryStr;
     }
 
+    private static String aggregatorDistinctBetweenBrackets(String queryStr)
+    {
+        Pattern aggregatorPattern = Pattern.compile("(( |[(])(count|SUM|AVG|MIN|MAX)( )*(distinct (\\?[\\w_-]+)))",Pattern.CASE_INSENSITIVE);
+        Matcher mv = aggregatorPattern.matcher(queryStr);
+        while (mv.find())
+        {
+            String str = mv.group(5);
+            queryStr = queryStr.replace(str,"("+str+")");
+        }
+        return queryStr;
+    }
+
     private static ArrayList<String> asVariables(String select)
     {
         ArrayList<String> stringList = new ArrayList<>();
@@ -195,7 +217,7 @@ public class QueryFixer {
             System.out.println("+++++-*+++++*-+"+queryParseException.getMessage());
         }
         catch (Exception e) {
-          //  System.out.println("*****+-+-+-+-*****"+queryStr);
+            System.out.println("*****+-+-+-+-*****"+queryStr);
             System.out.println("*****+-+-+-+-*****");
             e.printStackTrace();
         }
