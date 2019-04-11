@@ -26,9 +26,9 @@ public class SyntacticalValidation {
 
     public static void main(String[] args) {
         /*Stopwatch stopwatch = Stopwatch.createStarted();
-        String sourceFile = syntaxNonValidFile2;
+        String sourceFile = syntaxValidFile2;
        // String writingFile = syntaxValidFile;
-        String writingFile = "C:\\Users\\KamilaB\\Desktop\\3CS\\Prototypage\\Step_1\\endpoints\\dbPedia\\Support_Files\\Resulting_Files\\syntaxValidReglage";
+        String writingFile = "C:\\Users\\KamilaB\\Desktop\\3CS\\Prototypage\\Step_1\\endpoints\\LinkedGeoData\\Support_Files\\Resulting_Files\\syntaxValidReglage";
 
         // Validate (Test_query);
 
@@ -46,12 +46,7 @@ public class SyntacticalValidation {
                 "\tPREFIX linkedct: <http://data.linkedct.org/resource/linkedct/>" +
                 "\tPREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\t" +
                 "SELECT count distinct ?a WHERE {?a a dbpedia-owl:LightHouse} GROUP BY  ?a\n");    */
-        Validate("PREFIX lgd: <http://0.0.0.0/lgd/>  # GENERATED\n" +
-                "PREFIX lgdo: <http://0.0.0.0/lgdo/>  # GENERATED\n" +
-                "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>  # PREDEFINED\n" +
-                "Prefix lgd:<http://linkedgeodata.org/> \t\tPrefix lgdo:<http://linkedgeodata.org/ontology/> \t\t\t" +
-                "\tSelect ?s, ?l, lang(?l)\t\t{\t\t\t\t\t\t ?s a lgdo:Country ;\t\t         rdfs:label ?l .\t\t\t" +
-                "\t  filter( langMatches( lang(?l) , \"pt\") )\t\t\t\t}");
+        Validate("\tSELECT  ?s (count(*))\tFROM <http://linkedgeodata.org>\tWHERE\t  { ?s  rdfs:label  ?label\t    FILTER regex(?label, \"Moscova\")\t    OPTIONAL\t      { ?s  georss:point  ?point }\t  }\tGROUP BY ?s\t");
 
 
     }
@@ -61,7 +56,7 @@ public class SyntacticalValidation {
      **/
     private static String Validate(String queryStr) {
         String queryStr2 = QueryFixer.get().fix(queryStr);
-        /*System.out.println(queryStr2);*/
+        System.out.println(queryStr2);
         return QueryFixer.toQuery(queryStr2).toString();
     }
 
