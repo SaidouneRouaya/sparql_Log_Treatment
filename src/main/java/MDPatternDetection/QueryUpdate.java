@@ -15,6 +15,7 @@ public class QueryUpdate {
 
     private QueryConstruction queryConstruction = new QueryConstruction();
 
+
     public QueryUpdate() {
     }
 
@@ -59,7 +60,6 @@ public class QueryUpdate {
         System.out.println("== before ==\n" + query);
 
         //    query = toConstruct(query,new Template(queryConstruction.getBpConstruct()));
-
 
         System.out.println("\n\n\n== after ==\n" + query);
 

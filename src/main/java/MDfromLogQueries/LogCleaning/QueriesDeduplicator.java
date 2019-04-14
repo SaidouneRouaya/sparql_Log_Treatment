@@ -47,7 +47,6 @@ public class QueriesDeduplicator {
                 querySet.add(line);
                 /* System.out.println( "ligne \t"+nb_line);*/
             }
-            /*System.out.println("nombre de ligne dans le set :"+querySet.size()+" "+nb_line);*/
             FileOperation.WriteInFile(writingDedupFilePath, querySet);
 
         } catch (Exception e) {

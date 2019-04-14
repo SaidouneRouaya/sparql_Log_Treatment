@@ -38,8 +38,8 @@ public class Statistics1 {
 
     private int DHP = 0; // Maximum depth of the hierarchy relationships of the star S
 
-    private double RBC = 0;    //Ratio of base classes. Number of base classes per dimension class of the star S
-    private double RSA = 0;    //Ratio of attributes of the star S. (Number of attributes Fact Attributes) /( number of Dimension + Dimension attributes)
+    private float RBC = 0f;    //Ratio of base classes. Number of base classes per dimension class of the star S
+    private float RSA = 0f;    //Ratio of attributes of the star S. (Number of attributes Fact Attributes) /( number of Dimension + Dimension attributes)
 
     //**
     private int NMH = 0;// ** Number of multiple hierarchies in the schema
@@ -238,57 +238,60 @@ public class Statistics1 {
             subject = m.getResource(key);
             ArrayList<RDFNode> visitedNodes = new ArrayList<>();
             int nbHierarchies = 0;
-/*
-                System.out.println(" la clé :"+key);
-                ConsolidationTest.afficherModel(m);
 
-*/
             if (subject != null) {
+                /** NFC **/
                 if (subject.hasProperty(RDF.type, Annotations.FACT.toString()))
                     statistics1.setNFC(statistics1.getNFC() + 1);
+
                 visitedNodes.add(subject);
                 List<Statement> propertyIterator = subject.listProperties().toList();
-                for (Statement stat : propertyIterator) {
-                    if (!stat.getPredicate().equals(RDF.type) && !visitedNodes.contains(stat.getObject())) {
-                        object = stat.getObject();
+
+                for (Statement statement : propertyIterator) {
+
+                    if (!statement.getPredicate().equals(RDF.type) && !visitedNodes.contains(statement.getObject())) {
+                        object = statement.getObject();
+                        /** NDC **/
                         if (object.asResource().hasProperty(RDF.type, Annotations.NONFUNCTIONALDIMENSION.toString())) {
                             visitedNodes.add(object);
                             statistics1.setNDC(statistics1.getNDC() + 1);
                             statistics1.setNH(0);
+                            /** NH **/
                             statistics1 = countLevels(object.asResource(), statistics1, 1, visitedNodes);
                             if (statistics1.getNH() > 0) {
                                 nbHierarchies += statistics1.getNH();
                             }
+                            /** DHP **/
                             statistics1.setDHP(max(statistics1.getDHP(), 1));
                         }
+
+                        /** NAFC **/
                         if (object.asResource().hasProperty(RDF.type, Annotations.FACTATTRIBUTE.toString()))
                             statistics1.setNAFC(statistics1.getNAFC() + 1);
                     }
                 }
             }
             statistics1.setNH(nbHierarchies);
+
+            /** NC **/
             statistics1.setNC(statistics1.getNDC() + statistics1.getNFC() + statistics1.getNBC());
-            if (statistics1.getNDC() > 0)
-                statistics1.setRBC(statistics1.getNBC() / statistics1.getNDC());
-            statistics1.setNA(statistics1.getNAFC() + statistics1.getNADC());
-            if (statistics1.getNADC() > 0)
+
+            /** RBC **/
+            if (statistics1.getNDC() > 0) statistics1.setRBC(statistics1.getNBC() / statistics1.getNDC());
+
+            /** NA **/
+            statistics1.setNA(statistics1.getNAFC() + statistics1.getNADC() + statistics1.getNABC());
+
+            /** RSA **/
+            if (statistics1.getNADC() + statistics1.getNABC() > 0)
                 statistics1.setRSA(statistics1.getNAFC() / (statistics1.getNADC() + statistics1.getNABC()));
+
             statistics1.setModel(m);
+
             statistics1ArrayList.add(statistics1);
-            //showStatistics(statistics1);
-            /*try {
-                System.in.read();
             }
-            catch (IOException e)
-            {
-
-            }*/
-        }
-
 
         return statistics1ArrayList;
-
-
     }
 
     public Statistics1 countLevels(Resource resource, Statistics1 statistics1, int nbLevels, ArrayList<RDFNode> visitedNodes) {
@@ -299,22 +302,30 @@ public class Statistics1 {
         for (Statement statement : propertyList) {
             if (!statement.getPredicate().equals(RDF.type) && !visitedNodes.contains(statement.getObject())) {
                 object = statement.getObject();
-                //System.out.println(statement);
+
                 if (object.asResource().hasProperty(RDF.type, Annotations.NONFUNCTIONALDIMENSIONLEVEL.toString())) {
                     visitedNodes.add(object);
                     nbH++;
+
+                    /** NBC **/
                     statistics1.setNBC(statistics1.getNBC() + 1);
+                    /** DHP **/
                     statistics1.setDHP(max(statistics1.getDHP(), nbLevels));
+                    /** NH **/
                     statistics1.setNH(nbH);
+
                     statistics1 = countLevels(object.asResource(), statistics1, nbLevels, visitedNodes);
 
                 }
                 if (object.asResource().hasProperty(RDF.type, Annotations.DIMENSIONATTRIBUTE.toString())) {
-                    if (resource.hasProperty(RDF.type, Annotations.NONFUNCTIONALDIMENSIONLEVEL.toString()))
+                    /** NABC **/
+                    if (resource.hasProperty(RDF.type, Annotations.NONFUNCTIONALDIMENSIONLEVEL.toString())
+                            || resource.hasProperty(RDF.type, Annotations.DIMENSIONLEVEL.toString()))
                         statistics1.setNABC(statistics1.getNABC() + 1);
-                    else if (resource.hasProperty(RDF.type, Annotations.NONFUNCTIONALDIMENSION.toString()))
+                    /** NADC **/
+                    else if (resource.hasProperty(RDF.type, Annotations.NONFUNCTIONALDIMENSION.toString()) ||
+                            resource.hasProperty(RDF.type, Annotations.DIMENSION.toString()))
                         statistics1.setNADC(statistics1.getNADC() + 1);
-
                 }
             }
 
@@ -381,11 +392,11 @@ public class Statistics1 {
         this.NC = NC;
     }
 
-    public double getRBC() {
+    public float getRBC() {
         return RBC;
     }
 
-    public void setRBC(double RBC) {
+    public void setRBC(float RBC) {
         this.RBC = RBC;
     }
 
@@ -437,11 +448,11 @@ public class Statistics1 {
         this.DHP = DHP;
     }
 
-    public double getRSA() {
+    public float getRSA() {
         return RSA;
     }
 
-    public void setRSA(double RSA) {
+    public void setRSA(float RSA) {
         this.RSA = RSA;
     }
 

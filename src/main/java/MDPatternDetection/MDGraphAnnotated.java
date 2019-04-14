@@ -113,8 +113,8 @@ public class MDGraphAnnotated {
         for (Statement statement : propertyIterator) {
             //statement = (Statement) propertyIterator.next();
             property = statement.getPredicate();
-            try {
 
+            try {
 
                 if (!property.equals(RDF.type)) {
                     propertyType = Constants.getPropertyType(property);

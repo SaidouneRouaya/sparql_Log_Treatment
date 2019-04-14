@@ -11,7 +11,7 @@ import scala.collection.parallel.ParSeq
 import scala.io.Source
 
 
-object Main2 extends App {
+object Queries2GraphesParallel extends App {
 
   val t1 = System.currentTimeMillis()
 
@@ -60,9 +60,9 @@ object Main2 extends App {
               val query = QueryFactory.create(line)
               val queryUpdate = new QueryUpdate(query)
               constructedQuery = queryUpdate.toConstruct(query)
-
               /* Some meaning if there is a result != null */
               Some(constructedQuery)
+              //  Some(query)
 
             } catch {
               case unknown => {
@@ -79,6 +79,7 @@ object Main2 extends App {
         println("--------------------- un group finished ---------------------------------- ")
 
         writeInFile(constructQueriesFile2, treatedGroupOfLines.collect { case Some(x) => x })
+        // writeInFile(constructQueriesFileTest, treatedGroupOfLines.collect { case Some(x) => x })
       }
     }
 

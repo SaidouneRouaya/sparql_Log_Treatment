@@ -84,7 +84,7 @@ object QueryExecutorParallel extends App {
     writer.close()
   }
 
-  executeQueriesInFile(Declarations.constructQueriesFile2, "https://dbpedia.org/sparql")
+  //executeQueriesInFile(Declarations.constructQueriesFile2, "https://dbpedia.org/sparql")
 
   def writeInTdb(models: ParSeq[Model]) = {
     val tdb = new TdbOperation()
@@ -96,6 +96,7 @@ object QueryExecutorParallel extends App {
     models.foreach(m => {
       nb_model += 1
       TdbOperation.originalDataSet.addNamedModel("model_" + nb_model, m)
+      //   TdbOperation.originalDataSetTest.addNamedModel("model_" + nb_model, m)
     })
 
 
@@ -109,6 +110,7 @@ object QueryExecutorParallel extends App {
         nb_model += 1
         TdbOperation
           .originalDataSet
+          //.originalDataSetTest
           .addNamedModel("model_" + nb_model,
             m)
       }

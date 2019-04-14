@@ -27,24 +27,30 @@ object MDGraphBySubjectScala extends App {
   subjects = Vector("http://dbpedia.org/ontology/Book", "http://schema.org/Book", "http://purl.org/ontology/bibo/Book")
   models.clear()
   models = getModelsOfSubjectList(subjects, resultsScala)
-  stat = statistics.stat2(convertToJavaMap(models))
-  MDGraphBySubject.writeAllStats(stat, "book")
+  if (models.nonEmpty) {
+    stat = statistics.stat2(convertToJavaMap(models))
+    MDGraphBySubject.writeAllStats(stat, "book")
+  }
 
   /** university **/
-  println(" ---------------- book ")
+  println(" ---------------- university ")
   models.clear()
   models = getModelsOfSubject("http://dbpedia.org/ontology/University", resultsScala)
-  stat = statistics.stat2(convertToJavaMap(models))
-  MDGraphBySubject.writeAllStats(stat, "university")
+  if (models.nonEmpty) {
+    stat = statistics.stat2(convertToJavaMap(models))
+    MDGraphBySubject.writeAllStats(stat, "university")
+  }
 
   /** Publication **/
 
   /** Media **/
-  println(" ---------------- book ")
+  println(" ---------------- media ")
   models.clear()
   models = getModelsOfSubject("http://dbpedia.org/ontology/Media", resultsScala)
-  stat = statistics.stat2(convertToJavaMap(models))
-  MDGraphBySubject.writeAllStats(stat, "media")
+  if (models.nonEmpty) {
+    stat = statistics.stat2(convertToJavaMap(models))
+    MDGraphBySubject.writeAllStats(stat, "media")
+  }
 
   /** Software **/
   println(" ---------------- software ")
@@ -100,7 +106,9 @@ object MDGraphBySubjectScala extends App {
     stat = statistics.stat2(convertToJavaMap(models))
     MDGraphBySubject.writeAllStats(stat, "airport")
   }
+
   var stat = new util.ArrayList[Statistics1]()
+
 
   def getModelsOfSubjectList(subjectList: Vector[String], models: mutable.HashMap[String, Model]): mutable.HashMap[String, Model] = {
 

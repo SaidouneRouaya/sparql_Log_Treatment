@@ -152,7 +152,7 @@ object ConsolidationParallel extends App {
           }
         }
 
-        writeInTdb(modelHashMap, TdbOperation.originalDataSetStringModel)
+        writeInTdb(modelHashMap, TdbOperation._toString)
         modelHashMap.clear()
         println(s" ------------------------- finish with the group number: $nb_grp -------------------------------- ")
     }

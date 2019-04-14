@@ -19,10 +19,10 @@ import static MDfromLogQueries.Declarations.Declarations.tdbDirectory;
 public class TdbOperation {
     private static Dataset dataset = TDBFactory.createDataset(tdbDirectory);
     public static Dataset originalDataSet = TDBFactory.createDataset(originalTdbDirectory);
+    // public static Dataset originalDataSetTest = TDBFactory.createDataset(originalTdbDirectoryTest);
     public static Dataset _toString = TDBFactory.createDataset(Declarations._toString);
     public static Dataset dataSetConsolidate = TDBFactory.createDataset(Declarations.dataSetConsolidated);
     public static Dataset dataSetAnnotated = TDBFactory.createDataset(Declarations.dataSetAnnotated);
-
 
     public static void main(String... argv) {
 

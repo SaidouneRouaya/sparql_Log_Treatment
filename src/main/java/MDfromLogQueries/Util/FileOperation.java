@@ -447,7 +447,7 @@ public class FileOperation {
             bw = new BufferedWriter(new FileWriter(file, true));
 
 
-            bw.write("\n****************************** " + typeStat + " *******************************************");
+            bw.write("\n******************************************* " + typeStat + " *******************************************\n");
             bw.write("Total number of classes of the star S\t:\tNC(S) =\t" + statistics1.getNC() + "\n");
             bw.write("Number of fact classes of the start S\t:\tNFC(S) =\t" + statistics1.getNFC() + "\n");
             bw.write("Number of dimension classes of the star S \t:\tNDC(S) =\t" + statistics1.getNDC() + "\n");
@@ -460,7 +460,7 @@ public class FileOperation {
             bw.write("Number of hierarchy relationships of the star S\t:\tNH(S) =\t" + statistics1.getNH() + "\n");
             bw.write("Maximum depth of the hierarchy relationships of the star S\t:\tDHP(S)  =\t" + statistics1.getDHP() + "\n");
             bw.write("Ratio of attributes of the star S\t:\tRSA(S) =\t" + statistics1.getRSA() + "\n");
-            bw.write("****************************** Fin de " + typeStat + " *******************************************\n");
+            //bw.write("\n****************************** Fin de " + typeStat + " *******************************************\n");
             bw.flush();
         } catch (
                 IOException e) {
@@ -485,17 +485,9 @@ public class FileOperation {
             int i = 0;
             for (Statistics1 stat : statistisArrayList) {
                 i++;
-                bw.write("********************************* Graph number " + i + " ************************************************\n");
+                bw.write("\n********************************* Graph number " + i + "  *********************************\n");
 
-               /* StmtIterator stmtIterator = stat.getModel().listStatements();
-                int j = 0;
-                while (stmtIterator.hasNext())
-                {
-                    j++;
-                    bw.write(j+". "+stmtIterator.nextStatement()+"\n");
-                }*/
 
-                bw.write("------------------------------------------------------------------\n");
 
                 bw.write("Total number of classes of the star S\t:\tNC(S) =\t" + stat.getNC() + "\n");
                 bw.write("Number of fact classes of the start S\t:\tNFC(S) =\t" + stat.getNFC() + "\n");
@@ -509,7 +501,7 @@ public class FileOperation {
                 bw.write("Number of hierarchy relationships of the star S\t:\tNH(S) =\t" + stat.getNH() + "\n");
                 bw.write("Maximum depth of the hierarchy relationships of the star S\t:\tDHP(S)  =\t" + stat.getDHP() + "\n");
                 bw.write("Ratio of attributes of the star S\t:\tRSA(S) =\t" + stat.getRSA() + "\n");
-                bw.write("*********************************************************************************\n");
+                // bw.write("*********************************************************************************\n");
 
             }
             bw.flush();

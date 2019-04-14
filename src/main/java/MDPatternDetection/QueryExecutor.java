@@ -159,12 +159,11 @@ public class QueryExecutor {
     public QueryExecutor() {
     }
 
-    public ResultSet executeQuerySelect(String queryStr, String endpoint)
+    public ResultSet executeQuerySelect(Query query, String endpoint)
     {
         ResultSet results = null;
-        Query query = null;
         try{
-            query = QueryFactory.create(queryStr);
+            //  query = QueryFactory.create(queryStr);
             QueryExecution qexec = QueryExecutionFactory.sparqlService(endpoint, query);
             results = qexec.execSelect();
             /*  System.out.println("Result " + results.next());*/

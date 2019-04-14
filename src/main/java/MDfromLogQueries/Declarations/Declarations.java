@@ -28,6 +28,7 @@ public class Declarations {
     public static String logFile2 = root + "ProgramOutput\\Fichier_log_construct_scala.txt";
     public static String syntaxValidFileTest = root + "ProgramOutput\\Fichier_Syntaxe_Valide_Test.txt";
     public static String constructQueriesFile2 = root + "ProgramOutput\\Fichier_Construct_scala.txt";
+    public static String constructQueriesFileTest = root + "ProgramOutput\\Fichier_Construct_scala_Test.txt";
     public static String constructQueriesFile = root + "ProgramOutput\\Fichier_Construct_java.txt";
 
     public static String syntaxNonValidFile = root + "ProgramOutput\\Fichier_Syntaxe_Non_Valide_java.txt";
@@ -37,11 +38,12 @@ public class Declarations {
     public static String defaultOntologiesDir = root + "Ontologies\\ontologies_namespaces";
     public static String tdbDirectory = root+"tdbDirectory";
     public static String originalTdbDirectory = root+"originalTdbDirectory";
+    public static String originalTdbDirectoryTest = root + "originalTdbDirectoryTest";
 
 
-    public static String _toString = "_toString";
-    public static String dataSetConsolidated = "dataSetConsolidated";
-    public static String dataSetAnnotated = "dataSetAnnotated";
+    public static String _toString = root2 + "_toString";
+    public static String dataSetConsolidated = root2 + "dataSetConsolidated";
+    public static String dataSetAnnotated = root2 + "dataSetAnnotated";
 
 
     public static String propertiesOntology = root + "Ontologies\\ontologies_namespaces\\addedOntology.ttl";
