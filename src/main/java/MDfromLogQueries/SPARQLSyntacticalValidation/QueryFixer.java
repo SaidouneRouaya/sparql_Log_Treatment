@@ -36,7 +36,7 @@ public class QueryFixer {
     public static QueryFixer get() {
         return INSTANCE;
     }
-
+//TODO Faire en sorte de ne garder que les requêtes SELECT et convertir les construct en select
 
     private final static String TEST_QUERY_STR1 = "PREFIX a: <http://a/>\n" +
             "\n" +
@@ -99,11 +99,16 @@ public class QueryFixer {
             return queryStr;
         }
         String select = ms.group(1);
-        Pattern aggregPattern = Pattern.compile("(( |[(])(COUNT|SUM|AVG|MIN|MAX)( |[(]))",Pattern.CASE_INSENSITIVE);
-        Matcher mv = aggregPattern.matcher(queryStr);
+        //Pattern aggregPattern = Pattern.compile("(( |[(])(COUNT|SUM|AVG|MIN|MAX)( |[(]))",Pattern.CASE_INSENSITIVE);
+        Pattern aggregPattern = Pattern.compile("( ([(]*)( )*(count|SUM|AVG|MIN|MAX)( distinct)?( |\\())",Pattern.CASE_INSENSITIVE);        Matcher mv = aggregPattern.matcher(queryStr);
         if (mv.find()) {
             /* Put the aggregator ex : COUNT(?var) as ?var2 between brackets to respect Jena Syntax */
-            queryStr = aggregatorBetweenBrackets(queryStr);
+            if (mv.group(2).isEmpty())
+                queryStr = aggregatorBetweenBrackets(queryStr);
+            if (mv.group(4) != null)
+            {
+                queryStr = aggregatorDistinctBetweenBrackets(queryStr);
+            }
             /* Adds all variables that are in the select clause to the group by clause */
             Pattern variablesPattern = Pattern.compile("(\\?[\\w_-]+)");
             Matcher matcherVariables = variablesPattern.matcher(select);
@@ -153,6 +158,17 @@ public class QueryFixer {
         }
         return queryStr;
     }
+    private static String aggregatorDistinctBetweenBrackets(String queryStr)
+    {
+        Pattern aggregatorPattern = Pattern.compile("(( |[(])(count|SUM|AVG|MIN|MAX)( )*(distinct (\\?[\\w_-]+)))",Pattern.CASE_INSENSITIVE);
+        Matcher mv = aggregatorPattern.matcher(queryStr);
+        while (mv.find())
+        {
+            String str = mv.group(5);
+            queryStr = queryStr.replace(str,"("+str+")");
+        }
+        return queryStr;
+    }
 
     private static ArrayList<String> asVariables(String select)
     {
@@ -191,11 +207,11 @@ public class QueryFixer {
         }catch (QueryParseException queryParseException)
         {
            System.out.println("erreur 2");
-            System.out.println("*****+-+-+-+-*****"+queryStr);
+           // System.out.println("*****+-+-+-+-*****"+queryStr);
             System.out.println("+++++-*+++++*-+"+queryParseException.getMessage());
         }
         catch (Exception e) {
-          //  System.out.println("*****+-+-+-+-*****"+queryStr);
+           // System.out.println("*****+-+-+-+-*****"+queryStr);
             System.out.println("*****+-+-+-+-*****");
             e.printStackTrace();
         }

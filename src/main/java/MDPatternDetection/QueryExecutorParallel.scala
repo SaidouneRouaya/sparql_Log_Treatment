@@ -6,6 +6,7 @@ import java.util
 import MDfromLogQueries.Declarations.Declarations
 import org.apache.jena.query.QueryFactory
 import org.apache.jena.rdf.model.{Model, ModelFactory}
+import org.apache.jena.tdb.TDB
 
 import scala.collection.parallel.ParSeq
 import scala.io.Source
@@ -108,6 +109,7 @@ object QueryExecutorParallel extends App {
 
       if (m != null) {
         nb_model += 1
+        println("write "+nb_model)
         TdbOperation
           .originalDataSet
           //.originalDataSetTest
@@ -115,6 +117,7 @@ object QueryExecutorParallel extends App {
             m)
       }
     })
+    TDB.sync(TdbOperation.originalDataSet)
 
   }
 

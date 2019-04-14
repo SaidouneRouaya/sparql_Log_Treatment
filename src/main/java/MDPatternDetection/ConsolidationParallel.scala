@@ -15,12 +15,12 @@ object ConsolidationParallel extends App {
   val t1 = System.currentTimeMillis()
 
 
-  val modelHashMap: mutable.HashMap[String, Model] = consolidate(TdbOperation.unpersistModelsMap(TdbOperation._toString))
+  val modelHashMap: mutable.HashMap[String, Model] = consolidate(TdbOperation.unpersistModelsMap(TdbOperation.originalDataSet))
 
-  writeInTdb(modelHashMap, TdbOperation.dataSetConsolidate)
+  writeInTdb(modelHashMap, TdbOperation.originalDataSetConsolidated)
 
   //TODO à déplacer vers une classe pour l'annotation
-  val modelsConsolidated = TdbOperation.unpersistModelsMap(TdbOperation.dataSetConsolidate)
+  val modelsConsolidated = TdbOperation.unpersistModelsMap(TdbOperation.originalDataSetConsolidated)
   val modelsAnnotated = MDGraphAnnotated.constructMDGraphs(modelsConsolidated)
   writeInTdb(convertToScalaMap(modelsAnnotated), TdbOperation.dataSetAnnotated)
   val duration = System.currentTimeMillis() - t1
@@ -152,7 +152,7 @@ object ConsolidationParallel extends App {
           }
         }
 
-        writeInTdb(modelHashMap, TdbOperation._toString)
+        writeInTdb(modelHashMap, TdbOperation.originalDataSetConsolidated)
         modelHashMap.clear()
         println(s" ------------------------- finish with the group number: $nb_grp -------------------------------- ")
     }

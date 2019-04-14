@@ -27,6 +27,9 @@ public class OntologyFactory {
                 case ("ttl"):
                     extension = "TURTLE";
                     break;
+                case ("nt"):
+                    extension = "N-TRIPLES";
+                    break;
                     default:
                         extension = "RDF/XML";
                         break;
