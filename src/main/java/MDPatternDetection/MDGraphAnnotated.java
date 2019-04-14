@@ -1,7 +1,6 @@
 package MDPatternDetection;
 
 import MDPatternDetection.AnnotationClasses.Annotations;
-import MDfromLogQueries.Util.Constants;
 import MDfromLogQueries.Util.ConstantsUtil;
 import com.google.common.base.Stopwatch;
 import org.apache.jena.rdf.model.Model;
@@ -78,7 +77,7 @@ public class MDGraphAnnotated {
                                     statement.getObject().asResource().addProperty(RDF.type, Annotations.NONFUNCTIONALDIMENSION.toString());
 
                                 }
-                                addDimensionLevels(statement.getObject().asResource(),constantsUtil);
+                                addDimensionLevels(statement.getObject().asResource(), constantsUtil);
                             }
                             break;
                             default: {
@@ -89,7 +88,7 @@ public class MDGraphAnnotated {
                                 } else {
                                     //TODO sinon il faut demander au endpoint si c fonctionnel
                                     statement.getObject().asResource().addProperty(RDF.type, Annotations.NONFUNCTIONALDIMENSION.toString());
-                                    addDimensionLevels(statement.getObject().asResource(),constantsUtil);
+                                    addDimensionLevels(statement.getObject().asResource(), constantsUtil);
                                 }
                             }
                             break;
@@ -135,7 +134,7 @@ public class MDGraphAnnotated {
                                 statement.getObject().asResource().addProperty(RDF.type, Annotations.NONFUNCTIONALDIMENSION.toString());
                                 statement.getObject().asResource().addProperty(new PropertyImpl(Annotations.PARENTLEVEL.toString()), dimension);
                             }
-                            addDimensionLevels(statement.getObject().asResource(),constantsUtil);
+                            addDimensionLevels(statement.getObject().asResource(), constantsUtil);
                         }
                         break;
                         default: {

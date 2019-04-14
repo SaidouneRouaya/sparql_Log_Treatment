@@ -570,24 +570,24 @@ public class FileOperation {
 
         }
     }
+
     public static void writeModelsInFile(HashMap<String, Model> models, String writingFilePath) {
         File file = new File(writingFilePath);
         BufferedWriter bw = null;
         try {
             if (!file.isFile()) file.createNewFile();
             bw = new BufferedWriter(new FileWriter(file, true));
-            int i =0;
+            int i = 0;
             Set<String> keys = models.keySet();
             for (String key : keys) {
                 i++;
-                bw.write("*********************************Graph number "+i+" "+key +" ************************************************\n");
+                bw.write("*********************************Graph number " + i + " " + key + " ************************************************\n");
 
                 StmtIterator stmtIterator = models.get(key).listStatements();
                 int j = 0;
-                while (stmtIterator.hasNext())
-                {
+                while (stmtIterator.hasNext()) {
                     j++;
-                    bw.write(j+". "+stmtIterator.nextStatement()+"\n");
+                    bw.write(j + ". " + stmtIterator.nextStatement() + "\n");
                 }
 
                 bw.write("*********************************************************************************\n");

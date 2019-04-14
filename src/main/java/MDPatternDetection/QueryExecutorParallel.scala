@@ -109,7 +109,7 @@ object QueryExecutorParallel extends App {
 
       if (m != null) {
         nb_model += 1
-        println("write "+nb_model)
+        println("write " + nb_model)
         TdbOperation
           .originalDataSet
           //.originalDataSetTest

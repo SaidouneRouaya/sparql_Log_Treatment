@@ -2,14 +2,8 @@ package MDfromLogQueries.SPARQLSyntacticalValidation;
 
 import MDfromLogQueries.Declarations.Declarations;
 import MDfromLogQueries.Util.FileOperation;
-import com.google.common.base.Stopwatch;
 
 import java.util.ArrayList;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import static MDfromLogQueries.Declarations.Declarations.*;
-import static java.util.concurrent.TimeUnit.SECONDS;
 
 public class SyntacticalValidation {
 
