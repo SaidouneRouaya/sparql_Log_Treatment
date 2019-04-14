@@ -19,7 +19,7 @@ import java.util.Set;
 
 public class ConstantsUtil {
     private OntProperty currentProperty= null;
-    private static String endpoint = "https://dbpedia.org/sparql";
+
 
     //à changer probablement en créant un nouveau type contenant la datatypeProperty et son ou ses range
     public Node getRangeofProperty(Property property) {

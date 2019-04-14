@@ -69,7 +69,7 @@ object Queries2GraphesParallel extends App {
             } catch {
               case unknown => {
                 println("une erreur\n\n\n\n\n\n\n\n\n")
-                writeInLogFile(logFileConstruct, constructedQuery)
+                writeInLogFile(constructLogFileParallel, constructedQuery)
                 None
               }
             }

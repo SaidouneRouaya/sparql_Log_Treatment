@@ -75,7 +75,7 @@ public class Consolidation {
             }
             if (num == 10000) {
                 System.out.println("taille avant persist  " + modelHashMap.size());
-                TdbOperation.persistNonAnnotated(modelHashMap);
+                TdbOperation.persistNonAnnotated(modelHashMap, TdbOperation._toString);
                 modelHashMap.clear();
                 num = 0;
             }

@@ -24,8 +24,8 @@ public class Declarations {
 
     public static String syntaxValidFile = root + "ProgramOutput\\Fichier_Syntaxe_Valide_java.txt";
     public static String syntaxValidFile2 = root + "ProgramOutput\\Fichier_Syntaxe_Valide_scala.txt";
-    public static String logFile = root + "ProgramOutput\\Fichier_log_construct_java.txt";
-    public static String logFile2 = root + "ProgramOutput\\Fichier_log_construct_scala.txt";
+    public static String constructLogFile = root + "ProgramOutput\\Fichier_log_construct_java.txt";
+    public static String constructLogFileParallel = root + "ProgramOutput\\Fichier_log_construct_scala.txt";
     public static String syntaxValidFileTest = root + "ProgramOutput\\Fichier_Syntaxe_Valide_Test.txt";
     public static String constructQueriesFile2 = root + "ProgramOutput\\Fichier_Construct_scala.txt";
     public static String constructQueriesFileTest = root + "ProgramOutput\\Fichier_Construct_scala_Test.txt";

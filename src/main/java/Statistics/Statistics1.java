@@ -220,7 +220,6 @@ public class Statistics1 {
 
     public ArrayList<Statistics1> stat2(HashMap<String, Model> models) {
 
-        // = TdbOperation.unpersistModelsMap();
 
         Set<String> listModels = models.keySet();
         Resource subject;

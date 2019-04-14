@@ -4,7 +4,6 @@ import org.apache.jena.iri.impl.Main;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
@@ -93,60 +92,5 @@ public class Resources {
         return currentClassLoader().getResourceAsStream(resourceName);
     }
 
-    public static String getMainResourceFilename(String resourceName) {
-        String base = "sparql_Log_Treatment/src/main/resources/";
-        File file = new File(base, resourceName);
-        return file.getPath();
-    }
-    /*
-    public static String getLocalProperty(String key) {
-        return properties.getProperty(key);
-    }
 
-    public static List<String> listResources(String path) {
-        try (InputStream inputStream = currentClassLoader().getResourceAsStream(path)) {
-            BufferedReader br = new BufferedReader(new InputStreamReader(
-                    inputStream, StandardCharsets.UTF_8));
-            return br.lines().collect(Collectors.toList());
-        } catch (IOException e) {
-
-            return Collections.emptyList();
-        }
-    }
-
-    public static String getLocalPropertyOr(String key, String alternative) {
-        String localProperty = getLocalProperty(key);
-        return localProperty != null ? localProperty : alternative;
-    }
-
-
-    public static String getMainResourceFilename(String resourceName) {
-        String base = "fxl/src/main/resources/";
-        File file = new File(base, resourceName);
-        return file.getPath();
-    }
-
-    public static String getTestResourceFilename(String resourceName) {
-        String base = "fxl/src/test/resources/";
-        File file = new File(base, resourceName);
-        return file.getPath();
-    }
-
-    public static String getResourceAsString(String resourceName) {
-        InputStream inputStream = getResourceAsStream(resourceName);
-        try {
-            if (inputStream != null) {
-                return IOUtils.toString(inputStream, StandardCharsets.UTF_8);
-            }
-        } catch (IOException ignored) {
-        }
-        return null;
-    }
-    public static InputStream getFileStreamFromProperty(String key) {
-        try {
-            return new FileInputStream(getLocalProperty(key));
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        }
-    }*/
 }

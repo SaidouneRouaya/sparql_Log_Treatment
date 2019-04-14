@@ -165,7 +165,7 @@ public class MDGraphAnnotated {
         Stopwatch stopwatchannotation = Stopwatch.createStarted();
 
 
-        HashMap<String, Model> modelsConsolidated = TdbOperation.unpersistModelsMap(TdbOperation.originalDataSetConsolidated);
+        HashMap<String, Model> modelsConsolidated = TdbOperation.unpersistModelsMap(TdbOperation.dataSetConsolidate);
 
         stopwatchunpersist.stop();
         System.out.println("time  unpersist : " + stopwatchunpersist);
@@ -174,7 +174,7 @@ public class MDGraphAnnotated {
         stopwatchannotation.stop();
         System.out.println(" time annotation " + stopwatchannotation);
 
-        TdbOperation.persistAnnotatedHashMap(modelsAnnotated);
+        TdbOperation.persistAnnotatedHashMap(modelsAnnotated, TdbOperation.dataSetAnnotated);
 
         stopwatch.stop();
         System.out.println("\n Time elapsed for the program is " + stopwatch.elapsed(SECONDS));

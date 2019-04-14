@@ -13,7 +13,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
-import static MDfromLogQueries.Declarations.Declarations.logFile;
+import static MDfromLogQueries.Declarations.Declarations.executionLogFile;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 public class QueryExecutor {
@@ -151,7 +151,7 @@ public class QueryExecutor {
             /*  System.out.println("Result " + results.next());*/
         } catch (Exception e) {
             e.printStackTrace();
-            FileOperation.writeQueryInLog(logFile, "Ask", query);
+            FileOperation.writeQueryInLog(executionLogFile, "Ask", query);
         }
         return results;
     }
@@ -170,7 +170,7 @@ public class QueryExecutor {
         }
         catch (Exception e){
             e.printStackTrace();
-            FileOperation.writeQueryInLog(logFile, "Select", query);
+            FileOperation.writeQueryInLog(executionLogFile, "Select", query);
         }
         return results;
     }
@@ -186,7 +186,7 @@ public class QueryExecutor {
             /* System.out.println("Result "+ results.toString());*/
         }
         catch (Exception e){
-            FileOperation.writeQueryInLog(logFile, "Construct", query);
+            FileOperation.writeQueryInLog(executionLogFile, "Construct", query);
         }
         return results;
     }

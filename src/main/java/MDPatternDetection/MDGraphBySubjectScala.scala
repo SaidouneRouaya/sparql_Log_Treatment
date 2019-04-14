@@ -18,7 +18,7 @@ object MDGraphBySubjectScala extends App {
 
 
   val statistics: Statistics1 = new Statistics1
-  val duration = System.currentTimeMillis() - t1
+
   var models = new mutable.HashMap[String, Model]
   var subjects = Vector[String]()
 
@@ -156,6 +156,7 @@ object MDGraphBySubjectScala extends App {
     result
   }
 
+  val duration = System.currentTimeMillis() - t1
   println(duration)
 
 

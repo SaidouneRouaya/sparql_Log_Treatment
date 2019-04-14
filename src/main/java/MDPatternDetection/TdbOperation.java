@@ -104,22 +104,6 @@ public class TdbOperation {
     }
 
 
-    public static void persist(ArrayList<Model> models) {
-
-
-        try {
-
-            for (Model m : models) {
-
-                originalDataSet.addNamedModel(m.listSubjects().next().toString(), m);
-            }
-
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
 
     public static HashMap<String, Model> unpersistModelsMap(Dataset dataset) {
         HashMap<String, Model> results = new HashMap<>();
@@ -130,9 +114,7 @@ public class TdbOperation {
         TDB.sync(dataset);
         if (dataset == null) return null;
 
-        boolean finish = false;
         Iterator<String> it = dataset.listNames();
-
 
         String name;
 
@@ -149,9 +131,6 @@ public class TdbOperation {
 
                 if (name != null && model != null) results.put(name, model);
             }
-
-
-
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -174,7 +153,6 @@ public class TdbOperation {
         Iterator<String> it = dataset.listNames();
 
         try {
-
             while (it.hasNext()) {
                 String name = it.next();
                 while (name == null) {
@@ -182,10 +160,7 @@ public class TdbOperation {
                 }
 
                 results.add(name);
-
             }
-
-
         } catch (Exception e) {
             e.printStackTrace();
         }

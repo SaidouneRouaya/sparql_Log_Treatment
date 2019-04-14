@@ -33,7 +33,7 @@ public class AppTest {
 
         HashMap<String, Model> resultsHashMap = Consolidation.consolidate(models);
 
-        TdbOperation.persistNonAnnotated(resultsHashMap);
+        TdbOperation.persistNonAnnotated(resultsHashMap, TdbOperation.dataSetConsolidate);
 
 
 

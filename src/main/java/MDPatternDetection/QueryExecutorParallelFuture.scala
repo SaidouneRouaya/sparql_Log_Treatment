@@ -37,10 +37,6 @@ object QueryExecutorParallelFuture extends App {
     constructQueriesList.grouped(100000).foreach {
 
       groupOfLines => {
-
-
-
-
         val timeFor100000 = System.currentTimeMillis()
 
 

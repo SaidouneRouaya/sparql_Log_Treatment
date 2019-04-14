@@ -1,7 +1,7 @@
 package MDPatternDetection;
 
 import MDfromLogQueries.Declarations.Declarations;
-import MDfromLogQueries.Util.Constants;
+import MDfromLogQueries.Util.Constants2;
 import MDfromLogQueries.Util.FileOperation;
 import com.google.common.base.Stopwatch;
 import org.apache.jena.query.Query;
@@ -22,7 +22,7 @@ public class Queries2Graphes {
 
     public Queries2Graphes() {
         /* Change the path in the case of using another query logs */
-        new Constants(Declarations.dbPediaOntologyPath); // init the Constants to use it next
+        new Constants2(Declarations.dbPediaOntologyPath); // init the cconstants to use it next
     }
 
     /**
@@ -31,7 +31,7 @@ public class Queries2Graphes {
      **/
 
     public static ArrayList<Query> TransformQueriesInFile(String filePath) {
-        new Constants(Declarations.dbPediaOntologyPath);
+        new Constants2(Declarations.dbPediaOntologyPath);
         //  ArrayList<Query> constructQueriesList = new ArrayList<>();
         ArrayList<Query> constructQueriesList = new ArrayList<>();
         ArrayList<Query> constructQueriesListFinal = new ArrayList<>();
@@ -44,14 +44,11 @@ public class Queries2Graphes {
 
             lines = (ArrayList<String>) FileOperation.ReadFile(filePath);
 
-
-            //while (nb_line<1000){
             for (String line : lines) {
 
                 try {
 
 
-                    // String line = lines.get(nb_line);
                     nb_line++;
 
                     Query query = QueryFactory.create(line);
@@ -64,12 +61,6 @@ public class Queries2Graphes {
 
                     System.out.println("*  " + nb_line);
 
-                  /*  if (nb_line == 10000) {
-                        constructQueriesListFinal.addAll(constructQueriesList);
-
-                        nb_line = 0;
-                        constructQueriesList.clear();
-                    }*/
 
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -89,12 +80,10 @@ public class Queries2Graphes {
 
     public static ArrayList<Query> TransformQueriesinFile2(List<String> lines) {
 
-        new Constants(Declarations.dbPediaOntologyPath);
+        new Constants2(Declarations.dbPediaOntologyPath);
 
         //ArrayList<Query> constructQueriesList = new ArrayList<>();
         ArrayList<Query> constructQueriesList = new ArrayList<>();
-
-        int nb_line = 0; // for statistical matters
 
         try {
             /** Graph pattern extraction **/
@@ -106,7 +95,6 @@ public class Queries2Graphes {
                 try {
 
                     String line = it.next();
-                    nb_line++;
                     Query query = QueryFactory.create(line);
 
                     QueryUpdate queryUpdate = new QueryUpdate(query);

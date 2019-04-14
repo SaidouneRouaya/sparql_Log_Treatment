@@ -16,7 +16,7 @@ object QueryExecutorParallel extends App {
 
   var nb_model = 0
   val t1 = System.currentTimeMillis()
-  val duration = System.currentTimeMillis() - t1
+
 
   def executeQueriesInFile(filePath: String, endPoint: String) = {
     val t1 = System.currentTimeMillis()
@@ -85,15 +85,11 @@ object QueryExecutorParallel extends App {
     writer.close()
   }
 
-  //executeQueriesInFile(Declarations.constructQueriesFile2, "https://dbpedia.org/sparql")
 
   def writeInTdb(models: ParSeq[Model]) = {
     val tdb = new TdbOperation()
     var nb_model = 0
 
-
-
-    // je suis un commentaire
     models.foreach(m => {
       nb_model += 1
       TdbOperation.originalDataSet.addNamedModel("model_" + nb_model, m)
@@ -120,6 +116,11 @@ object QueryExecutorParallel extends App {
     TDB.sync(TdbOperation.originalDataSet)
 
   }
+
+
+  executeQueriesInFile(Declarations.constructQueriesFile2, "https://dbpedia.org/sparql")
+
+  val duration = System.currentTimeMillis() - t1
 
   println(duration)
 }
