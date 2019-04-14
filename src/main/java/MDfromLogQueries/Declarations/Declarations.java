@@ -16,6 +16,7 @@ public class Declarations {
     public static String directoryPathCopie = root + "DataLog\\test - Copie";
     public static String writingFilePath = root + "ProgramOutput\\Fichier_log_Nettoye_Complet_Parallel_test.txt";
     public static String writingFilePathCopie = root + "ProgramOutput\\Fichier_log_Nettoye_Complet_Parallel_Java_Copie.txt";
+    public static String timesFilePath = root + "ProgramOutput\\Fichier_Temps.txt";
 
 
     public static String writingDedupFilePath = root + "ProgramOutput\\Fichier_log_Dedup_Nettoye.txt";
