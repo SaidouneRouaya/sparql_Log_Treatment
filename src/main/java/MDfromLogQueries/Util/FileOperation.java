@@ -1,11 +1,8 @@
 package MDfromLogQueries.Util;
 
-import MDfromLogQueries.Declarations.Declarations;
 import Statistics.Statistics1;
 import org.apache.jena.query.Query;
 import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.ModelFactory;
-import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.rdf.model.StmtIterator;
 
 import java.io.*;
@@ -192,180 +189,31 @@ public class FileOperation {
         }
     }
 
-
-
-    public static void writeModelsInFile(String writingFilePath, ArrayList<Model> models) {
-        System.out.println("RAni sdakhel Write\n");
+    public static void writeTimesInFile(String writingFilePath, String operation, Long time) {
 
         File file = new File(writingFilePath);
-        FileOutputStream outputFile = null;
-        OutputStream out = null;
-
-        Statement statement;
-
+        BufferedWriter bw = null;
         try {
             if (!file.isFile()) file.createNewFile();
 
-            outputFile = new FileOutputStream(file);
+            bw = new BufferedWriter(new FileWriter(file, true));
 
+            bw.write("\n" + operation);
+            bw.write("\n Time : \t " + time.toString());
 
-            BufferedWriter bw = new BufferedWriter(new FileWriter(file, true));
-            out = new FileOutputStream(file);
+            bw.flush();
 
-            for (Model model : models) {
-
-              /*  Iterator<Statement> list = model.listStatements();
-                 while (list.hasNext()) {
-                    statement = list.next();
-                    System.out.println("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&"+statement.toString());
-                    bw.write(statement.toString().replaceAll("[\n\r]","\t"));
-                    bw.flush();
-                }
-                bw.write("\n");
-                bw.flush();
-
-                //bw.write(model.toString().replaceAll("[\n\r]","\t")+"\n");
-                */
-                model.write(out, "RDF/XML");
-
-                //bw.flush();
-            }
-            System.out.println("kamalt write\n");
         } catch (IOException e) {
             System.out.println("Impossible file creation");
         } finally {
 
             try {
-                out.close();
+                bw.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }
 
         }
-    }
-
-    public static void writeModelInFile(String writingFilePath, Model model) {
-        System.out.println("RAni sdakhel Write\n");
-
-        File file = new File(writingFilePath);
-        FileOutputStream outputFile = null;
-        OutputStream out = null;
-
-        Statement statement;
-
-        try {
-            if (!file.isFile()) file.createNewFile();
-
-            outputFile = new FileOutputStream(file);
-
-
-            BufferedWriter bw = new BufferedWriter(new FileWriter(file, true));
-            out = new FileOutputStream(file);
-
-            model.write(out, "TURTLE");
-
-            //bw.flush();
-            System.out.println("kamalt write\n");
-        } catch (IOException e) {
-            System.out.println("Impossible file creation");
-        } finally {
-
-            try {
-                out.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-        }
-    }
-
-
-    public static ArrayList<Model> readModelsFromFile(String filePath) {
-
-        System.out.println("rani dakhel read\n");
-        ArrayList<Model> models = new ArrayList<>();
-        BufferedReader br = null;
-        FileInputStream inputFile = null;
-        InputStream in = null;
-        File file = new File(filePath);
-        int linesNumbers = 0;
-
-
-        try {
-            if (!file.isFile()) file.createNewFile();
-            in = new FileInputStream(file);
-
-            br = new BufferedReader(new FileReader(file));
-
-            Model model = ModelFactory.createDefaultModel();
-
-            //  model.read(br, null, "RDF/XML");
-            // model.read(inputFile,filePath,  "TURTLE");
-
-            //   model.read(inputFile ,  "RDF/XML");
-
-            // model.read(in,  "TURTLE");
-            model.read(in, "RDF/XML");
-
-
-          /*  String line;
-            while ( (line =br.readLine()) != null) {
-
-                model.read(new StringReader(line), null, "TURTLE");
-
-              //  model.read(new ByteArrayInputStream(line.getBytes()), null);
-
-                models.add(model);
-            }
-*/
-            System.out.println("*****\t" + linesNumbers);
-
-
-            System.out.println("kamalt read\n");
-        } catch (Exception e) {
-            e.printStackTrace();
-
-        } finally {
-
-            try {
-                br.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        return models;
-    }
-
-    public static Model readModelFromFile(String filePath) {
-        BufferedReader br = null;
-        InputStream in = null;
-        File file = new File(filePath);
-        int linesNumbers = 0;
-        Model model = ModelFactory.createDefaultModel();
-
-        try {
-            if (!file.isFile()) file.createNewFile();
-            in = new FileInputStream(file);
-
-            br = new BufferedReader(new FileReader(file));
-
-            model = ModelFactory.createDefaultModel();
-            model.read(in, filePath, "TURTLE");
-
-            System.out.println("*****\t" + linesNumbers);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-
-        } finally {
-
-            try {
-                br.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        return model;
     }
 
 
@@ -397,50 +245,6 @@ public class FileOperation {
     }
 
 
-    public static void main(String[] args) {
-
-        ArrayList<ArrayList<String>> listt = ReadFile4Transform(Declarations.syntaxValidFile);
-
-
-        for (ArrayList<String> a : listt) {
-
-            System.out.println("taille : " + a.size());
-
-
-        }
-
-    }
-     /* BufferedWriter bw = null;
-
-        try {
-        File file =new File("C:\\Users\\pc\\Desktop\\PFE\\Files\\Fichier_Syntaxe_Valide_Test.txt");
-
-
-        if (!file.isFile()) file.createNewFile();
-
-        for (int i=0; i<65; i++)
-        {
-
-            bw = new BufferedWriter(new FileWriter(file, true));
-
-
-
-            bw.write(i+"\n");
-
-            bw.flush();
-        }
-    }        catch (IOException e) {
-        System.out.println("Impossible file creation");
-    }finally {
-
-        try {
-            bw.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-    }
-}*/
 
     public static void writeStatisticsInFile2(Statistics1 statistics1, String typeStat, String writingFilePath) {
         File file = new File(writingFilePath);
