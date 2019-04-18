@@ -41,5 +41,5 @@ class Scenario_LogOnly {
   statisticsBySubjectList(subjects)
   FileOperation.writeTimesInFile(timesFilePath, "Statistics ", System.currentTimeMillis() - t_statistics)
 
-
+  //TODO ecrire dans un fichier les stat concernant nombre de req ..Etc
 }
