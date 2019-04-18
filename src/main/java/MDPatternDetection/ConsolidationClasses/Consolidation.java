@@ -91,9 +91,24 @@ public class Consolidation {
     public static HashMap<String,Model> toStringModelsHashmap2(ArrayList<Model> modelArrayList)
     {
         HashMap<String,Model> modelHashMap = new HashMap<>();
+        HashMap<String,Model> modelsFromOneModel;
+        int nb = 0;
         for (Model m : modelArrayList)
         {
-            modelHashMap.putAll(getModelsofModel(m));
+            modelsFromOneModel =  getModelsofModel(m);
+            for (String key : modelsFromOneModel.keySet())
+            {
+                nb++;
+                System.out.println("model num "+nb);
+                if(modelHashMap.containsKey(key))
+                {
+                    modelHashMap.replace(key,modelHashMap.get(key).union(modelsFromOneModel.get(key)));
+                }
+                else
+                {
+                    modelHashMap.put(key, modelsFromOneModel.get(key));
+                }
+            }
         }
         return modelHashMap;
     }
@@ -108,30 +123,37 @@ public class Consolidation {
             Model resourceModel = ModelFactory.createDefaultModel();
             if (!rdfNodeList.contains(resource))
             {
-                modelHashMap.put(resource.getURI(),getModelOfResource(resource,resourceModel));
+                ArrayList<RDFNode> visitedNodes = new ArrayList<>();
+                visitedNodes.add(resource);
+                modelHashMap.put(resource.getURI(),getModelOfResource(resource,resourceModel,visitedNodes));
             }
         }
         return modelHashMap;
     }
 
-    public static Model getModelOfResource(Resource resource, Model model)
+    public static Model getModelOfResource(Resource resource, Model model, ArrayList<RDFNode> visitedNodes )
     {
         StmtIterator stmtIterator = resource.listProperties();
         Model internModel = stmtIterator.toModel();
+        //System.out.println(" le modele louwel "+resource+" "+internModel);
+        //System.out.println(" modeeelddd "+model);
         List<Statement> list =resource.listProperties().toList();
         for(Statement statement : list)
         {
-
-            boolean contains  = model.listSubjects().toList().contains(statement.getObject().asResource());
+            //System.out.println("je rentre ici");
+            //System.out.println(" modeeel "+model);
+            boolean contains  = visitedNodes.contains(statement.getObject().asResource());
+            //System.out.println("le contains "+contains);
             if (!contains)
+            //if (model.getResource(rdfNode.toString()))
             {
-                internModel.add(getModelOfResource(statement.getObject().asResource(), internModel));
-                return internModel;
+                visitedNodes.add(statement.getObject());
+                internModel.add(getModelOfResource(statement.getObject().asResource(), internModel, visitedNodes));
             }
             else{
-                internModel = ModelFactory.createDefaultModel();
+                internModel = internModel.remove(statement);
             }
-                //internModel = internModel.union(getModelOfResource(statement.getObject().asResource(),internModel));
+            //internModel = internModel.union(getModelOfResource(statement.getObject().asResource(),internModel));
             //model.add();
         }
         return internModel;
