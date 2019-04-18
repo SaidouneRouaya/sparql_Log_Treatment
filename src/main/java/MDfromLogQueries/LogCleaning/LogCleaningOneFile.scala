@@ -12,7 +12,7 @@ import scala.collection.JavaConverters
 import scala.collection.parallel.ParSeq
 import scala.io.Source
 
-object LogCleaningOneFile extends App{
+object LogCleaningOneFile extends App {
   /** This class reads the log files and extract queries **/
 
   val t1 = System.currentTimeMillis()
@@ -24,11 +24,13 @@ object LogCleaningOneFile extends App{
   /* Result (cleaned queries)'s file path */
   val destinationfilePath = Declarations.cleanedQueriesFileCopie
   val duration = System.currentTimeMillis() - t1
+  val dir = new File(directoryPath)
   /* Regex on wich is based the algorithm to extract the queries */
   private val PATTERN = Pattern.compile("[^\"]*\"(?:GET )?/sparql/?\\?([^\"\\s\\n]*)[^\"]*\".*")
   //private val PATTERN = Pattern.compile("(sparql)(.*)")
   /* Statistical variables*/
   var nb_queries = 0
+
   /** Write the cleaned queries in the destination file path **/
   def writeFiles(filePath: String, destinationfilePath: String) = {
     var queryList = Source.fromFile(filePath).getLines
@@ -47,7 +49,7 @@ object LogCleaningOneFile extends App{
               } else Left(line)
 
             } catch {
-              case e : Exception => {
+              case e: Exception => {
                 println("une erreur\n\n\n\n\n\n\n\n\n")
                 Left(line)
               }
@@ -56,14 +58,24 @@ object LogCleaningOneFile extends App{
         }
 
         println("--------------------- un group finished ---------------------------------- ")
-        nb_queries = nb_queries+nb_req
+        nb_queries = nb_queries + nb_req
         val (correct, errors) = treatedGroupOfLines.partition(_.isRight)
         writeInFile(destinationfilePath, correct.collect { case Right(Some(x)) => x })
         writeInFile(Declarations.notCleanedQueries, errors.collect { case Left(line) => line })
       }
-      }
-    println("nombre de requêtes dans le log :"+ nb_queries)
+    }
+    println("nombre de requêtes dans le log :" + nb_queries)
     null
+  }
+
+  def writeInFile(destinationFilePath: String, queries: ParSeq[String]) = {
+
+
+    val writer = new PrintWriter(new FileOutputStream(new File(destinationFilePath), true))
+
+    queries.foreach(query => writer.write(query.replaceAll("[\n\r]", "\t") + "\n"))
+
+    writer.close()
   }
 
   /** Read lines of log file passed as parameter **/
@@ -92,17 +104,8 @@ object LogCleaningOneFile extends App{
     }
     else null
   }
-  def writeInFile(destinationFilePath: String, queries: ParSeq[String]) = {
 
-
-    val writer = new PrintWriter(new FileOutputStream(new File(destinationFilePath), true))
-
-    queries.foreach(query => writer.write(query.replaceAll("[\n\r]", "\t") + "\n"))
-
-    writer.close()
-  }
-  val dir = new File(directoryPath)
-  dir.listFiles().toList.foreach(filePath => writeFiles(filePath.toString,destinationfilePath))
+  dir.listFiles().toList.foreach(filePath => writeFiles(filePath.toString, destinationfilePath))
   //writeFiles(dirPath, destinationfilePath)
 
   def queryFromRequest(requestStr: String): String = {
@@ -118,5 +121,6 @@ object LogCleaningOneFile extends App{
     null
 
   }
+
   println(duration)
 }

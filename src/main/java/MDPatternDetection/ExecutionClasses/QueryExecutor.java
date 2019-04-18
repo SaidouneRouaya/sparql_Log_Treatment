@@ -1,5 +1,8 @@
-package MDPatternDetection;
+package MDPatternDetection.ExecutionClasses;
 
+import MDPatternDetection.AnnotationClasses.MDGraphAnnotated;
+import MDPatternDetection.ConsolidationClasses.Consolidation;
+import MDPatternDetection.GraphConstructionClasses.Queries2Graphes;
 import MDfromLogQueries.Declarations.Declarations;
 import MDfromLogQueries.Util.FileOperation;
 import com.google.common.base.Stopwatch;
@@ -13,7 +16,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
-import static MDfromLogQueries.Declarations.Declarations.logFile;
+import static MDfromLogQueries.Declarations.Declarations.executionLogFile;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 public class QueryExecutor {
@@ -74,22 +77,18 @@ public class QueryExecutor {
 
                 QueryExecutor queryExecutor = new QueryExecutor();
 
-                System.out.println("\nla transformation en construct \n");
-
-//                ArrayList<Query> constructQueriesList = Queries2Graphes.TransformQueriesinFile2(allLines.subList(0, cpt));
-                // Execution of each CONSTRUCT query
-
                 int num = 0;
-                Query query = QueryFactory.create();
+                Query query;
                 System.out.println("\nL'execution des requetes \n");
+
                 for (String queryStr : allLines) {
                     num++;
                     query=QueryFactory.create(queryStr);
                     System.out.println("exeution req " + num + "\n");
                     Model model;
                     if ((model = queryExecutor.executeQueryConstruct(query, endPoint)) != null) results.add(model);
-                    if (!model.isEmpty())
-                    {System.out.println("Le model :");
+                    if (model != null) {
+                        System.out.println("Le model :");
                         Iterator<Statement> listStatements = model.listStatements();
                         while (listStatements.hasNext()) {
                             System.out.println(listStatements.next().toString());
@@ -151,7 +150,7 @@ public class QueryExecutor {
             /*  System.out.println("Result " + results.next());*/
         } catch (Exception e) {
             e.printStackTrace();
-            FileOperation.writeQueryInLog(logFile, "Ask", query);
+            FileOperation.writeQueryInLog(executionLogFile, "Ask", query);
         }
         return results;
     }
@@ -159,19 +158,18 @@ public class QueryExecutor {
     public QueryExecutor() {
     }
 
-    public ResultSet executeQuerySelect(String queryStr, String endpoint)
+    public ResultSet executeQuerySelect(Query query, String endpoint)
     {
         ResultSet results = null;
-        Query query = null;
         try{
-            query = QueryFactory.create(queryStr);
+            //  query = QueryFactory.create(queryStr);
             QueryExecution qexec = QueryExecutionFactory.sparqlService(endpoint, query);
             results = qexec.execSelect();
             /*  System.out.println("Result " + results.next());*/
         }
         catch (Exception e){
             e.printStackTrace();
-            FileOperation.writeQueryInLog(logFile, "Select", query);
+            FileOperation.writeQueryInLog(executionLogFile, "Select", query);
         }
         return results;
     }
@@ -187,7 +185,7 @@ public class QueryExecutor {
             /* System.out.println("Result "+ results.toString());*/
         }
         catch (Exception e){
-            FileOperation.writeQueryInLog(logFile, "Construct", query);
+            FileOperation.writeQueryInLog(executionLogFile, "Construct", query);
         }
         return results;
     }

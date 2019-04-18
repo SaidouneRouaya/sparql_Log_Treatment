@@ -1,4 +1,4 @@
-package MDPatternDetection;
+package MDfromLogQueries.Util;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.jena.ontology.OntModel;
@@ -30,6 +30,9 @@ public class OntologyFactory {
                 case ("nt"):
                     extension = "N-TRIPLES";
                     break;
+                case ("owl"):
+                    extension = "RDF/XML";
+                    break;
                     default:
                         extension = "RDF/XML";
                         break;
@@ -37,7 +40,7 @@ public class OntologyFactory {
             model.read(in, file, extension);
             in.close();
         } catch (IOException e) {
-            // e.printStackTrace();
+            e.printStackTrace();
         }
     }
 }

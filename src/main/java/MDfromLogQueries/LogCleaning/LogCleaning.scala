@@ -23,7 +23,7 @@ object Main extends App {
 
   /* Result (cleaned queries)'s file path */
   val filePath = Declarations.cleanedQueriesFileCopie
-  val duration = System.currentTimeMillis() - t1
+
   /* Regex on wich is based the algorithm to extract the queries */
   private val PATTERN = Pattern.compile("[^\"]*\"(?:GET )?/sparql/?\\?([^\"\\s\\n]*)[^\"]*\".*")
   //private val PATTERN = Pattern.compile("(sparql)(.*)")
@@ -82,6 +82,8 @@ object Main extends App {
     null
 
   }
+
+  val duration = System.currentTimeMillis() - t1
   println(duration)
 
 }

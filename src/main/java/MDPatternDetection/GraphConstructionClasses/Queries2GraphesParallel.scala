@@ -1,41 +1,18 @@
-package MDfromLogQueries.LogCleaning
+package MDPatternDetection.GraphConstructionClasses
 
-import java.io._
+import java.io.{File, FileOutputStream, PrintWriter}
 
-import MDPatternDetection.QueryUpdate
-import MDfromLogQueries.Declarations.Declarations._
+import MDfromLogQueries.Declarations.Declarations.{constructLogFileParallel, constructQueriesFile2, dbPediaOntologyPath, syntaxValidFile2}
 import MDfromLogQueries.Util.Constants2
 import org.apache.jena.query.{Query, QueryFactory}
 
 import scala.collection.parallel.ParSeq
 import scala.io.Source
 
-
-object Main2 extends App {
+object Queries2GraphesParallel extends App {
 
   val t1 = System.currentTimeMillis()
-
-
-  /** Function that writes into destinationFilePath the list passed as parameter **/
-  def writeInFile(destinationFilePath: String, queries: ParSeq[Query]) = {
-
-
-    val writer = new PrintWriter(new FileOutputStream(new File(destinationFilePath), true))
-
-    queries.foreach(query => writer.write(query.toString().replaceAll("[\n\r]", "\t") + "\n"))
-
-    writer.close()
-  }
-
-  def writeInLogFile(destinationFilePath: String, query: Query) = {
-
-    val writer = new PrintWriter(new FileOutputStream(new File(destinationFilePath), true))
-
-    writer.write(query.toString().replaceAll("[\n\r]", "\t") + "\n")
-
-    writer.close()
-  }
-
+  val duration = System.currentTimeMillis() - t1
 
   //: util.ArrayList[Query]
   def TransformQueriesInFile(filePath: String) = {
@@ -62,14 +39,14 @@ object Main2 extends App {
                 query.setQuerySelectType();
               val queryUpdate = new QueryUpdate(query)
               constructedQuery = queryUpdate.toConstruct(query)
-
               /* Some meaning if there is a result != null */
               Some(constructedQuery)
+              //  Some(query)
 
             } catch {
               case unknown => {
                 println("une erreur\n\n\n\n\n\n\n\n\n")
-                writeInLogFile(logFileConstruct, constructedQuery)
+                writeInLogFile(constructLogFileParallel, constructedQuery)
                 None
               }
             }
@@ -81,16 +58,34 @@ object Main2 extends App {
         println("--------------------- un group finished ---------------------------------- ")
 
         writeInFile(constructQueriesFile2, treatedGroupOfLines.collect { case Some(x) => x })
+        // writeInFile(constructQueriesFileTest, treatedGroupOfLines.collect { case Some(x) => x })
       }
     }
 
   }
 
+  /** Function that writes into destinationFilePath the list passed as parameter **/
+  def writeInFile(destinationFilePath: String, queries: ParSeq[Query]) = {
+
+
+    val writer = new PrintWriter(new FileOutputStream(new File(destinationFilePath), true))
+
+    queries.foreach(query => writer.write(query.toString().replaceAll("[\n\r]", "\t") + "\n"))
+
+    writer.close()
+  }
+
   TransformQueriesInFile(syntaxValidFile2)
 
+  def writeInLogFile(destinationFilePath: String, query: Query) = {
 
-  val duration = System.currentTimeMillis() - t1
+    val writer = new PrintWriter(new FileOutputStream(new File(destinationFilePath), true))
+
+    writer.write(query.toString().replaceAll("[\n\r]", "\t") + "\n")
+
+    writer.close()
+  }
+
   println(duration)
 
 }
-

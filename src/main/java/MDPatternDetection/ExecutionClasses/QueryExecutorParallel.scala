@@ -1,9 +1,9 @@
-package MDPatternDetection
+package MDPatternDetection.ExecutionClasses
 
 import java.io.{File, FileOutputStream, PrintWriter}
-import java.util
 
 import MDfromLogQueries.Declarations.Declarations
+import MDfromLogQueries.Util.TdbOperation
 import org.apache.jena.query.QueryFactory
 import org.apache.jena.rdf.model.{Model, ModelFactory}
 import org.apache.jena.tdb.TDB
@@ -11,23 +11,17 @@ import org.apache.jena.tdb.TDB
 import scala.collection.parallel.ParSeq
 import scala.io.Source
 
-
 object QueryExecutorParallel extends App {
 
-  var nb_model = 0
   val t1 = System.currentTimeMillis()
   val duration = System.currentTimeMillis() - t1
+  var nb_model = 0
 
   def executeQueriesInFile(filePath: String, endPoint: String) = {
-    val t1 = System.currentTimeMillis()
-    var nb = 0
+
     val queryExecutor = new QueryExecutor
 
-
     val constructQueriesList = Source.fromFile(filePath).getLines
-
-
-    val results = new util.ArrayList[Model]
 
     constructQueriesList.grouped(100000).foreach {
       groupOfLines => {
@@ -75,6 +69,18 @@ object QueryExecutorParallel extends App {
     writer.close()
   }
 
+  def writeInTdb(models: ParSeq[Model]) = {
+    val tdb = new TdbOperation()
+    var nb_model = 0
+
+    models.foreach(m => {
+      nb_model += 1
+      TdbOperation.originalDataSet.addNamedModel("model_" + nb_model, m)
+      //   TdbOperation.originalDataSetTest.addNamedModel("model_" + nb_model, m)
+    })
+
+
+  }
 
   def writeInLogFile(destinationFilePath: String, queries: Vector[String]) = {
 
@@ -85,22 +91,8 @@ object QueryExecutorParallel extends App {
     writer.close()
   }
 
+
   executeQueriesInFile(Declarations.constructQueriesFile2, "https://dbpedia.org/sparql")
-
-  def writeInTdb(models: ParSeq[Model]) = {
-    val tdb = new TdbOperation()
-    var nb_model = 0
-
-
-
-    // je suis un commentaire
-    models.foreach(m => {
-      nb_model += 1
-      TdbOperation.originalDataSet.addNamedModel("model_" + nb_model, m)
-    })
-
-
-  }
 
   def writeInTdb(models: Vector[Model]) = {
 
@@ -108,11 +100,12 @@ object QueryExecutorParallel extends App {
 
       if (m != null) {
         nb_model += 1
-        println("write "+nb_model)
+        println("write " + nb_model)
         TdbOperation
           .originalDataSet
+          //.originalDataSetTest
           .addNamedModel("model_" + nb_model,
-            m)
+          m)
       }
     })
     TDB.sync(TdbOperation.originalDataSet)
@@ -121,4 +114,3 @@ object QueryExecutorParallel extends App {
 
   println(duration)
 }
-

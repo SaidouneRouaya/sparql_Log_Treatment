@@ -1,11 +1,9 @@
 package MDfromLogQueries.Util;
 
-import MDfromLogQueries.Declarations.Declarations;
 import Statistics.Statistics1;
+import Statistics.StatisticsAnalytic;
 import org.apache.jena.query.Query;
 import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.ModelFactory;
-import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.rdf.model.StmtIterator;
 
 import java.io.*;
@@ -192,180 +190,31 @@ public class FileOperation {
         }
     }
 
-
-
-    public static void writeModelsInFile(String writingFilePath, ArrayList<Model> models) {
-        System.out.println("RAni sdakhel Write\n");
+    public static void writeTimesInFile(String writingFilePath, String operation, Long time) {
 
         File file = new File(writingFilePath);
-        FileOutputStream outputFile = null;
-        OutputStream out = null;
-
-        Statement statement;
-
+        BufferedWriter bw = null;
         try {
             if (!file.isFile()) file.createNewFile();
 
-            outputFile = new FileOutputStream(file);
+            bw = new BufferedWriter(new FileWriter(file, true));
 
+            bw.write("\n" + operation);
+            bw.write("\n Time : \t " + time.toString());
 
-            BufferedWriter bw = new BufferedWriter(new FileWriter(file, true));
-            out = new FileOutputStream(file);
+            bw.flush();
 
-            for (Model model : models) {
-
-              /*  Iterator<Statement> list = model.listStatements();
-                 while (list.hasNext()) {
-                    statement = list.next();
-                    System.out.println("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&"+statement.toString());
-                    bw.write(statement.toString().replaceAll("[\n\r]","\t"));
-                    bw.flush();
-                }
-                bw.write("\n");
-                bw.flush();
-
-                //bw.write(model.toString().replaceAll("[\n\r]","\t")+"\n");
-                */
-                model.write(out, "RDF/XML");
-
-                //bw.flush();
-            }
-            System.out.println("kamalt write\n");
         } catch (IOException e) {
             System.out.println("Impossible file creation");
         } finally {
 
             try {
-                out.close();
+                bw.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }
 
         }
-    }
-
-    public static void writeModelInFile(String writingFilePath, Model model) {
-        System.out.println("RAni sdakhel Write\n");
-
-        File file = new File(writingFilePath);
-        FileOutputStream outputFile = null;
-        OutputStream out = null;
-
-        Statement statement;
-
-        try {
-            if (!file.isFile()) file.createNewFile();
-
-            outputFile = new FileOutputStream(file);
-
-
-            BufferedWriter bw = new BufferedWriter(new FileWriter(file, true));
-            out = new FileOutputStream(file);
-
-            model.write(out, "TURTLE");
-
-            //bw.flush();
-            System.out.println("kamalt write\n");
-        } catch (IOException e) {
-            System.out.println("Impossible file creation");
-        } finally {
-
-            try {
-                out.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-        }
-    }
-
-
-    public static ArrayList<Model> readModelsFromFile(String filePath) {
-
-        System.out.println("rani dakhel read\n");
-        ArrayList<Model> models = new ArrayList<>();
-        BufferedReader br = null;
-        FileInputStream inputFile = null;
-        InputStream in = null;
-        File file = new File(filePath);
-        int linesNumbers = 0;
-
-
-        try {
-            if (!file.isFile()) file.createNewFile();
-            in = new FileInputStream(file);
-
-            br = new BufferedReader(new FileReader(file));
-
-            Model model = ModelFactory.createDefaultModel();
-
-            //  model.read(br, null, "RDF/XML");
-            // model.read(inputFile,filePath,  "TURTLE");
-
-            //   model.read(inputFile ,  "RDF/XML");
-
-            // model.read(in,  "TURTLE");
-            model.read(in, "RDF/XML");
-
-
-          /*  String line;
-            while ( (line =br.readLine()) != null) {
-
-                model.read(new StringReader(line), null, "TURTLE");
-
-              //  model.read(new ByteArrayInputStream(line.getBytes()), null);
-
-                models.add(model);
-            }
-*/
-            System.out.println("*****\t" + linesNumbers);
-
-
-            System.out.println("kamalt read\n");
-        } catch (Exception e) {
-            e.printStackTrace();
-
-        } finally {
-
-            try {
-                br.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        return models;
-    }
-
-    public static Model readModelFromFile(String filePath) {
-        BufferedReader br = null;
-        InputStream in = null;
-        File file = new File(filePath);
-        int linesNumbers = 0;
-        Model model = ModelFactory.createDefaultModel();
-
-        try {
-            if (!file.isFile()) file.createNewFile();
-            in = new FileInputStream(file);
-
-            br = new BufferedReader(new FileReader(file));
-
-            model = ModelFactory.createDefaultModel();
-            model.read(in, filePath, "TURTLE");
-
-            System.out.println("*****\t" + linesNumbers);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-
-        } finally {
-
-            try {
-                br.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        return model;
     }
 
 
@@ -397,50 +246,6 @@ public class FileOperation {
     }
 
 
-    public static void main(String[] args) {
-
-        ArrayList<ArrayList<String>> listt = ReadFile4Transform(Declarations.syntaxValidFile);
-
-
-        for (ArrayList<String> a : listt) {
-
-            System.out.println("taille : " + a.size());
-
-
-        }
-
-    }
-     /* BufferedWriter bw = null;
-
-        try {
-        File file =new File("C:\\Users\\pc\\Desktop\\PFE\\Files\\Fichier_Syntaxe_Valide_Test.txt");
-
-
-        if (!file.isFile()) file.createNewFile();
-
-        for (int i=0; i<65; i++)
-        {
-
-            bw = new BufferedWriter(new FileWriter(file, true));
-
-
-
-            bw.write(i+"\n");
-
-            bw.flush();
-        }
-    }        catch (IOException e) {
-        System.out.println("Impossible file creation");
-    }finally {
-
-        try {
-            bw.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-    }
-}*/
 
     public static void writeStatisticsInFile2(Statistics1 statistics1, String typeStat, String writingFilePath) {
         File file = new File(writingFilePath);
@@ -450,7 +255,7 @@ public class FileOperation {
             bw = new BufferedWriter(new FileWriter(file, true));
 
 
-            bw.write("\n****************************** " + typeStat + " *******************************************");
+            bw.write("\n******************************************* " + typeStat + " *******************************************\n");
             bw.write("Total number of classes of the star S\t:\tNC(S) =\t" + statistics1.getNC() + "\n");
             bw.write("Number of fact classes of the start S\t:\tNFC(S) =\t" + statistics1.getNFC() + "\n");
             bw.write("Number of dimension classes of the star S \t:\tNDC(S) =\t" + statistics1.getNDC() + "\n");
@@ -463,7 +268,7 @@ public class FileOperation {
             bw.write("Number of hierarchy relationships of the star S\t:\tNH(S) =\t" + statistics1.getNH() + "\n");
             bw.write("Maximum depth of the hierarchy relationships of the star S\t:\tDHP(S)  =\t" + statistics1.getDHP() + "\n");
             bw.write("Ratio of attributes of the star S\t:\tRSA(S) =\t" + statistics1.getRSA() + "\n");
-            bw.write("****************************** Fin de " + typeStat + " *******************************************\n");
+            //bw.write("\n****************************** Fin de " + typeStat + " *******************************************\n");
             bw.flush();
         } catch (
                 IOException e) {
@@ -488,17 +293,9 @@ public class FileOperation {
             int i = 0;
             for (Statistics1 stat : statistisArrayList) {
                 i++;
-                bw.write("********************************* Graph number " + i + " ************************************************\n");
+                bw.write("\n********************************* Graph number " + i + "  *********************************\n");
 
-               /* StmtIterator stmtIterator = stat.getModel().listStatements();
-                int j = 0;
-                while (stmtIterator.hasNext())
-                {
-                    j++;
-                    bw.write(j+". "+stmtIterator.nextStatement()+"\n");
-                }*/
 
-                bw.write("------------------------------------------------------------------\n");
 
                 bw.write("Total number of classes of the star S\t:\tNC(S) =\t" + stat.getNC() + "\n");
                 bw.write("Number of fact classes of the start S\t:\tNFC(S) =\t" + stat.getNFC() + "\n");
@@ -512,7 +309,7 @@ public class FileOperation {
                 bw.write("Number of hierarchy relationships of the star S\t:\tNH(S) =\t" + stat.getNH() + "\n");
                 bw.write("Maximum depth of the hierarchy relationships of the star S\t:\tDHP(S)  =\t" + stat.getDHP() + "\n");
                 bw.write("Ratio of attributes of the star S\t:\tRSA(S) =\t" + stat.getRSA() + "\n");
-                bw.write("*********************************************************************************\n");
+                // bw.write("*********************************************************************************\n");
 
             }
             bw.flush();
@@ -528,6 +325,55 @@ public class FileOperation {
             }
 
         }
+    }
+
+    public static void writeStatisticsListInFile2(ArrayList<StatisticsAnalytic> statistisAnalyticsArrayList, String writingFilePath) {
+
+        File file = new File(writingFilePath);
+        BufferedWriter bw = null;
+        try {
+            if (!file.isFile()) file.createNewFile();
+            bw = new BufferedWriter(new FileWriter(file, true));
+            int i = 0;
+            for (StatisticsAnalytic stat : statistisAnalyticsArrayList) {
+                i++;
+                switch (stat.type) {
+
+                    case ("Fact"): {
+                        bw.write("\n********************************* Fact number " + i + "  *********************************\n");
+                        bw.write("\n********************************* URI: " + stat.URI + " *********************************\n");
+                        bw.write("Number of potential Dimension " + stat.nbDim + "\n");
+                        bw.write("Number of potential Fact Attribute " + stat.nbFactAtt + "\n");
+
+                    }
+                    break;
+                    case ("Dimension"): {
+                        bw.write("\n********************************* Dimension number " + i + "  *********************************\n");
+                        bw.write("\n********************************* URI: " + stat.URI + " *********************************\n");
+                        bw.write("Number of potential Levels " + stat.nbLevel + "\n");
+                        bw.write("Number of potential Dimension Attribute " + stat.nbDimAtt + "\n");
+
+                    }
+                    break;
+                }
+
+                bw.flush();
+            }
+
+        } catch (
+                IOException e) {
+            System.out.println("Impossible file creation");
+        } finally {
+
+            try {
+                bw.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        }
+
+
     }
 
     public static void writeStatisticsInFile(String writingFilePath, Statistics1 statistics1) {
@@ -578,24 +424,24 @@ public class FileOperation {
 
         }
     }
+
     public static void writeModelsInFile(HashMap<String, Model> models, String writingFilePath) {
         File file = new File(writingFilePath);
         BufferedWriter bw = null;
         try {
             if (!file.isFile()) file.createNewFile();
             bw = new BufferedWriter(new FileWriter(file, true));
-            int i =0;
+            int i = 0;
             Set<String> keys = models.keySet();
             for (String key : keys) {
                 i++;
-                bw.write("*********************************Graph number "+i+" "+key +" ************************************************\n");
+                bw.write("*********************************Graph number " + i + " " + key + " ************************************************\n");
 
                 StmtIterator stmtIterator = models.get(key).listStatements();
                 int j = 0;
-                while (stmtIterator.hasNext())
-                {
+                while (stmtIterator.hasNext()) {
                     j++;
-                    bw.write(j+". "+stmtIterator.nextStatement()+"\n");
+                    bw.write(j + ". " + stmtIterator.nextStatement() + "\n");
                 }
 
                 bw.write("*********************************************************************************\n");

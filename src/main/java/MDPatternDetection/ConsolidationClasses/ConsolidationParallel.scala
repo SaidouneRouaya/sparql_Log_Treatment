@@ -1,7 +1,9 @@
-package MDPatternDetection
+package MDPatternDetection.ConsolidationClasses
 
 import java.util
 
+import MDPatternDetection.AnnotationClasses.MDGraphAnnotated
+import MDfromLogQueries.Util.TdbOperation
 import org.apache.jena.query.Dataset
 import org.apache.jena.rdf.model.{Model, ModelFactory, NodeIterator, RDFNode}
 import org.apache.jena.tdb.TDB
@@ -17,12 +19,13 @@ object ConsolidationParallel extends App {
 
   val modelHashMap: mutable.HashMap[String, Model] = consolidate(TdbOperation.unpersistModelsMap(TdbOperation.originalDataSet))
 
-  writeInTdb(modelHashMap, TdbOperation.originalDataSetConsolidated)
+  writeInTdb(modelHashMap, TdbOperation.dataSetConsolidate)
 
   //TODO à déplacer vers une classe pour l'annotation
-  val modelsConsolidated = TdbOperation.unpersistModelsMap(TdbOperation.originalDataSetConsolidated)
+  val modelsConsolidated = TdbOperation.unpersistModelsMap(TdbOperation.dataSetConsolidate)
   val modelsAnnotated = MDGraphAnnotated.constructMDGraphs(modelsConsolidated)
   writeInTdb(convertToScalaMap(modelsAnnotated), TdbOperation.dataSetAnnotated)
+
   val duration = System.currentTimeMillis() - t1
 
   /** *************************************************** Functions ***********************************************************************/
@@ -80,7 +83,7 @@ object ConsolidationParallel extends App {
   }
 
   def convertToScalaMap(modelHashMap: util.HashMap[String, Model]): mutable.HashMap[String, Model] = {
-
+    val time = System.currentTimeMillis()
     val kies = modelHashMap.keySet()
     val result: mutable.HashMap[String, Model] = new mutable.HashMap[String, Model]()
 
@@ -97,6 +100,8 @@ object ConsolidationParallel extends App {
       }
 
     )
+    val duration = System.currentTimeMillis() - time
+    println(s"time to convert to scala map is: $duration")
     result
   }
 
@@ -152,7 +157,7 @@ object ConsolidationParallel extends App {
           }
         }
 
-        writeInTdb(modelHashMap, TdbOperation.originalDataSetConsolidated)
+        writeInTdb(modelHashMap, TdbOperation.dataSetConsolidate)
         modelHashMap.clear()
         println(s" ------------------------- finish with the group number: $nb_grp -------------------------------- ")
     }

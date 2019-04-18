@@ -1,4 +1,4 @@
-package MDPatternDetection;
+package MDPatternDetection.GraphConstructionClasses;
 
 import MDfromLogQueries.Util.ConstantsUtil;
 import org.apache.jena.graph.*;
@@ -32,7 +32,7 @@ public class QueryConstruction {
     private int j = 1; // Number of predicate variables
     public static int nb_prop = 0;
     public static int nb_prop_total = 0;
-    ConstantsUtil constantsUtil = new ConstantsUtil();
+    private ConstantsUtil constantsUtil = new ConstantsUtil();
 
     public BasicPattern getBpConstruct() {
         return bpConstruct;
@@ -51,8 +51,7 @@ public class QueryConstruction {
     {
         existingTriples.addAll(e_bpwhere.getList());
         this.bpWhere=  modifyBasicPattern(e_bpwhere);
-        //System.out.println(bpWhere.toString());
-        //afficher();
+
     }
 
     /** Takes a basic pattern and returns the basic pattern + every variable rdf:type ?type **/

@@ -2,51 +2,19 @@ package MDfromLogQueries.SPARQLSyntacticalValidation;
 
 import MDfromLogQueries.Declarations.Declarations;
 import MDfromLogQueries.Util.FileOperation;
-import com.google.common.base.Stopwatch;
 
 import java.util.ArrayList;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import static MDfromLogQueries.Declarations.Declarations.*;
-import static java.util.concurrent.TimeUnit.SECONDS;
 
 public class SyntacticalValidation {
 
-    public static String Test_query = "PREFIX a: <http://a/>\n" +
-            "\n" +
-            "# 12:34\n" +
-            "SELECT ?x ?x ?x ?y WHERE {\n" +
-            "?x a:a ?y.\n" +
-            "?x b:b ?y.\n" +
-            "?x b:b ?y.\n" +
-            "?x b:b ?y.\n" +
-            "?x c-x:c-x ?y.\n" +
-            "}";
-
     public static void main(String[] args) {
-        /*Stopwatch stopwatch = Stopwatch.createStarted();
-        String sourceFile = syntaxValidFile2;
-       // String writingFile = syntaxValidFile;
-        String writingFile = "C:\\Users\\KamilaB\\Desktop\\3CS\\Prototypage\\Step_1\\endpoints\\LinkedGeoData\\Support_Files\\Resulting_Files\\syntaxValidReglage";
 
-        // Validate (Test_query);
-
-        ValidateFile(sourceFile, writingFile);
-
-        stopwatch.stop();
-        System.out.println("Time elapsed for the program is " + stopwatch.elapsed(SECONDS));*/
-      /*  Validate("PREFIX dc: <http://purl.org/dc/elements/1.1/>" +
-                " PREFIX lgdp: <http://linkedgeodata.org/property/> " +
-                "PREFIX lgdo: <http://linkedgeodata.org/ontology/>\t" +
-                "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\t" +
-                "PREFIX gho: <http://ghodata/>" +
-                "\tPREFIX dbpedia-owl: <http://dbpedia.org/ontology/>" +
-                "\tPREFIX umbel-sc: <http://umbel.org/umbel/sc/>" +
-                "\tPREFIX linkedct: <http://data.linkedct.org/resource/linkedct/>" +
-                "\tPREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\t" +
-                "SELECT count distinct ?a WHERE {?a a dbpedia-owl:LightHouse} GROUP BY  ?a\n");    */
-        Validate("\tSELECT  ?s (count(*))\tFROM <http://linkedgeodata.org>\tWHERE\t  { ?s  rdfs:label  ?label\t    FILTER regex(?label, \"Moscova\")\t    OPTIONAL\t      { ?s  georss:point  ?point }\t  }\tGROUP BY ?s\t");
+        Validate("\tSELECT  ?s (count(*))\t" +
+                "FROM <http://linkedgeodata.org>\t" +
+                "WHERE\t  { ?s  rdfs:label  ?label\t    " +
+                "FILTER regex(?label, \"Moscova\")\t    " +
+                "OPTIONAL\t      { ?s  georss:point  ?point }\t  }\t" +
+                "GROUP BY ?s\t");
 
 
     }

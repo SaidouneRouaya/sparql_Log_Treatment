@@ -1,8 +1,8 @@
-package MDPatternDetection;
+package MDPatternDetection.AnnotationClasses;
 
-import MDPatternDetection.AnnotationClasses.Annotations;
-import MDfromLogQueries.Util.Constants;
 import MDfromLogQueries.Util.ConstantsUtil;
+import MDfromLogQueries.Util.TdbOperation;
+import MDfromLogQueries.Util.XSDMeasure_Types;
 import com.google.common.base.Stopwatch;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Property;
@@ -20,6 +20,8 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 
 public class MDGraphAnnotated {
 
+    XSDMeasure_Types xsd = new XSDMeasure_Types();
+
 
     public static HashMap<String, Model> constructMDGraphs(HashMap<String, Model> hashMapModels) {
         // HashMap<String , Model > results= new HashMap<>();
@@ -31,10 +33,7 @@ public class MDGraphAnnotated {
             Map.Entry<String, Model> pair = (Map.Entry) it.next();
             System.out.println(" annotation du model n° " + i++);
             construtMDGraph(pair.getKey(), pair.getValue());
-
-
         }
-
         return hashMapModels;
     }
 
@@ -67,18 +66,23 @@ public class MDGraphAnnotated {
                         //  System.out.println(" predicat :"+property+ "type dialha : "+propertyType);
                         switch (propertyType) {
                             case ("datatypeProperty"): {
-                                statement.getObject().asResource().addProperty(RDF.type, Annotations.FACTATTRIBUTE.toString());
+                                if (XSDMeasure_Types.types.contains(statement.getObject().asResource())) {
+                                    statement.getObject().asResource().addProperty(RDF.type, Annotations.MEASURE.toString());
+
+                                } else {
+                                    statement.getObject().asResource().addProperty(RDF.type, Annotations.FACTATTRIBUTE.toString());
+                                }
                             }
                             break;
                             case ("objectProperty"): {
-
+                                //TODO rendre nonFunctionalPrperty ==> Dimension
                                 if (constantsUtil.isFunctionalProperty(property)) {
                                     statement.getObject().asResource().addProperty(RDF.type, Annotations.DIMENSION.toString());
                                 } else {
                                     statement.getObject().asResource().addProperty(RDF.type, Annotations.NONFUNCTIONALDIMENSION.toString());
 
                                 }
-                                addDimensionLevels(statement.getObject().asResource(),constantsUtil);
+                                addDimensionLevels(statement.getObject().asResource(), constantsUtil);
                             }
                             break;
                             default: {
@@ -89,7 +93,7 @@ public class MDGraphAnnotated {
                                 } else {
                                     //TODO sinon il faut demander au endpoint si c fonctionnel
                                     statement.getObject().asResource().addProperty(RDF.type, Annotations.NONFUNCTIONALDIMENSION.toString());
-                                    addDimensionLevels(statement.getObject().asResource(),constantsUtil);
+                                    addDimensionLevels(statement.getObject().asResource(), constantsUtil);
                                 }
                             }
                             break;
@@ -116,8 +120,8 @@ public class MDGraphAnnotated {
         for (Statement statement : propertyIterator) {
             //statement = (Statement) propertyIterator.next();
             property = statement.getPredicate();
-            try {
 
+            try {
 
                 if (!property.equals(RDF.type)) {
                     propertyType = constantsUtil.getPropertyType(property);
@@ -135,7 +139,7 @@ public class MDGraphAnnotated {
                                 statement.getObject().asResource().addProperty(RDF.type, Annotations.NONFUNCTIONALDIMENSION.toString());
                                 statement.getObject().asResource().addProperty(new PropertyImpl(Annotations.PARENTLEVEL.toString()), dimension);
                             }
-                            addDimensionLevels(statement.getObject().asResource(),constantsUtil);
+                            addDimensionLevels(statement.getObject().asResource(), constantsUtil);
                         }
                         break;
                         default: {
@@ -166,7 +170,7 @@ public class MDGraphAnnotated {
         Stopwatch stopwatchannotation = Stopwatch.createStarted();
 
 
-        HashMap<String, Model> modelsConsolidated = TdbOperation.unpersistModelsMap(TdbOperation.originalDataSetConsolidated);
+        HashMap<String, Model> modelsConsolidated = TdbOperation.unpersistModelsMap(TdbOperation.dataSetConsolidate);
 
         stopwatchunpersist.stop();
         System.out.println("time  unpersist : " + stopwatchunpersist);
@@ -175,7 +179,7 @@ public class MDGraphAnnotated {
         stopwatchannotation.stop();
         System.out.println(" time annotation " + stopwatchannotation);
 
-        TdbOperation.persistAnnotatedHashMap(modelsAnnotated);
+        TdbOperation.persistAnnotatedHashMap(modelsAnnotated, TdbOperation.dataSetAnnotated);
 
         stopwatch.stop();
         System.out.println("\n Time elapsed for the program is " + stopwatch.elapsed(SECONDS));

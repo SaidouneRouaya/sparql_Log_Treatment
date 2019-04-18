@@ -1,16 +1,15 @@
 package MDfromLogQueries.Util;
 
-import MDPatternDetection.OntologyFactory;
-import MDPatternDetection.QueryExecutor;
+import MDPatternDetection.ExecutionClasses.QueryExecutor;
 import org.apache.jena.graph.Node;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.ontology.OntProperty;
 import org.apache.jena.ontology.OntResource;
-import org.apache.jena.query.Query;
-import org.apache.jena.query.QueryFactory;
+import org.apache.jena.query.*;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Property;
+import org.apache.jena.vocabulary.OWL;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -19,7 +18,7 @@ import java.util.Set;
 
 public class ConstantsUtil {
     private OntProperty currentProperty= null;
-    private static String endpoint = "https://dbpedia.org/sparql";
+
 
     //à changer probablement en créant un nouveau type contenant la datatypeProperty et son ou ses range
     public Node getRangeofProperty(Property property) {
@@ -95,8 +94,8 @@ public class ConstantsUtil {
 
     private boolean findProperty(Property property)
     {
-        OntModel ontoModel = ModelFactory.createOntologyModel();
-        OntologyFactory.readOntology(property.getNameSpace(), ontoModel);
+        OntModel ontoModel = ModelFactory.createOntologyModel(property.getNameSpace());
+        // OntologyFactory.readOntology(, ontoModel);
         /* System.out.println("Size of datatypeProperties" + ontoModel.listOntProperties().toList().size());*/
         OntProperty ontProperty = ontoModel.getOntProperty(property.getURI());
         if (ontProperty != null)
@@ -108,6 +107,31 @@ public class ConstantsUtil {
             return false;
         }
     }
+
+    public String findPropertyEndpoint(String propertyStr, String endpoint) {
+        String prop = "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> SELECT DISTINCT ?o WHERE {<" + propertyStr + "> rdf:type ?o.}";
+        QueryExecution qexec = QueryExecutionFactory.sparqlService(endpoint, prop);
+        ResultSet results = qexec.execSelect();
+        QuerySolution querySolution;
+        OntModel ont = ModelFactory.createOntologyModel();
+
+        while (results.hasNext()) {
+            querySolution = results.next();
+            if (querySolution.get("?o").equals(OWL.ObjectProperty)) {
+                Constants2.addObjectProperty(ont.createOntProperty(querySolution.get("?o").toString()));
+                return "objectProperty";
+
+            } else {
+                if (querySolution.get("?o").equals(OWL.DatatypeProperty)) {
+                    Constants2.addDatatypesProperty(ont.createOntProperty(querySolution.get("?o").toString()));
+                    return "datatypeProperty";
+
+                }
+            }
+        }
+        return "";
+    }
+
     public String selectPropertyFromEnpoint(Property property, String endpoint)
     {
         String queryStr = "Construct{ <"+property.getURI()+"> ?predicate ?object } " +

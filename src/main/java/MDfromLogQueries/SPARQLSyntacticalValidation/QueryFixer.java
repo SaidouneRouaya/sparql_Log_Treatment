@@ -9,7 +9,6 @@ import org.yaml.snakeyaml.Yaml;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Array;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -100,13 +99,13 @@ public class QueryFixer {
         }
         String select = ms.group(1);
         //Pattern aggregPattern = Pattern.compile("(( |[(])(COUNT|SUM|AVG|MIN|MAX)( |[(]))",Pattern.CASE_INSENSITIVE);
-        Pattern aggregPattern = Pattern.compile("( ([(]*)( )*(count|SUM|AVG|MIN|MAX)( distinct)?( |\\())",Pattern.CASE_INSENSITIVE);        Matcher mv = aggregPattern.matcher(queryStr);
+        Pattern aggregPattern = Pattern.compile("( ([(]*)( )*(count|SUM|AVG|MIN|MAX)( distinct)?( |\\())", Pattern.CASE_INSENSITIVE);
+        Matcher mv = aggregPattern.matcher(queryStr);
         if (mv.find()) {
             /* Put the aggregator ex : COUNT(?var) as ?var2 between brackets to respect Jena Syntax */
             if (mv.group(2).isEmpty())
                 queryStr = aggregatorBetweenBrackets(queryStr);
-            if (mv.group(4) != null)
-            {
+            if (mv.group(4) != null) {
                 queryStr = aggregatorDistinctBetweenBrackets(queryStr);
             }
             /* Adds all variables that are in the select clause to the group by clause */
@@ -158,14 +157,13 @@ public class QueryFixer {
         }
         return queryStr;
     }
-    private static String aggregatorDistinctBetweenBrackets(String queryStr)
-    {
-        Pattern aggregatorPattern = Pattern.compile("(( |[(])(count|SUM|AVG|MIN|MAX)( )*(distinct (\\?[\\w_-]+)))",Pattern.CASE_INSENSITIVE);
+
+    private static String aggregatorDistinctBetweenBrackets(String queryStr) {
+        Pattern aggregatorPattern = Pattern.compile("(( |[(])(count|SUM|AVG|MIN|MAX)( )*(distinct (\\?[\\w_-]+)))", Pattern.CASE_INSENSITIVE);
         Matcher mv = aggregatorPattern.matcher(queryStr);
-        while (mv.find())
-        {
+        while (mv.find()) {
             String str = mv.group(5);
-            queryStr = queryStr.replace(str,"("+str+")");
+            queryStr = queryStr.replace(str, "(" + str + ")");
         }
         return queryStr;
     }
@@ -207,11 +205,11 @@ public class QueryFixer {
         }catch (QueryParseException queryParseException)
         {
            System.out.println("erreur 2");
-           // System.out.println("*****+-+-+-+-*****"+queryStr);
+            // System.out.println("*****+-+-+-+-*****"+queryStr);
             System.out.println("+++++-*+++++*-+"+queryParseException.getMessage());
         }
         catch (Exception e) {
-           // System.out.println("*****+-+-+-+-*****"+queryStr);
+            // System.out.println("*****+-+-+-+-*****"+queryStr);
             System.out.println("*****+-+-+-+-*****");
             e.printStackTrace();
         }
