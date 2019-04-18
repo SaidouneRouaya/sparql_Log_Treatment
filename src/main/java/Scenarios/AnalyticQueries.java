@@ -1,8 +1,6 @@
 package Scenarios;
 
-import MDPatternDetection.Queries2Graphes;
-import MDPatternDetection.QueryExecutor;
-import MDPatternDetection.QueryUpdate;
+import MDPatternDetection.ExecutionClasses.QueryExecutor;
 import MDfromLogQueries.Declarations.Declarations;
 import MDfromLogQueries.SPARQLSyntacticalValidation.QueryFixer;
 import MDfromLogQueries.Util.FileOperation;
@@ -134,7 +132,7 @@ public class AnalyticQueries {
                 query = QueryFactory.create(queryStr);
                 System.out.println("exeution req ");
                 ResultSet resultSet;
-                if ((resultSet = queryExecutor.executeQuerySelect(queryStr, "https://dbpedia.org/sparql")) != null) results.add(resultSet);
+                if ((resultSet = queryExecutor.executeQuerySelect(query, "https://dbpedia.org/sparql")) != null) results.add(resultSet);
             }
         } catch (Exception e) {
             e.printStackTrace();
