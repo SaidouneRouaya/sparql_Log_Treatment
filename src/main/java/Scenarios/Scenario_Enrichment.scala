@@ -13,6 +13,7 @@ class Scenario_Enrichment {
   /** 1. Unpersisting of annotated models **/
   var t_unpersisting: Long = System.currentTimeMillis()
   FileOperation.writeTimesInFile(timesFilePath, "Unpersisting for enrichment ", System.currentTimeMillis() - t_unpersisting)
+
   /** 2. Enrichment of annotated models **/
   var t_enrichment: Long = System.currentTimeMillis()
   enrichMDScehma(modelsAnnotated)
