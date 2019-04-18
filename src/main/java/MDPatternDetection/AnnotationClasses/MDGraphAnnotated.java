@@ -1,7 +1,8 @@
-package MDPatternDetection;
+package MDPatternDetection.AnnotationClasses;
 
-import MDPatternDetection.AnnotationClasses.Annotations;
 import MDfromLogQueries.Util.ConstantsUtil;
+import MDfromLogQueries.Util.TdbOperation;
+import MDfromLogQueries.Util.XSDMeasure_Types;
 import com.google.common.base.Stopwatch;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Property;
@@ -19,6 +20,8 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 
 public class MDGraphAnnotated {
 
+    XSDMeasure_Types xsd = new XSDMeasure_Types();
+
 
     public static HashMap<String, Model> constructMDGraphs(HashMap<String, Model> hashMapModels) {
         // HashMap<String , Model > results= new HashMap<>();
@@ -30,10 +33,7 @@ public class MDGraphAnnotated {
             Map.Entry<String, Model> pair = (Map.Entry) it.next();
             System.out.println(" annotation du model n° " + i++);
             construtMDGraph(pair.getKey(), pair.getValue());
-
-
         }
-
         return hashMapModels;
     }
 
@@ -66,11 +66,16 @@ public class MDGraphAnnotated {
                         //  System.out.println(" predicat :"+property+ "type dialha : "+propertyType);
                         switch (propertyType) {
                             case ("datatypeProperty"): {
-                                statement.getObject().asResource().addProperty(RDF.type, Annotations.FACTATTRIBUTE.toString());
+                                if (XSDMeasure_Types.types.contains(statement.getObject().asResource())) {
+                                    statement.getObject().asResource().addProperty(RDF.type, Annotations.MEASURE.toString());
+
+                                } else {
+                                    statement.getObject().asResource().addProperty(RDF.type, Annotations.FACTATTRIBUTE.toString());
+                                }
                             }
                             break;
                             case ("objectProperty"): {
-
+                                //TODO rendre nonFunctionalPrperty ==> Dimension
                                 if (constantsUtil.isFunctionalProperty(property)) {
                                     statement.getObject().asResource().addProperty(RDF.type, Annotations.DIMENSION.toString());
                                 } else {

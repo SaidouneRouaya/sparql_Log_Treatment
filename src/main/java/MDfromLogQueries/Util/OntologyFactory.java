@@ -1,4 +1,4 @@
-package MDPatternDetection;
+package MDfromLogQueries.Util;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.jena.ontology.OntModel;
@@ -29,6 +29,9 @@ public class OntologyFactory {
                     break;
                 case ("nt"):
                     extension = "N-TRIPLES";
+                    break;
+                case ("owl"):
+                    extension = "RDF/XML";
                     break;
                     default:
                         extension = "RDF/XML";

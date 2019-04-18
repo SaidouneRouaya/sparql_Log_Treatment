@@ -5,7 +5,8 @@ public class Declarations {
     public static String root2 = "E:\\TdbDirectories\\";
 
     public static String cleanedQueriesFile = root + "ProgramOutput\\Fichier_log_Nettoye_Complet_Parallel.txt";
-    public static String cleanedQueriesFileCopie = root + "ProgramOutput\\FFichier_log_Nettoye_Complet_Parallel_Scala_Copie.txt";
+    public static String notCleanedQueries = root + "ProgramOutput\\Fichier_log_nonNettoye_Complet_Parallel.txt";
+    public static String cleanedQueriesFileCopie = root + "ProgramOutput\\Fichier_log_Nettoye_Complet_Parallel_Scala_Copie.txt";
 
     public static String LogDirectory = root + "ProgramOutput\\Data log\\dbp351logs\\";
 
@@ -54,5 +55,10 @@ public class Declarations {
     public static String maxstatisticsFile = root + "Statistics\\Fichier_statistique_max.txt";
     public static String avgstatisticsFile = root + "Statistics\\Fichier_statistique_avg.txt";
     public static String totalstatisticsFile = root + "Statistics\\Fichier_statistique_total.txt";
+
+    public static String statisticsAnalyticFactFile = root + "Statistics\\Fichier_statistique_Analytique_Fact.txt";
+    public static String statisticsAnalyticDimFile = root + "Statistics\\Fichier_statistique_Analytique_Dimension.txt";
+
+
 }
 

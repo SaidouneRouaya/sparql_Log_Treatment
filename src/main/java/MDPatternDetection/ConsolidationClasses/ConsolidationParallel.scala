@@ -1,7 +1,9 @@
-package MDPatternDetection
+package MDPatternDetection.ConsolidationClasses
 
 import java.util
 
+import MDPatternDetection.AnnotationClasses.MDGraphAnnotated
+import MDfromLogQueries.Util.TdbOperation
 import org.apache.jena.query.Dataset
 import org.apache.jena.rdf.model.{Model, ModelFactory, NodeIterator, RDFNode}
 import org.apache.jena.tdb.TDB
@@ -81,7 +83,7 @@ object ConsolidationParallel extends App {
   }
 
   def convertToScalaMap(modelHashMap: util.HashMap[String, Model]): mutable.HashMap[String, Model] = {
-
+    val time = System.currentTimeMillis()
     val kies = modelHashMap.keySet()
     val result: mutable.HashMap[String, Model] = new mutable.HashMap[String, Model]()
 
@@ -98,6 +100,8 @@ object ConsolidationParallel extends App {
       }
 
     )
+    val duration = System.currentTimeMillis() - time
+    println(s"time to convert to scala map is: $duration")
     result
   }
 

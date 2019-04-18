@@ -1,4 +1,4 @@
-package MDPatternDetection;
+package MDPatternDetection.GraphConstructionClasses;
 
 
 import MDfromLogQueries.Declarations.Declarations;

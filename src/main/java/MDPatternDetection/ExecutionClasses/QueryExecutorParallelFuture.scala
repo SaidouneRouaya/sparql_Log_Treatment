@@ -1,6 +1,8 @@
-package MDPatternDetection
-import MDPatternDetection.QueryExecutorParallel.{writeInLogFile, writeInTdb}
+package MDPatternDetection.ExecutionClasses
+
+import MDPatternDetection.ExecutionClasses.QueryExecutorParallel.{writeInLogFile, writeInTdb}
 import MDfromLogQueries.Declarations.Declarations
+import MDfromLogQueries.Util.TdbOperation
 import org.apache.jena.query.{Query, QueryFactory}
 import org.apache.jena.rdf.model.Model
 
@@ -14,14 +16,11 @@ object QueryExecutorParallelFuture extends App {
   val t1 = System.currentTimeMillis()
 
   val tdb = new TdbOperation()
-  var numQueryRun = 0
-
-
-
-  executeQueriesInFile(Declarations.constructQueriesFile2, "https://dbpedia.org/sparql")
   val duration = System.currentTimeMillis() - t1
 
 
+  executeQueriesInFile(Declarations.constructQueriesFile2, "https://dbpedia.org/sparql")
+  var numQueryRun = 0
 
   def executeQueriesInFile(filePath: String, endPoint: String) = {
 
@@ -44,23 +43,23 @@ object QueryExecutorParallelFuture extends App {
 
           line => {
             try {
-            nb_req += 1
-            println("Requete\t" + nb_req)
+              nb_req += 1
+              println("Requete\t" + nb_req)
 
 
-            val query = QueryFactory.create(line)
+              val query = QueryFactory.create(line)
 
-            runQuery(endPoint, queryExecutor, query).map {
-              case model => {
-                nb_model_notnull += 1
-                Right(model)
-              }
-              case null => {
-                nb_model_null += 1
-                Left(line)
-              }
+              runQuery(endPoint, queryExecutor, query).map {
+                case model => {
+                  nb_model_notnull += 1
+                  Right(model)
+                }
+                case null => {
+                  nb_model_null += 1
+                  Left(line)
+                }
 
-            }.recover { case e: Exception => Left(line) }
+              }.recover { case e: Exception => Left(line) }
             } catch {
               case ex: Exception => Future.successful(Left(line))
             }
@@ -72,19 +71,19 @@ object QueryExecutorParallelFuture extends App {
 
         println("--------------------- un group finished ---------------------------------- ")
 
-          val seq = Await.result(Future.sequence(treatedGroupOfLines), Duration.Inf)
-          val (correct, errors) = seq.partition(_.isRight)
+        val seq = Await.result(Future.sequence(treatedGroupOfLines), Duration.Inf)
+        val (correct, errors) = seq.partition(_.isRight)
 
 
         println("************ nombre model not null avant tdb : " + nb_model_notnull)
         println("************ nombre model  null avant tdb : " + nb_model_null)
 
 
-            writeInTdb(correct.collect { case Right(x) => x })
+        writeInTdb(correct.collect { case Right(x) => x })
         // writeInTdb(correct.collect { case Right(x) => x })
         writeInLogFile(Declarations.executionLogFile, errors.collect { case Left(line) => line })
 
-          val finish = System.currentTimeMillis() - timeFor100000
+        val finish = System.currentTimeMillis() - timeFor100000
         println("time for 100 000 req is   " + finish)
 
 
@@ -101,6 +100,7 @@ object QueryExecutorParallelFuture extends App {
     println("run query n: " + numQueryRun)
     model
   }
+
   println(duration)
 
 }

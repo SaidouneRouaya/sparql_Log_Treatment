@@ -1,6 +1,8 @@
 package MDPatternDetection;
 
 
+import MDPatternDetection.ConsolidationClasses.Consolidation;
+import MDfromLogQueries.Util.TdbOperation;
 import com.google.common.base.Stopwatch;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Resource;

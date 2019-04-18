@@ -2,7 +2,8 @@ package Statistics
 
 import java.util
 
-import MDPatternDetection.{ConsolidationParallel, MDGraphBySubject, TdbOperation}
+import MDPatternDetection.ConsolidationClasses.ConsolidationParallel
+import MDfromLogQueries.Util.TdbOperation
 import org.apache.jena.rdf.model.Model
 import org.apache.jena.rdf.model.impl.ResourceImpl
 
@@ -45,7 +46,7 @@ object MDGraphBySubjectScala extends App {
     "http://dbpedia.org/ontology/Airport", "http://schema.org/Airport"
   )
 
-  def statisticsBySubjectList(subjectsList: Vector[String]) = Unit {
+  def statisticsBySubjectList(subjectsList: Vector[String]) {
 
     val statistics: Statistics1 = new Statistics1
     var stat = new util.ArrayList[Statistics1]()

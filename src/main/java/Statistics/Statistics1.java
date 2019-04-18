@@ -1,7 +1,7 @@
 package Statistics;
 
 import MDPatternDetection.AnnotationClasses.Annotations;
-import MDPatternDetection.TdbOperation;
+import MDfromLogQueries.Util.TdbOperation;
 import org.apache.jena.query.Dataset;
 import org.apache.jena.rdf.model.*;
 import org.apache.jena.tdb.TDBFactory;

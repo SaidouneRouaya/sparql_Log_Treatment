@@ -1,4 +1,4 @@
-package MDPatternDetection;
+package MDfromLogQueries.Util;
 
 import MDfromLogQueries.Declarations.Declarations;
 import org.apache.jena.query.Dataset;

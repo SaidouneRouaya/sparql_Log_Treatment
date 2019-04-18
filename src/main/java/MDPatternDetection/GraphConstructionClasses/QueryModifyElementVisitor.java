@@ -1,4 +1,4 @@
-package MDPatternDetection;
+package MDPatternDetection.GraphConstructionClasses;
 
 import org.apache.jena.graph.Triple;
 import org.apache.jena.sparql.core.BasicPattern;

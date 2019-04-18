@@ -1,5 +1,6 @@
-package MDPatternDetection;
+package MDPatternDetection.ConsolidationClasses;
 
+import MDfromLogQueries.Util.TdbOperation;
 import org.apache.jena.rdf.model.*;
 
 import java.util.*;

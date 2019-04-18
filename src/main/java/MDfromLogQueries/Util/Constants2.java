@@ -1,7 +1,6 @@
 package MDfromLogQueries.Util;
 
-import MDPatternDetection.OntologyFactory;
-import MDPatternDetection.QueryExecutor;
+import MDPatternDetection.ExecutionClasses.QueryExecutor;
 import MDfromLogQueries.Declarations.Declarations;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.ontology.OntProperty;
@@ -178,9 +177,19 @@ public class Constants2 {
         datatypeProperties.addAll(propertyList);
     }
 
+    public static void addDatatypesProperty(OntProperty propertyList) {
+        datatypeProperties.add(propertyList);
+    }
+
     public static void addObjectProperties(List<OntProperty> propertyList) {
         objectProperties.addAll(propertyList);
     }
+
+    public static void addObjectProperty(OntProperty propertyList) {
+        objectProperties.add(propertyList);
+    }
+
+
 
     public static void addOtherProperties(List<OntProperty> propertyList) {
         otherProperties.addAll(propertyList);

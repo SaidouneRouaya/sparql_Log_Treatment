@@ -1,16 +1,15 @@
 package Scenarios
 
-import MDPatternDetection.ConsolidationParallel.{consolidate, convertToScalaMap, modelsAnnotated, writeInTdb}
-import MDPatternDetection.QueryExecutorParallelFuture.executeQueriesInFile
-import MDPatternDetection.TdbOperation
+import MDPatternDetection.ConsolidationClasses.ConsolidationParallel.{consolidate, convertToScalaMap, modelsAnnotated, writeInTdb}
+import MDPatternDetection.ExecutionClasses.QueryExecutorParallelFuture.executeQueriesInFile
 import MDfromLogQueries.Declarations.Declarations
 import MDfromLogQueries.Declarations.Declarations._
 import MDfromLogQueries.LogCleaning.Main.writeFiles
 import MDfromLogQueries.SPARQLSyntacticalValidation.SyntacticValidationParallel.valideQueriesInFile
-import MDfromLogQueries.Util.FileOperation
+import MDfromLogQueries.Util.{FileOperation, TdbOperation}
 import Statistics.MDGraphBySubjectScala.{statisticsBySubjectList, subjects}
 
-class scenario1 {
+class Scenario_LogOnly {
 
   /** 1. Nettoyage du log **/
   var t_cleaning: Long = System.currentTimeMillis()

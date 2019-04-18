@@ -1,5 +1,8 @@
-package MDPatternDetection;
+package MDPatternDetection.ExecutionClasses;
 
+import MDPatternDetection.AnnotationClasses.MDGraphAnnotated;
+import MDPatternDetection.ConsolidationClasses.Consolidation;
+import MDPatternDetection.GraphConstructionClasses.Queries2Graphes;
 import MDfromLogQueries.Declarations.Declarations;
 import MDfromLogQueries.Util.FileOperation;
 import com.google.common.base.Stopwatch;
@@ -74,22 +77,18 @@ public class QueryExecutor {
 
                 QueryExecutor queryExecutor = new QueryExecutor();
 
-                System.out.println("\nla transformation en construct \n");
-
-//                ArrayList<Query> constructQueriesList = Queries2Graphes.TransformQueriesinFile2(allLines.subList(0, cpt));
-                // Execution of each CONSTRUCT query
-
                 int num = 0;
-                Query query = QueryFactory.create();
+                Query query;
                 System.out.println("\nL'execution des requetes \n");
+
                 for (String queryStr : allLines) {
                     num++;
                     query=QueryFactory.create(queryStr);
                     System.out.println("exeution req " + num + "\n");
                     Model model;
                     if ((model = queryExecutor.executeQueryConstruct(query, endPoint)) != null) results.add(model);
-                    if (!model.isEmpty())
-                    {System.out.println("Le model :");
+                    if (model != null) {
+                        System.out.println("Le model :");
                         Iterator<Statement> listStatements = model.listStatements();
                         while (listStatements.hasNext()) {
                             System.out.println(listStatements.next().toString());

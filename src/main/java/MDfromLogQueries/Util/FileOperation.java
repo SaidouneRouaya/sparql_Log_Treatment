@@ -1,6 +1,7 @@
 package MDfromLogQueries.Util;
 
 import Statistics.Statistics1;
+import Statistics.StatisticsAnalytic;
 import org.apache.jena.query.Query;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.StmtIterator;
@@ -324,6 +325,55 @@ public class FileOperation {
             }
 
         }
+    }
+
+    public static void writeStatisticsListInFile2(ArrayList<StatisticsAnalytic> statistisAnalyticsArrayList, String writingFilePath) {
+
+        File file = new File(writingFilePath);
+        BufferedWriter bw = null;
+        try {
+            if (!file.isFile()) file.createNewFile();
+            bw = new BufferedWriter(new FileWriter(file, true));
+            int i = 0;
+            for (StatisticsAnalytic stat : statistisAnalyticsArrayList) {
+                i++;
+                switch (stat.type) {
+
+                    case ("Fact"): {
+                        bw.write("\n********************************* Fact number " + i + "  *********************************\n");
+                        bw.write("\n********************************* URI: " + stat.URI + " *********************************\n");
+                        bw.write("Number of potential Dimension " + stat.nbDim + "\n");
+                        bw.write("Number of potential Fact Attribute " + stat.nbFactAtt + "\n");
+
+                    }
+                    break;
+                    case ("Dimension"): {
+                        bw.write("\n********************************* Dimension number " + i + "  *********************************\n");
+                        bw.write("\n********************************* URI: " + stat.URI + " *********************************\n");
+                        bw.write("Number of potential Levels " + stat.nbLevel + "\n");
+                        bw.write("Number of potential Dimension Attribute " + stat.nbDimAtt + "\n");
+
+                    }
+                    break;
+                }
+
+                bw.flush();
+            }
+
+        } catch (
+                IOException e) {
+            System.out.println("Impossible file creation");
+        } finally {
+
+            try {
+                bw.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        }
+
+
     }
 
     public static void writeStatisticsInFile(String writingFilePath, Statistics1 statistics1) {

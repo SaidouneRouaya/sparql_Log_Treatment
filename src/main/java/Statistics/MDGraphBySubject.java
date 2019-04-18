@@ -1,9 +1,9 @@
-package MDPatternDetection;
+package Statistics;
 
 
 import MDfromLogQueries.Declarations.Declarations;
 import MDfromLogQueries.Util.FileOperation;
-import Statistics.Statistics1;
+import MDfromLogQueries.Util.TdbOperation;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.impl.ResourceImpl;

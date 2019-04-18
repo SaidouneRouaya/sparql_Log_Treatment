@@ -1,4 +1,4 @@
-package MDPatternDetection;
+package MDPatternDetection.GraphConstructionClasses;
 
 import MDfromLogQueries.Declarations.Declarations;
 import MDfromLogQueries.Util.Constants2;
@@ -32,9 +32,7 @@ public class Queries2Graphes {
 
     public static ArrayList<Query> TransformQueriesInFile(String filePath) {
         new Constants2(Declarations.dbPediaOntologyPath);
-        //  ArrayList<Query> constructQueriesList = new ArrayList<>();
         ArrayList<Query> constructQueriesList = new ArrayList<>();
-        ArrayList<Query> constructQueriesListFinal = new ArrayList<>();
         ArrayList<String> lines;
 
         int nb_line = 0; // for statistical matters

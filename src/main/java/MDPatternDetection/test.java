@@ -1,7 +1,7 @@
 package MDPatternDetection;
 
 
-import MDfromLogQueries.LogCleaning.Queries2GraphesParallel;
+import MDPatternDetection.GraphConstructionClasses.Queries2GraphesParallel;
 import com.google.common.base.Stopwatch;
 
 public class test {
