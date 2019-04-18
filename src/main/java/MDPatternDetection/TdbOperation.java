@@ -23,6 +23,7 @@ public class TdbOperation {
     public static Dataset originalDataSet = TDBFactory.createDataset(originalTdbDirectory);
     public static Dataset originalDataSetConsolidated = TDBFactory.createDataset(originalTdbDirectoryConsolidated);
     public static Dataset dataSetAnnotated = TDBFactory.createDataset(originalTdbDirectoryAnnotated);
+    public static Dataset dataSetAnalytic = TDBFactory.createDataset(tdbAnalytic);
 
     public static void main(String... argv) {
 

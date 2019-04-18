@@ -1,7 +1,7 @@
 package MDfromLogQueries.Declarations;
 
 public class Declarations {
-    public static String root = "C:\\Users\\KamilaB\\Desktop\\3CS\\Prototypage\\Step_1\\endpoints\\LinkedGeoData\\Support_Files\\";
+    public static String root = "C:\\Users\\KamilaB\\Desktop\\3CS\\Prototypage\\Step_1\\endpoints\\dbPedia\\Support_Files\\";
 
 
     public static String directoryPath = root+"Data Log\\logs";
@@ -38,6 +38,7 @@ public class Declarations {
     public static String originalTdbDirectory = root+"originalTdbDirectory";
     public static String originalTdbDirectoryConsolidated = root+"originalTdbDirConsolidated";
     public static String originalTdbDirectoryAnnotated = root+"tdbDirectoryAnnotated";
+    public static String tdbAnalytic = root+"tdbDirectoryAnalytic";
 
     public static String propertiesOntology = root+"ontologies_namespaces\\addedOntology.ttl";
     public static String cleanedQueriesFile = root+"Resulting_Files\\FFichier_log_Nettoye_Complet_Parallel_Scala.txt";
@@ -48,6 +49,10 @@ public class Declarations {
     public static String writingFilePathCopie = root+"Resulting_Files\\Fichier_log_Nettoye_Complet_Parallel_Java_Copie.txt";
     public static String modelsFilePath = root+"Resulting_Files\\Fichier_models.rdf";
     public static String syntaxValidFileTest = root+"Resulting_Files\\Fichier_Syntaxe_Valide_Test.txt";
+
+
     public static String AnalyticQueriesFile = root+"Resulting_Files\\Fichier_Analytic_Queries.txt";
+    public static String AnalyticQueriesFile2 = root+"Resulting_Files\\Fichier_Analytic_Queries2.txt";
+    public static String AnalyticConstructQueriesFile = root+"Resulting_Files\\Fichier_Analytic_Construct_Queries.txt";
 
 }
