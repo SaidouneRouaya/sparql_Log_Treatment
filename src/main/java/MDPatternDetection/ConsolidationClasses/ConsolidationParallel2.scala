@@ -159,7 +159,7 @@ object ConsolidationParallel2 extends App {
           }
         }
 
-        writeInTdb(modelHashMap, TdbOperation.originalDataSetConsolidated)
+        writeInTdb(modelHashMap, TdbOperation.dataSetConsolidate)
         modelHashMap.clear()
         println(s" ------------------------- finish with the group number: $nb_grp -------------------------------- ")
     }
@@ -220,7 +220,7 @@ object ConsolidationParallel2 extends App {
         }
 
         println(s" ------------------------- finish with the group ------------------------------- ")
-        writeInTdb(modelHashMap, TdbOperation.originalDataSetConsolidated)
+        writeInTdb(modelHashMap, TdbOperation.dataSetConsolidate)
         modelHashMap.clear()
       }
     }

@@ -18,7 +18,7 @@ object Queries2GraphesParallel extends App {
   def TransformQueriesInFile(filePath: String) = {
 
 
-    new Constants2(dbPediaOntologyPath)
+    new Constants2()
 
     val lines = Source.fromFile(filePath).getLines
 

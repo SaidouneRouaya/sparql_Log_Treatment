@@ -7,10 +7,7 @@ import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.tdb.TDB;
 import org.apache.jena.tdb.TDBFactory;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 
 import static MDfromLogQueries.Declarations.Declarations.originalTdbDirectory;
 import static MDfromLogQueries.Declarations.Declarations.tdbDirectory;
@@ -22,6 +19,8 @@ public class TdbOperation {
     public static Dataset _toString = TDBFactory.createDataset(Declarations._toString);
     public static Dataset dataSetConsolidate = TDBFactory.createDataset(Declarations.dataSetConsolidated);
     public static Dataset dataSetAnnotated = TDBFactory.createDataset(Declarations.dataSetAnnotated);
+    public static Dataset dataSetAnalytic = TDBFactory.createDataset(Declarations.dataSetAnalytic);
+
 
 
     public static void main(String... argv) {
@@ -77,6 +76,23 @@ public class TdbOperation {
         }
     }
 
+
+    public static void persistNonNamedModels(Collection<Model> modelsCollection, Dataset originalDataSetStringModel) {
+        try {
+            //Dataset dataset = DatasetFactory.create(model);
+            Iterator it = modelsCollection.iterator();
+            int nb = 0;
+            for (Model model :  modelsCollection) {
+                nb++;
+                System.out.println(" next model " + nb);
+                originalDataSetStringModel.addNamedModel("model "+nb,model);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     public static void persistAnnotatedHashMap(HashMap<String, Model> modelHashMap, Dataset dataset) {
 
 
@@ -102,7 +118,6 @@ public class TdbOperation {
             e.printStackTrace();
         }
     }
-
 
 
     public static HashMap<String, Model> unpersistModelsMap(Dataset dataset) {

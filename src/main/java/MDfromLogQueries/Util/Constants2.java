@@ -37,10 +37,7 @@ public class Constants2 {
     //TODO a changer pour le test d'autres endpoints (mettre en entrée)
     private static String endpoint = "https://dbpedia.org/sparql";
 
-    public Constants2(String path) {
-        ontologyPath = path;
-        initObjectProperties();
-        initDatatypeProperties();
+    public Constants2() {
         initDefaultProperties();
         System.out.println("\n" + otherProperties.size() + "*****************************");
     }
@@ -78,7 +75,7 @@ public class Constants2 {
     }
 
     public static void main(String[] args) {
-        new Constants2(Declarations.dbPediaOntologyPath);
+        new Constants2();
         initDefaultProperties();
         for (OntProperty ontProperty : otherProperties) {
             try {

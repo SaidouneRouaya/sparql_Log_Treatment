@@ -94,8 +94,9 @@ public class ConstantsUtil {
 
     private boolean findProperty(Property property)
     {
-        OntModel ontoModel = ModelFactory.createOntologyModel(property.getNameSpace());
-        // OntologyFactory.readOntology(, ontoModel);
+        OntModel ontoModel = ModelFactory.createOntologyModel();
+        System.out.println(property);
+         OntologyFactory.readOntology(property.getNameSpace(), ontoModel);
         /* System.out.println("Size of datatypeProperties" + ontoModel.listOntProperties().toList().size());*/
         OntProperty ontProperty = ontoModel.getOntProperty(property.getURI());
         if (ontProperty != null)
@@ -129,7 +130,7 @@ public class ConstantsUtil {
                 }
             }
         }
-        return "";
+        return "notFound";
     }
 
     public String selectPropertyFromEnpoint(Property property, String endpoint)

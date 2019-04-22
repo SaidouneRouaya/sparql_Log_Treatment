@@ -40,7 +40,7 @@ public class OntologyFactory {
             model.read(in, file, extension);
             in.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            //e.printStackTrace();
         }
     }
 }
