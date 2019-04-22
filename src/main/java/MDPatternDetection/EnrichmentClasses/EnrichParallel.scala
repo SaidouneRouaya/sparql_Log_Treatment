@@ -15,7 +15,7 @@ object EnrichParallel extends App {
   val modelsAnnotated: util.HashMap[String, Model] = TdbOperation.unpersistModelsMap(TdbOperation.dataSetAnnotated)
   var endpoint = "https://dbpedia.org/sparql"
   var constantsUtil = new ConstantsUtil
-  var constants2 = new Constants2(Declarations.dbPediaOntologyPath)
+  var constants2 = new Constants2()
 
   enrichMDScehma(modelsAnnotated)
 

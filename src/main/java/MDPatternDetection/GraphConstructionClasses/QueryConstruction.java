@@ -11,10 +11,7 @@ import org.apache.jena.rdf.model.impl.ModelCom;
 import org.apache.jena.sparql.core.BasicPattern;
 import org.apache.jena.vocabulary.RDF;
 
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class QueryConstruction {
 
@@ -30,9 +27,10 @@ public class QueryConstruction {
     private Set<Triple> existingTriples = new HashSet<>();
     private int i = 1; //Number of subject variables
     private int j = 1; // Number of predicate variables
-    public static int nb_prop = 0;
-    public static int nb_prop_total = 0;
+    private static int nb_prop = 0;
+    private static int nb_prop_total = 0;
     private ConstantsUtil constantsUtil = new ConstantsUtil();
+    private ArrayList<Node> addedVariables = new ArrayList<>();
 
     public BasicPattern getBpConstruct() {
         return bpConstruct;
@@ -67,6 +65,7 @@ public class QueryConstruction {
             Node subjectRDFTypeValue;
             subject = (Resource) nodeIterator.next();
             subjectRDFTypeValue = verifyRDFTypeProperty(subject, i, rdfTypeProp, "sub"); //verifies whether the subject had an rdf:type triple
+            addedVariables.add(subjectRDFTypeValue);
             i++;
             propertyIterate(subject, subjectRDFTypeValue); // parses the properties of the subject
         }
@@ -206,9 +205,15 @@ public class QueryConstruction {
                     break;
                 }
                 newTriple = new Triple(subjectRDFTypeValue, property.asNode(), objectRDFTypeValue);
+                addedVariables.add(objectRDFTypeValue);
                 bpConstruct.add(newTriple);
             }
         }
+    }
+
+
+    public ArrayList<Node> getAddedVariables() {
+        return addedVariables;
     }
 
     //TODO à enlever ki nefriwha

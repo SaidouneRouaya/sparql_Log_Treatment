@@ -29,7 +29,7 @@ public class Enrich {
 
     public static String endpoint = "https://dbpedia.org/sparql";
     public static ConstantsUtil constantsUtil = new ConstantsUtil();
-    public static Constants2 constants2 = new Constants2(Declarations.dbPediaOntologyPath);
+    public static Constants2 constants2 = new Constants2();
     public static ArrayList<StatisticsAnalytic> statisticsAnalytics4Fact = new ArrayList<>();
     public static ArrayList<StatisticsAnalytic> statisticsAnalytics4Dimension = new ArrayList<>();
     private static int nb_attribute = 0;

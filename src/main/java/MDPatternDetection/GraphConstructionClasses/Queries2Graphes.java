@@ -22,7 +22,7 @@ public class Queries2Graphes {
 
     public Queries2Graphes() {
         /* Change the path in the case of using another query logs */
-        new Constants2(Declarations.dbPediaOntologyPath); // init the cconstants to use it next
+        new Constants2(); // init the cconstants to use it next
     }
 
     /**
@@ -31,7 +31,7 @@ public class Queries2Graphes {
      **/
 
     public static ArrayList<Query> TransformQueriesInFile(String filePath) {
-        new Constants2(Declarations.dbPediaOntologyPath);
+        new Constants2();
         ArrayList<Query> constructQueriesList = new ArrayList<>();
         ArrayList<String> lines;
 
@@ -78,7 +78,7 @@ public class Queries2Graphes {
 
     public static ArrayList<Query> TransformQueriesinFile2(List<String> lines) {
 
-        new Constants2(Declarations.dbPediaOntologyPath);
+        new Constants2();
 
         //ArrayList<Query> constructQueriesList = new ArrayList<>();
         ArrayList<Query> constructQueriesList = new ArrayList<>();
