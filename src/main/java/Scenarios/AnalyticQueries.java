@@ -1,11 +1,9 @@
 package Scenarios;
 
-import MDPatternDetection.ConsolidationClasses.Consolidation;
 import MDPatternDetection.ConsolidationTest;
 import MDPatternDetection.ExecutionClasses.QueryExecutor;
 import MDPatternDetection.GraphConstructionClasses.QueryUpdate;
 import MDfromLogQueries.Declarations.Declarations;
-import MDfromLogQueries.SPARQLSyntacticalValidation.QueryFixer;
 import MDfromLogQueries.Util.Constants2;
 import MDfromLogQueries.Util.FileOperation;
 import MDfromLogQueries.Util.TdbOperation;
@@ -13,7 +11,10 @@ import org.apache.jena.graph.Node;
 import org.apache.jena.graph.NodeFactory;
 import org.apache.jena.graph.Node_Variable;
 import org.apache.jena.graph.Triple;
-import org.apache.jena.query.*;
+import org.apache.jena.query.Query;
+import org.apache.jena.query.QueryFactory;
+import org.apache.jena.query.QuerySolution;
+import org.apache.jena.query.ResultSet;
 import org.apache.jena.rdf.model.*;
 import org.apache.jena.rdf.model.impl.PropertyImpl;
 import org.apache.jena.rdf.model.impl.ResourceImpl;
@@ -30,16 +31,6 @@ import java.util.*;
 
 public class AnalyticQueries {
 
-    public boolean containsAggregator(Query query) {
-        List<ExprAggregator> exprAggregatorList = new ArrayList<>();
-        if (!query.hasAggregators()) {
-            return false;
-        } else {
-            return true;
-        }
-    }
-
-
     public static boolean isAnalytic(Query query) {
         List<ExprAggregator> exprAggregatorList;
         int i = 0;
@@ -55,7 +46,6 @@ public class AnalyticQueries {
         }
         return (i > 0);
     }
-
 
     public static ArrayList<String> getAnalyticQueries(ArrayList<String> queryList) {
         ArrayList<String> analyticQueriesList = new ArrayList<>();
@@ -82,7 +72,6 @@ public class AnalyticQueries {
         return analyticQueriesList;
     }
 
-
     public static HashSet<Model> executeAnalyticQueriesList(ArrayList<String> queryList) {
         int nb_line = 0; //for statistical needs
         int nb = 0;
@@ -96,7 +85,7 @@ public class AnalyticQueries {
             try {
                 nb_line++;
                 //queryStr = line;
-                System.out.println("requete num : "+nb_line);
+                System.out.println("requete num : " + nb_line);
                 queryStr = queryList.get(nb_line);
                 query = QueryFactory.create(queryStr);
                 QueryUpdate queryUpdate = new QueryUpdate(query);// Adding missing rdf:type statements to the query
@@ -111,7 +100,7 @@ public class AnalyticQueries {
                 ResultSet resultSet;
                 resultSet = queryExecutor.executeQuerySelect(query, "https://dbpedia.org/sparql");
 
-                modelHashSet.addAll(constructModels(resultSet, bpConstruct, analyticQuery,bpWhereTriples));
+                modelHashSet.addAll(constructModels(resultSet, bpConstruct, analyticQuery, bpWhereTriples));
 
                 System.out.println("line \t" + nb_line);
             } catch (Exception e) {
@@ -124,7 +113,7 @@ public class AnalyticQueries {
     }
 
     public static HashSet<Model> constructModels(ResultSet resultSet, BasicPattern bpConstruct, AnalyticQuery analyticQuery
-    ,List<Triple> bpWhereTriples) {
+            , List<Triple> bpWhereTriples) {
         List<Triple> tripleList;
         HashSet<Model> modelHashSet = new HashSet<>();
         Model model;
@@ -165,8 +154,8 @@ public class AnalyticQueries {
                     model.add(statement);
             }
             if (querySolution.get(analyticQuery.aggregVariables).isResource()) {
-                Node rdfNode = getRdfTypeVariable(bpWhereTriples,analyticQuery.aggregVariables);
-                if(!rdfNode.isBlank())
+                Node rdfNode = getRdfTypeVariable(bpWhereTriples, analyticQuery.aggregVariables);
+                if (!rdfNode.isBlank())
                     subject = new ResourceImpl(rdfNode.getName());
                 else
                     subject = querySolution.get(analyticQuery.aggregVariables).asResource();
@@ -181,14 +170,11 @@ public class AnalyticQueries {
         return modelHashSet;
     }
 
-    private static Node getRdfTypeVariable(List<Triple> bpWhereTriples, String variable)
-    {
+    private static Node getRdfTypeVariable(List<Triple> bpWhereTriples, String variable) {
         Node rdfTypeVar = NodeFactory.createBlankNode();
 
-        for (Triple triple : bpWhereTriples)
-        {
-            if (triple.subjectMatches(new Node_Variable(variable)) && triple.predicateMatches(RDF.type.asNode()))
-            {
+        for (Triple triple : bpWhereTriples) {
+            if (triple.subjectMatches(new Node_Variable(variable)) && triple.predicateMatches(RDF.type.asNode())) {
                 rdfTypeVar = triple.getObject();
                 return rdfTypeVar;
             }
@@ -204,22 +190,21 @@ public class AnalyticQueries {
         queryList = (ArrayList<String>) FileOperation.ReadFile(Declarations.syntaxValidFile2);
         analyticQueriesList = getAnalyticQueries(queryList);
         //System.out.println("Size of validQueryList : "+validQueryList.size());
-        FileOperation.WriteInFile(Declarations.AnalyticQueriesFile,analyticQueriesList);
-         new Constants2();
+        FileOperation.WriteInFile(Declarations.AnalyticQueriesFile, analyticQueriesList);
+        new Constants2();
         new TdbOperation();
-       // ArrayList<String> queryList;
+        // ArrayList<String> queryList;
         //queryList = (ArrayList<String>) FileOperation.ReadFile(Declarations.AnalyticSelectQueriesFile);
         HashSet<Model> modelHashSet = executeAnalyticQueriesList(queryList);
-        TdbOperation.persistNonNamedModels(modelHashSet,TdbOperation.dataSetAnalytic);
+        TdbOperation.persistNonNamedModels(modelHashSet, TdbOperation.dataSetAnalytic);
 
-        HashMap<String,Model> modelHashMap = TdbOperation.unpersistModelsMap(TdbOperation.dataSetAnalytic);
+        HashMap<String, Model> modelHashMap = TdbOperation.unpersistModelsMap(TdbOperation.dataSetAnalytic);
 
         Set<String> keys = modelHashMap.keySet();
-        Model model ;
-        for(String key : keys)
-        {
+        Model model;
+        for (String key : keys) {
             model = modelHashMap.get(key);
-            System.out.println("*************************"+key+"*********************");
+            System.out.println("*************************" + key + "*********************");
             ConsolidationTest.afficherModel(model);
         }
 
@@ -257,6 +242,11 @@ public class AnalyticQueries {
             }
 
         }
+    }
+
+    public boolean containsAggregator(Query query) {
+        List<ExprAggregator> exprAggregatorList = new ArrayList<>();
+        return query.hasAggregators();
     }
 
 

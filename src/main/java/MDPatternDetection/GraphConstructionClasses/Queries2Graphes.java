@@ -1,6 +1,5 @@
 package MDPatternDetection.GraphConstructionClasses;
 
-import MDfromLogQueries.Declarations.Declarations;
 import MDfromLogQueries.Util.Constants2;
 import MDfromLogQueries.Util.FileOperation;
 import com.google.common.base.Stopwatch;

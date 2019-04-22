@@ -96,7 +96,7 @@ public class ConstantsUtil {
     {
         OntModel ontoModel = ModelFactory.createOntologyModel();
         System.out.println(property);
-         OntologyFactory.readOntology(property.getNameSpace(), ontoModel);
+        OntologyFactory.readOntology(property.getNameSpace(), ontoModel);
         /* System.out.println("Size of datatypeProperties" + ontoModel.listOntProperties().toList().size());*/
         OntProperty ontProperty = ontoModel.getOntProperty(property.getURI());
         if (ontProperty != null)

@@ -168,7 +168,7 @@ public class QueryExecutor {
             /*  System.out.println("Result " + results.next());*/
         }
         catch (Exception e){
-            System.out.println("the query "+query+"\n********************");
+            System.out.println("the query " + query + "\n********************");
             e.printStackTrace();
             FileOperation.writeQueryInLog(executionLogFile, "Select", query);
         }

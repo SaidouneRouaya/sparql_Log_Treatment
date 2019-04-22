@@ -2,10 +2,13 @@ package MDfromLogQueries.Declarations;
 
 public class Declarations {
     public static String endpoint = "dbPedia";
-    public static String root = "C:\\Users\\KamilaB\\Desktop\\3CS\\Prototypage\\Step_1\\endpoints\\"+endpoint+"\\Support_Files\\";
-    public static String root2 = "C:\\Users\\KamilaB\\Desktop\\3CS\\Prototypage\\Step_1\\endpoints\\"+endpoint+"\\TdbDirectories\\";
-    //public static String root = "C:\\Users\\pc\\Desktop\\PFE\\Files\\";
-    //public static String root2 = "E:\\TdbDirectories\\";
+    //public static String root = "C:\\Users\\KamilaB\\Desktop\\3CS\\Prototypage\\Step_1\\endpoints\\"+endpoint+"\\Support_Files\\";
+    //public static String root2 = "C:\\Users\\KamilaB\\Desktop\\3CS\\Prototypage\\Step_1\\endpoints\\"+endpoint+"\\TdbDirectories\\";
+    public static String root = "C:\\Users\\pc\\Desktop\\PFE\\Files\\" + endpoint + "\\Support_Files\\";
+    public static String root2 = "E:\\TdbDirectories\\" + endpoint + "\\TdbDirectories\\";
+
+
+
     public static String rootScenarioAnalytic = "Analytic\\";
     public static String statististicsRoot = "Statistics\\";
 
