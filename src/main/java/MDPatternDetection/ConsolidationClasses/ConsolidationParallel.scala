@@ -2,13 +2,12 @@ package MDPatternDetection.ConsolidationClasses
 
 import java.util
 
-import MDPatternDetection.AnnotationClasses.MDGraphAnnotated
 import MDfromLogQueries.Util.TdbOperation
 import org.apache.jena.query.Dataset
-import org.apache.jena.rdf.model.{Model, ModelFactory, NodeIterator, RDFNode}
+import org.apache.jena.rdf.model._
 import org.apache.jena.tdb.TDB
 
-import scala.collection.mutable
+import scala.collection.{JavaConverters, mutable}
 
 object ConsolidationParallel extends App {
 
@@ -16,15 +15,10 @@ object ConsolidationParallel extends App {
 
   val t1 = System.currentTimeMillis()
 
-
-  val modelHashMap: mutable.HashMap[String, Model] = consolidate(TdbOperation.unpersistModelsMap(TdbOperation.originalDataSet))
-
-  writeInTdb(modelHashMap, TdbOperation.dataSetConsolidate)
-
   //TODO à déplacer vers une classe pour l'annotation
-  val modelsConsolidated = TdbOperation.unpersistModelsMap(TdbOperation.dataSetConsolidate)
-  val modelsAnnotated = MDGraphAnnotated.constructMDGraphs(modelsConsolidated)
-  writeInTdb(convertToScalaMap(modelsAnnotated), TdbOperation.dataSetAnnotated)
+  /* val modelsConsolidated = TdbOperation.unpersistModelsMap(TdbOperation.originalDataSetConsolidated)
+   val modelsAnnotated = MDGraphAnnotated.constructMDGraphs(modelsConsolidated)
+   writeInTdb(convertToScalaMap(modelsAnnotated), TdbOperation.dataSetAnnotated)*/
 
   val duration = System.currentTimeMillis() - t1
 
@@ -33,12 +27,14 @@ object ConsolidationParallel extends App {
   def consolidate(modelHashMap: util.HashMap[String, Model]): mutable.HashMap[String, Model] = {
 
     println(" consolidation ")
+    toStringModelsHashmap2(unpersistModelsMap(TdbOperation.originalDataSet))
+
     if (modelHashMap == null) return null
     var nb = 0
 
     var modelsHashMap: mutable.HashMap[String, Model] = convertToScalaMap(modelHashMap)
-    //var modelsHashMap = modelHashMap
-    //if (modelsHashMap==null) return null
+
+
     var sizeOfResults: Int = modelsHashMap.size
     var sizeOfNewResults: Int = 0 // to compare it with the old one and exit the loop
 
@@ -83,7 +79,7 @@ object ConsolidationParallel extends App {
   }
 
   def convertToScalaMap(modelHashMap: util.HashMap[String, Model]): mutable.HashMap[String, Model] = {
-    val time = System.currentTimeMillis()
+
     val kies = modelHashMap.keySet()
     val result: mutable.HashMap[String, Model] = new mutable.HashMap[String, Model]()
 
@@ -100,8 +96,6 @@ object ConsolidationParallel extends App {
       }
 
     )
-    val duration = System.currentTimeMillis() - time
-    println(s"time to convert to scala map is: $duration")
     result
   }
 
@@ -119,6 +113,40 @@ object ConsolidationParallel extends App {
 
     }
     newResults
+  }
+
+  def toStringModelsHashmap2(it: Iterator[String]) = {
+    val modelHashMap = new mutable.HashMap[String, Model]
+    var modelsFromOneModel = new mutable.HashMap[String, Model]
+    var nb = 0
+    it.grouped(50000).foreach {
+      listOfKies => {
+
+
+        listOfKies.foreach {
+          key => {
+
+            val model = getModelFromTDB(key, TdbOperation.originalDataSet)
+            nb += 1
+            System.out.println("model num " + nb)
+            modelsFromOneModel = getModelsofModel(model)
+            import scala.collection.JavaConversions._
+            for (key2 <- modelsFromOneModel.keySet) {
+
+              if (modelHashMap.containsKey(key2)) {
+                modelHashMap.replace(key2, modelHashMap(key2).union(modelsFromOneModel(key2)))
+              }
+              else modelHashMap.put(key2, modelsFromOneModel(key2))
+            }
+          }
+        }
+
+        println(s" ------------------------- finish with the group ------------------------------- ")
+        writeInTdb(modelHashMap, TdbOperation._toString)
+        modelHashMap.clear()
+      }
+    }
+
   }
 
   def toStringModelHashMap(it: Iterator[String]): Unit = {
@@ -157,23 +185,11 @@ object ConsolidationParallel extends App {
           }
         }
 
-        writeInTdb(modelHashMap, TdbOperation.dataSetConsolidate)
+        writeInTdb(modelHashMap, TdbOperation._toString)
         modelHashMap.clear()
         println(s" ------------------------- finish with the group number: $nb_grp -------------------------------- ")
     }
 
-  }
-
-  def writeInTdb(models: mutable.HashMap[String, Model], dataset: Dataset) = {
-
-    println(" nombres des models pour persisting " + models.size)
-
-    models.foreach(m => {
-
-      if (m != null) {
-        dataset.addNamedModel(m._1, m._2)
-      }
-    })
   }
 
   /** Unpersisting **/
@@ -183,17 +199,74 @@ object ConsolidationParallel extends App {
     model
   }
 
-  def unpersistModelsMap(dataset: Dataset): mutable.HashMap[String, Model] = {
+  def writeInTdb(models: mutable.HashMap[String, Model], dataset: Dataset) = {
+
+    println(" nombres des models pour persisting " + models.size)
+
+    models.foreach(m => {
+      try {
+        if (m != null) {
+          if (dataset.containsNamedModel(m._1)) {
+            val model = dataset.getNamedModel(m._1).union(m._2)
+            dataset.replaceNamedModel(m._1, model)
+          }
+          else
+            dataset.addNamedModel(m._1, m._2)
+        }
+      }
+      catch {
+        case ex: Exception => ex.printStackTrace()
+      }
+    })
+  }
+
+  def getModelsofModel(model: Model): mutable.HashMap[String, Model] = {
+    val resourceList = model.listSubjects.toList
+    val rdfNodeList = model.listObjects.toList
+    val modelHashMap = new mutable.HashMap[String, Model]
+    import scala.collection.JavaConversions._
+    for (resource <- resourceList) {
+      val resourceModel = ModelFactory.createDefaultModel
+      if (!rdfNodeList.contains(resource)) {
+        var visitedNodes = new mutable.HashSet[RDFNode]()
+        visitedNodes.add(resource)
+        modelHashMap.put(resource.getURI, getModelOfResource(resource, resourceModel, visitedNodes))
+      }
+    }
+    modelHashMap
+  }
+
+  def getModelOfResource(resource: Resource, model: Model, visitedNodes: mutable.HashSet[RDFNode]): Model = {
+    val stmtIterator = resource.listProperties
+    var internModel = stmtIterator.toModel
+    //System.out.println(" le modele louwel "+resource+" "+internModel);
+    //System.out.println(" modeeelddd "+model);
+    val list = resource.listProperties.toList
+    import scala.collection.JavaConversions._
+    for (statement <- list) { //System.out.println("je rentre ici");
+      //System.out.println(" modeeel "+model);
+      val contains = visitedNodes.contains(
+        statement.getObject.asResource)
+      //System.out.println("le contains "+contains);
+      if (!contains) { //if (model.getResource(rdfNode.toString()))
+        visitedNodes.add(statement.getObject)
+        internModel.add(getModelOfResource(statement.getObject.asResource, internModel, visitedNodes))
+      }
+      else internModel = internModel.remove(statement)
+      //internModel = internModel.union(getModelOfResource(statement.getObject().asResource(),internModel));
+      //model.add();
+    }
+    internModel
+  }
+
+
+  def unpersistModelsMap(dataset: Dataset): Iterator[String] = {
 
     val results = new mutable.HashMap[String, Model]
 
-    //Dataset dataset = TDBFactory.createDataset(tdbDirectory);
     TDB.sync(dataset)
 
-    if (dataset == null) return null
-
-    System.out.println("taille de la liste  " + results.size)
-    results
+    JavaConverters.asScalaIterator(dataset.listNames())
   }
 
   println(s" La durée : $duration")
