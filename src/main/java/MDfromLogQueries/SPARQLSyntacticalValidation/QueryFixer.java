@@ -202,6 +202,15 @@ public class QueryFixer {
         Query maybeQuery = null;
         try {
             maybeQuery = QueryFactory.create(queryStr, Syntax.syntaxARQ);
+            if (!maybeQuery.isSelectType())
+            {
+                if(maybeQuery.isConstructType())
+                    maybeQuery.setQuerySelectType();
+                else {
+                    return null;
+                }
+            }
+
         }catch (QueryParseException queryParseException)
         {
            System.out.println("erreur 2");
