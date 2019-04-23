@@ -11,6 +11,9 @@ import scala.collection.{JavaConverters, mutable}
 
 object ConsolidationParallel extends App {
 
+  var modelsNumber = 0
+
+
   val tdbOperation = new TdbOperation()
 
   val t1 = System.currentTimeMillis()
@@ -74,6 +77,8 @@ object ConsolidationParallel extends App {
       modelsHashMap = cleanMap(modelsHashMap)
       sizeOfNewResults = modelsHashMap.size
     }
+    modelsNumber += modelsHashMap.size
+
     println(" taille de la hashmap apres consolidation : " + modelsHashMap.size)
     modelsHashMap
   }

@@ -25,6 +25,10 @@ public class QueryExecutor {
      * This class executes the queries
      **/
 
+    public static int queriesNumber = 0;
+    public static int queriesLogNumber = 0;
+
+
     public static ArrayList<Model> executeQuiersInFile(String filePath, String endPoint) {
         ArrayList<Model> results = new ArrayList<>();
 
@@ -183,9 +187,11 @@ public class QueryExecutor {
 
             QueryEngineHTTP qexec = QueryExecutionFactory.createServiceRequest(endpoint, query);
             results = qexec.execConstruct();
+            queriesNumber++;
             /* System.out.println("Result "+ results.toString());*/
         }
         catch (Exception e){
+            queriesLogNumber++;
             FileOperation.writeQueryInLog(executionLogFile, "Construct", query);
         }
         return results;

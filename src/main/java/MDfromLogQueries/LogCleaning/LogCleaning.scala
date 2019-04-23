@@ -11,7 +11,7 @@ import org.apache.http.client.utils.URLEncodedUtils
 import scala.collection.JavaConverters
 
 
-object Main extends App {
+object LogCleaning extends App {
 
   /** This class reads the log files and extract queries **/
 

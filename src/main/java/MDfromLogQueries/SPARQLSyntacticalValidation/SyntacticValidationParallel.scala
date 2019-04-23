@@ -12,7 +12,7 @@ object SyntacticValidationParallel extends App {
 
 
   val t1 = System.currentTimeMillis()
-  private var queriesNumber = 0
+  var queriesNumber = 0
 
 
 

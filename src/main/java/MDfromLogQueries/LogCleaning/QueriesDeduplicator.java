@@ -21,7 +21,7 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 
 public class QueriesDeduplicator {
 
-    private static int queriesNumber = 0;
+    public static int queriesNumber = 0;
 
 
     public static void main(String[] args) {
