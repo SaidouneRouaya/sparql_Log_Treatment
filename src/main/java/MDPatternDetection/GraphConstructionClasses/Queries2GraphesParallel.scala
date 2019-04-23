@@ -2,7 +2,7 @@ package MDPatternDetection.GraphConstructionClasses
 
 import java.io.{File, FileOutputStream, PrintWriter}
 
-import MDfromLogQueries.Declarations.Declarations.{constructLogFileParallel, constructQueriesFile2, dbPediaOntologyPath, syntaxValidFile2}
+import MDfromLogQueries.Declarations.Declarations.{constructLogFileParallel, constructQueriesFile2, syntaxValidFile2}
 import MDfromLogQueries.Util.Constants2
 import org.apache.jena.query.{Query, QueryFactory}
 

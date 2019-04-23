@@ -4,7 +4,6 @@ import java.io.{File, FileOutputStream, PrintWriter}
 
 import MDfromLogQueries.Declarations.Declarations
 import MDfromLogQueries.Declarations.Declarations._
-import MDfromLogQueries.Util.Constants2
 
 import scala.collection.parallel.ParSeq
 import scala.io.Source
@@ -13,7 +12,7 @@ object SyntacticValidationParallel extends App {
 
 
   val t1 = System.currentTimeMillis()
-
+  var queriesNumber = 0
 
 
 
@@ -47,7 +46,11 @@ object SyntacticValidationParallel extends App {
         println("--------------------- un group finished ---------------------------------- ")
 
         val (correct, errors) = treatedGroupOfLines.partition(_.isRight)
-        writeInFile(syntaxValidFile2, correct.collect { case Right(Some(x)) => x })
+        writeInFile(syntaxValidFile2, correct.collect { case Right(Some(x)) => {
+          queriesNumber += 1
+          x
+        }
+        })
         writeInLogFile(Declarations.syntaxNonValidFile2, errors.collect { case Left(line) => line })
 
       }

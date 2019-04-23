@@ -82,10 +82,10 @@ public class TdbOperation {
             //Dataset dataset = DatasetFactory.create(model);
             Iterator it = modelsCollection.iterator();
             int nb = 0;
-            for (Model model :  modelsCollection) {
+            for (Model model : modelsCollection) {
                 nb++;
                 System.out.println(" next model " + nb);
-                originalDataSetStringModel.addNamedModel("model "+nb,model);
+                originalDataSetStringModel.addNamedModel("model " + nb, model);
             }
 
         } catch (Exception e) {

@@ -1,302 +1,266 @@
-/*package MDPatternDetection;
+package Scenarios;
 
+import MDPatternDetection.ConsolidationTest;
+import MDPatternDetection.ExecutionClasses.QueryExecutor;
+import MDPatternDetection.GraphConstructionClasses.QueryUpdate;
+import MDfromLogQueries.Declarations.Declarations;
+import MDfromLogQueries.Util.Constants2;
+import MDfromLogQueries.Util.FileOperation;
+import MDfromLogQueries.Util.TdbOperation;
+import org.apache.jena.graph.Node;
+import org.apache.jena.graph.NodeFactory;
+import org.apache.jena.graph.Node_Variable;
 import org.apache.jena.graph.Triple;
-import org.apache.jena.ontology.OntProperty;
+import org.apache.jena.query.Query;
+import org.apache.jena.query.QueryFactory;
+import org.apache.jena.query.QuerySolution;
+import org.apache.jena.query.ResultSet;
 import org.apache.jena.rdf.model.*;
+import org.apache.jena.rdf.model.impl.PropertyImpl;
+import org.apache.jena.rdf.model.impl.ResourceImpl;
+import org.apache.jena.rdf.model.impl.StatementImpl;
+import org.apache.jena.sparql.core.BasicPattern;
+import org.apache.jena.sparql.expr.ExprAggregator;
 import org.apache.jena.vocabulary.RDF;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.*;
 
-import org.apache.jena.sparql.core.BasicPattern;
-import MDFromQueryLogs.SyntacticalValidation.QueryFixer;
-import java.io.*;
-import java.util.regex.Pattern;
-import java.util.Collection;
-
-import Utils.SharedFunctions;
-import MDFromQueryLogs.Deduplicate;
-
 public class AnalyticQueries {
-    private OntProperty currentProperty= null;
-    private static String endpoint = "https://dbpedia.org/sparql";
-    private static Property rdfTypeProp = RDF.type;
 
-    private static Triple tripleExists(Triple theTriple, BasicPattern existingTriples)
-    {
-        Iterator<Triple> iterator = existingTriples.iterator();
-        boolean exist = false;
-        Triple  triple= null;
-        while (iterator.hasNext() && !exist)
-        {
-            triple = iterator.next();
-            if (triple.getSubject().matches(theTriple.getSubject()) && triple.getPredicate().matches(theTriple.getPredicate()))
-                exist =true;
+    public static boolean isAnalytic(Query query) {
+        List<ExprAggregator> exprAggregatorList;
+        int i = 0;
+        if (query.hasAggregators()) {
+            exprAggregatorList = query.getAggregators();
+            for (ExprAggregator exprAggregator : exprAggregatorList) {
+                System.out.println("la var :" + exprAggregator.getAggregator().getExprList());
+                // the exprList is null in case it's a count(*)
+                if (exprAggregator.getAggregator().getExprList() != null) {
+                    i++;
+                }
+            }
         }
-        if (exist)
-            return triple;
-        else
-            return null;
+        return (i > 0);
+    }
+
+    public static ArrayList<String> getAnalyticQueries(ArrayList<String> queryList) {
+        ArrayList<String> analyticQueriesList = new ArrayList<>();
+        int nb_line = 0; //for statistical needs
+        int nb = 0;
+        String queryStr;
+        Query query = QueryFactory.create();
+        int size = queryList.size();
+        while (nb_line < size) {
+            try {
+                nb_line++;
+                queryStr = queryList.get(nb_line);
+                query = QueryFactory.create(queryStr);
+                if (query.hasAggregators() && isAnalytic(query)) {
+                    analyticQueriesList.add(query.toString());
+                }
+                System.out.println("line \t" + nb_line);
+            } catch (Exception e) {
+                // e.printStackTrace();
+                System.out.println("erreur");
+                nb++;
+            }
+        }
+        return analyticQueriesList;
+    }
+
+    public static HashSet<Model> executeAnalyticQueriesList(ArrayList<String> queryList) {
+        int nb_line = 0; //for statistical needs
+        int nb = 0;
+        String queryStr;
+        HashSet<Model> modelHashSet = new HashSet<>();
+        Query query;
+        int size = queryList.size();
+        QueryExecutor queryExecutor = new QueryExecutor();
+        AnalyticQuery analyticQuery = new AnalyticQuery();
+        while (nb_line < size) {
+            try {
+                nb_line++;
+                //queryStr = line;
+                System.out.println("requete num : " + nb_line);
+                queryStr = queryList.get(nb_line);
+                query = QueryFactory.create(queryStr);
+                QueryUpdate queryUpdate = new QueryUpdate(query);// Adding missing rdf:type statements to the query
+                query = queryUpdate.addAddedVariablesToResultVars(query); // Adding new variables to the resulting vars
+                BasicPattern bpConstruct = queryUpdate.getQueryConstruction().getBpConstruct(); // Getting construct BasicPattern to use it to construct the Graph Pattern
+                List<Triple> bpWhereTriples = queryUpdate.getQueryConstruction().getBpWhere().getList();
+
+                analyticQuery.selectQuery = query;
+                analyticQuery.selectQuery.addResultVar(analyticQuery.getAggregVariable());
+
+
+                ResultSet resultSet;
+                resultSet = queryExecutor.executeQuerySelect(query, "https://dbpedia.org/sparql");
+
+                modelHashSet.addAll(constructModels(resultSet, bpConstruct, analyticQuery, bpWhereTriples));
+
+                System.out.println("line \t" + nb_line);
+            } catch (Exception e) {
+                e.printStackTrace();
+                System.out.println("erreur");
+                nb++;
+            }
+        }
+        return modelHashSet;
+    }
+
+    public static HashSet<Model> constructModels(ResultSet resultSet, BasicPattern bpConstruct, AnalyticQuery analyticQuery
+            , List<Triple> bpWhereTriples) {
+        List<Triple> tripleList;
+        HashSet<Model> modelHashSet = new HashSet<>();
+        Model model;
+        Node node;
+        QuerySolution querySolution;
+        Statement statement;
+        Resource subject;
+        Property property;
+        RDFNode object;
+        while (resultSet.hasNext()) {
+            model = ModelFactory.createDefaultModel();
+            querySolution = resultSet.next();
+            tripleList = bpConstruct.getList();
+            for (Triple triple : tripleList) {
+                node = triple.getSubject();
+                if (node.isVariable()) {
+                    subject = querySolution.get(node.getName()).asResource();
+                } else {
+                    subject = new ResourceImpl(node.getURI());
+
+                }
+                node = triple.getPredicate();
+                if (node.isVariable()) {
+                    property = new PropertyImpl(querySolution.get(node.getName()).asNode().getURI());
+                } else {
+                    property = new PropertyImpl(node.getURI());
+
+                }
+                node = triple.getObject();
+                if (node.isVariable()) {
+                    object = new ResourceImpl(querySolution.get(node.getName()).asNode().getURI());
+                } else {
+                    object = new ResourceImpl(node.getURI());
+
+                }
+                statement = new StatementImpl(subject, property, object);
+                if (!model.contains(statement))
+                    model.add(statement);
+            }
+            if (querySolution.get(analyticQuery.aggregVariables).isResource()) {
+                Node rdfNode = getRdfTypeVariable(bpWhereTriples, analyticQuery.aggregVariables);
+                if (!rdfNode.isBlank())
+                    subject = new ResourceImpl(rdfNode.getName());
+                else
+                    subject = querySolution.get(analyticQuery.aggregVariables).asResource();
+
+                property = new PropertyImpl("http://0.0.0.0/lodlinc/countMeasure");
+                object = new ResourceImpl("http://www.w3.org/2001/XMLSchema#integer");
+                statement = new StatementImpl(subject, property, object);
+                model.add(statement);
+            }
+            modelHashSet.add(model);
+        }
+        return modelHashSet;
+    }
+
+    private static Node getRdfTypeVariable(List<Triple> bpWhereTriples, String variable) {
+        Node rdfTypeVar = NodeFactory.createBlankNode();
+
+        for (Triple triple : bpWhereTriples) {
+            if (triple.subjectMatches(new Node_Variable(variable)) && triple.predicateMatches(RDF.type.asNode())) {
+                rdfTypeVar = triple.getObject();
+                return rdfTypeVar;
+            }
+        }
+        return rdfTypeVar;
     }
 
     public static void main(String args[]) {
-        int ap = 0;
-        int i = 0;
-        int j = 0;
-        int r = 0;
-        String linee = "";
-        String SelectQ = "";
-        String Query = "";
-        String S="";
-        String ReadingFilePath = "C:\\Users\\HP\\Desktop\\LOG GEO\\";
-        File rep = new File(ReadingFilePath);
-        File[] fichiersJava = rep.listFiles();
-        Collection<String> CTest = new ArrayList<String>();
-        Pattern PATTERN = Pattern.compile("[^\"]*\"(?:GET )?/sparql/?\\?([^\"\\s\\n]*)[^\"]*\".*");
+        ArrayList<String> analyticQueriesList = new ArrayList<>();
+        Query query = null;
+        ArrayList<String> queryList;
+        AnalyticQueries analyticQueries = new AnalyticQueries();
+        queryList = (ArrayList<String>) FileOperation.ReadFile(Declarations.syntaxValidFile2);
+        analyticQueriesList = getAnalyticQueries(queryList);
+        //System.out.println("Size of validQueryList : "+validQueryList.size());
+        FileOperation.WriteInFile(Declarations.AnalyticQueriesFile, analyticQueriesList);
+        new Constants2();
+        new TdbOperation();
+        // ArrayList<String> queryList;
+        //queryList = (ArrayList<String>) FileOperation.ReadFile(Declarations.AnalyticSelectQueriesFile);
+        HashSet<Model> modelHashSet = executeAnalyticQueriesList(queryList);
+        TdbOperation.persistNonNamedModels(modelHashSet, TdbOperation.dataSetAnalytic);
 
-       for (File var : fichiersJava) {
-            String path = ReadingFilePath + var.getName();
-            Matcher matcher = PATTERN.matcher("");
-            System.out.println(path);
-            Collection<String> C = SharedFunctions.ReadFile(path);
-            for (String line : C) {
+        HashMap<String, Model> modelHashMap = TdbOperation.unpersistModelsMap(TdbOperation.dataSetAnalytic);
 
+        Set<String> keys = modelHashMap.keySet();
+        Model model;
+        for (String key : keys) {
+            model = modelHashMap.get(key);
+            System.out.println("*************************" + key + "*********************");
+            ConsolidationTest.afficherModel(model);
+        }
+
+    }
+
+    public static void writeresultsInFile(HashMap<String, ResultSet> resultSetHashMap, String writingFilePath) {
+        File file = new File(writingFilePath);
+        BufferedWriter bw = null;
+        try {
+            if (!file.isFile()) file.createNewFile();
+            bw = new BufferedWriter(new FileWriter(file, true));
+            Set<String> keyset = resultSetHashMap.keySet();
+            ResultSet resultSet;
+            int i = 0;
+            for (String key : keyset) {
                 i++;
-                r = line.lastIndexOf("SELECT");
-                if (r != -1){
-
-                    j = line.lastIndexOf("&query=");
-                    if (j!=-1) Query = line.substring(j + 7).trim();
-                    j = Query.lastIndexOf("format");
-                    if (j != -1) Query = Query.substring(0, j);
-                    j = Query.indexOf("?query=");
-                    if (j != -1) Query = Query.substring(j + 7).trim();
-                    }
-                    SelectQ = (URLEncodedUtils.parse(Query, Charset.forName("UTF-8"))).toString();
-                    j = SelectQ.lastIndexOf("HTTP/1.1");
-                    if (j!=-1) SelectQ = SelectQ.substring(0, j);
-                    j = SelectQ.lastIndexOf(", debug=on");
-                    if (j!=-1) SelectQ = SelectQ.substring(0, j);
-                    j = SelectQ.lastIndexOf("]");
-                    if (j!=-1) SelectQ = SelectQ.substring(0, j);
-
-
-                    if (SelectQ != "") {
-                        SelectQ = SelectQ.substring(1).trim();
-                        SelectQ = SelectQ.replace(",", " ");
-
-                        if(SelectQ.contains("COUNT(")||SelectQ.contains("COUNT (")||SelectQ.contains("count(")||SelectQ.contains("count (")||SelectQ.contains("Count(")||SelectQ.contains("Count (")
-                           ||SelectQ.contains("SUM(")||SelectQ.contains("SUM (")||SelectQ.contains("sum(")||SelectQ.contains("sum (")||SelectQ.contains("Sum(")||SelectQ.contains("Sum (")
-                                ||SelectQ.contains("AVG(")||SelectQ.contains("AVG (")||SelectQ.contains("avg(")||SelectQ.contains("avg (")||SelectQ.contains("Avg(")||SelectQ.contains("Avg (")
-                        ) {
-                             //ap++;
-                             SelectQ = QueryFixer.get().fix(SelectQ);
-
-                             try {
-                                 Query q = QueryFixer.toQuery(SelectQ);
-                                 //if (q.hasAggregators()) {
-                                  SelectQ = q.toString();
-                                   CTest.add(SelectQ);
-                                // }
-                             } catch (Exception e) {}
-                         //}
-                    }
+                bw.write("\n******************************************* Requete " + i + " *******************************************\n");
+                bw.write(key);
+                resultSet = resultSetHashMap.get(key);
+                while (resultSet.hasNext()) {
+                    bw.write(resultSet.next().toString() + "\n");
                 }
+                bw.write("\n****************************** Fin de la requete *******************************************\n");
+            }
+            bw.flush();
+        } catch (
+                IOException e) {
+            System.out.println("Impossible file creation");
+        } finally {
+
+            try {
+                bw.close();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
 
-        //SharedFunctions.WriteInFile("C:\\Users\\HP\\Desktop\\Files\\ProgramOutput\\MytestsGEO.txt",CTest);
-        //Deduplicate.Dedup("C:\\Users\\HP\\Desktop\\Files\\ProgramOutput\\MytestsGEO.txt", "C:\\Users\\HP\\Desktop\\Files\\ProgramOutput\\NewMytestsGEO.txt");
-        /*String paths="C:\\Users\\HP\\Desktop\\Files\\ProgramOutput\\NewMytestsTreated2.txt";
-        Collection<String> DeduplicateQueries = SharedFunctions.ReadFile(paths);
-        ArrayList<String> lines= new ArrayList(DeduplicateQueries);
-        int size=0;
-        ArrayList<Query> constructQueriesList = new ArrayList();
-
-        for (String line : lines) {
-            try {
-                Query query = QueryFixer.toQuery(line);
-                //String SS= query.getQueryPattern().toString();
-                String SS = query.toString();
-
-                //if ((!SS.contains("count(*)") || !SS.contains("Count(*)")) && query.getProjectVars().size()==1) {
-                    size++;
-                    System.out.println("-----------------------------------------------------------------------------------------------------------------------------");
-                    //System.out.println("Query before union treatement:\n "+query);
-                    BasicPattern bp = new BasicPattern();
-                   /* if (SS.contains("UNION") || SS.contains("union") || SS.contains("Union")) {
-                        String[] AR1 = SS.split("UNION");
-                        AR1[0] = AR1[0].replace("{", " ");
-                        AR1[0] = AR1[0].replace("WHERE", "WHERE {");
-                        AR1[0] = QueryFixer.get().fix(AR1[0]);
-                        query = QueryFixer.toQuery(AR1[0]);
-                        //System.out.println("AR1: "+query);
-                    }*/
-
-//String rqte=query.toString().replace("{"," ").replace("WHERE","WHERE{").replace("}")
-//System.out.println("Query after union treatement:\n"+rqte);
-//System.out.println("Query after union treatement:\n"+query);
-//System.out.println("BP:\n"+query.getQueryPattern());
-
-                    /*Element ee = query.getQueryPattern();
-                    if (ee instanceof ElementGroup) {
-                        Element e = ((ElementGroup) ee).getElements().get(0);
-                        if (e instanceof ElementPathBlock) {
-                            ElementPathBlock e1 = (ElementPathBlock) e;
-                            PathBlock pBlk = e1.getPattern();
-                            Resource subject;
-                            Graph graph= new CollectionGraph();
-                            for (TriplePath tp : pBlk) {
-                                //System.out.println("Subject: "+tp.getSubject()+"; Predicate: "+tp.getPredicate()+"; Object: "+tp.getObject());
-                                Triple t = Triple.create(tp.getSubject(), tp.getPredicate(), tp.getObject());
-                                bp.add(t);
-                                graph.add(t);
-                                //if(tp.getPredicate().isVariable() && (tp.getSubject().isVariable()||tp.getObject().isVariable())) System.out.println("I'm predicate var not legal"+tp.getPredicate());
-                                //else System.out.println("I'm not predicate var: "+tp.getPredicate());
-                                //System.out.println("Subject: "+tp.getSubject()+". Classe subject: "+tp.getSubject().getClass());
-                           }
-
-                            Model queryModel = new ModelCom(graph); // We use a model to parse the graph by its subject -> properties -> objects
-                            Iterator nodeIterator = queryModel.listSubjects();
-                            int n=0;
-                            BasicPattern bpModified=bp;
-
-                            //System.out.println("Before: "+bp);
-                            QueryConstruction qqq=new QueryConstruction(bpModified, bp);
-                            while (nodeIterator.hasNext()) { // for every subject we verify whether it has an rdf:type property in the origin basic pattern
-                                Node subjectRDFTypeValue;
-
-                                qqq=new QueryConstruction(bpModified, bp);
-                                subject = (Resource) nodeIterator.next();
-                                subjectRDFTypeValue = qqq.verifyRDFTypeProperty(subject, n, rdfTypeProp, "sub" ); //
-                                bp=qqq.getExistingTriples();
-                                n++;
-                                qqq.propertyIterate(subject, subjectRDFTypeValue);
-                                bp=qqq.getExistingTriples();
-                            }
-                            //System.out.println("New pattern construct: "+qqq.getBpConstruct());
-                            Query qr=QueryFactory.create(query);
-                            qr.setQueryConstructType();
-                            Template constructTemplate = new Template(bp);
-                            qr.setConstructTemplate(constructTemplate);
-                            //System.out.println("New pattern: \n"+qr);
-                            constructQueriesList.add(qr);
-                        } else if (e instanceof ElementTriplesBlock) {}
-                    }
-                }
-            catch(Exception E){}
         }
-        String endPoint = "https://dbpedia.org/sparql";
-        ArrayList<Model> aray=new ArrayList<>();
-        QueryExecutor queryExecution=new QueryExecutor();
-        queryExecution.executeQuiersInFile2(endPoint,constructQueriesList);
-        Collection<String> col = new ArrayList<>();
+    }
 
-        for (Query m:constructQueriesList){
-            col.add(m.toString());
-        }
-
-        /*
-         * Passer les requtes Count comme entrées: 9requetes/26 du fichier consutuct
-         */
-        /*String Req1="PREFIX  skos: <http://www.w3.org/2004/02/skos/core#>\n" +
-                "PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" +
-                "PREFIX  category: <http://0.0.0.0/category/>\n" +
-                "CONSTRUCT {\n" +
-                "?ob1 skos:broader category:Paintings_by_nationality .\n" +
-                "?sub0 skos:broader ?ob1.\n" +
-                "?sub2 skos:subject ?y .\n" +
-                "}\n" +
-                "WHERE{\n" +
-                "?x skos:broader category:Paintings_by_nationality .\n" +
-                "?y skos:broader ?x .\n" +
-                "?a skos:subject ?y .\n" +
-                "?y rdf:type ?sub0 .\n" +
-                "?x rdf:type ?ob1 .\n" +
-                "category:Paintings_by_nationality rdf:type ?ob1 .\n" +
-                "?a rdf:type ?sub2 .\n" +
-                "}\n" +
-                "LIMIT   50";
-        String Req2="PREFIX  :     <http://dbpedia.org/resource/>\n" +
-                "PREFIX  owl:  <http://www.w3.org/2002/07/owl#>\n" +
-                "PREFIX  xsd:  <http://www.w3.org/2001/XMLSchema#>\n" +
-                "PREFIX  skos: <http://www.w3.org/2004/02/skos/core#>\n" +
-                "PREFIX  rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n" +
-                "PREFIX  dbpedia: <http://dbpedia.org/>\n" +
-                "PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" +
-                "PREFIX  category: <http://0.0.0.0/category/>\n" +
-                "PREFIX  dbpedia2: <http://dbpedia.org/property/>\n" +
-                "PREFIX  foaf: <http://xmlns.com/foaf/0.1/>\n" +
-                "PREFIX  db:   <http://dbpedia.org/ontology/>\n" +
-                "PREFIX  dc:   <http://purl.org/dc/elements/1.1/>\n" +
-                "CONSTRUCT{\n" +
-                "?sub0 skos:broader ?ob1 .\n" +
-                "?sub1 skos:subject ?sub0 .\n" +
-                "}\n" +
-                "WHERE{ \n" +
-                "?x skos:broader category:Paintings_by_artist .\n" +
-                "?a skos:subject ?x .\n" +
-                "?x rdf:type ?sub0 .\n" +
-                "category:Paintings_by_artist rdf:type ?ob1 .\n" +
-                "?a rdf:type ?sub1 .\n" +
-                "}LIMIT   50";
-
-        String Req3="PREFIX  :     <http://dbpedia.org/resource/>\n" +
-                "PREFIX  dbo:  <http://dbpedia.org/ontology/>\n" +
-                "PREFIX  owl:  <http://www.w3.org/2002/07/owl#>\n" +
-                "PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" +
-                "PREFIX  xsd:  <http://www.w3.org/2001/XMLSchema#>\n" +
-                "PREFIX  skos: <http://www.w3.org/2004/02/skos/core#>\n" +
-                "PREFIX  rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n" +
-                "PREFIX  dbpedia: <http://dbpedia.org/>\n" +
-                "PREFIX  dbpedia2: <http://dbpedia.org/property/>\n" +
-                "PREFIX  foaf: <http://xmlns.com/foaf/0.1/>\n" +
-                "PREFIX  dc:   <http://purl.org/dc/elements/1.1/>\n" +
-                "CONSTRUCT{\n" +
-                "?sub0  <http://www.w3.org/2003/01/geo/wgs84_pos#lat> ?ob1 .\n" +
-                "?sub0  <http://www.w3.org/2003/01/geo/wgs84_pos#long> ?ob2 .\n" +
-                "?sub0  rdfs:label ?label .\n" +
-                "?sub0  skos:subject ?ob3 .\n" +
-                " }\n" +
-                "WHERE{ \n" +
-                "?element <http://www.w3.org/2003/01/geo/wgs84_pos#lat> ?lat .\n" +
-                "?element <http://www.w3.org/2003/01/geo/wgs84_pos#long> ?long .\n" +
-                "?element rdfs:label ?label .\n" +
-                "?element skos:subject ?subject .\n" +
-                "?element rdf:type ?sub0 .\n" +
-                "?lat rdf:type ?ob1 .\n" +
-                "?long rdf:type ?ob2 .\n" +
-                "?subject rdf:type ?ob3 .\n" +
-                "FILTER ( lang(?label) = \"en\" )}";
-
-
-        SharedFunctions.WriteInFile("C:\\Users\\HP\\Desktop\\Files\\ProgramOutput\\ConstructTreatedData.txt",col);
-        System.out.println("Total NB reuqests of log: "+i);
-        System.out.println("Total NB analytical requtes of log: "+ap);
-        System.out.println("Total NB Valid analytical requtes of log: "+CTest.size());
-        System.out.println("Deduplicated valid analytical queries: "+DeduplicateQueries.size());
-        System.out.println("Analytic queries: "+size);
-        System.out.println("construct queries: "+constructQueriesList.size());
-        System.out.println("Aray excecuted Construct Size: "+aray.size());
-
-        String triples =
-                "<http://dbpedia.org/resource/53debf646ad3465872522651> <http://dbpedia.org/resource/end> <http://dbpedia.org/resource/1407106906391>." +
-                        "\n<http://dbpedia.org/resource/53debf676ad3465872522655> <http://dbpedia.org/resource/foi> <http://dbpedia.org/resource/SpatialThing>.";
-
-
-        Model model = null;
-        try {
-            model = ModelFactory.createDefaultModel()
-                    .read(IOUtils.toInputStream(triples, "UTF-8"), null, "N-TRIPLES");
-            int n=0;
-            //System.out.println(model.listStatements());
-
-
-
-        } catch (IOException e) {
-            System.out.println("Error");
-        }
-
+    public boolean containsAggregator(Query query) {
+        List<ExprAggregator> exprAggregatorList = new ArrayList<>();
+        return query.hasAggregators();
     }
 
 
+}
+
+class AnalyticQuery {
+    protected Query selectQuery;
+    protected Query constructQuery;
+    protected String aggregVariables;
+
+    public String getAggregVariable() {
+
+        aggregVariables = selectQuery.getAggregators().get(0).getAggregator().getExprList().get(0).getVarName();
+        return aggregVariables;
     }
-*/
+
+}

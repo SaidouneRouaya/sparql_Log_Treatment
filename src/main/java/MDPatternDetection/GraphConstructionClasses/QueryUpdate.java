@@ -1,7 +1,6 @@
 package MDPatternDetection.GraphConstructionClasses;
 
 
-import MDfromLogQueries.Declarations.Declarations;
 import MDfromLogQueries.Util.Constants2;
 import org.apache.jena.graph.Node;
 import org.apache.jena.query.Query;
@@ -62,17 +61,13 @@ public class QueryUpdate {
         return query;
     }
 
-    public Query addAddedVariablesToResultVars(Query query)
-    {
+    public Query addAddedVariablesToResultVars(Query query) {
         ArrayList<Node> nodeArrayList = queryConstruction.getAddedVariables();
-        for (Node n : nodeArrayList)
-        {
+        for (Node n : nodeArrayList) {
             try {
                 query.addResultVar(n);
                 query.addGroupBy(n);
-            }
-            catch (Exception e)
-            {
+            } catch (Exception e) {
                 //e.printStackTrace();
                 System.out.println("not a variable");
             }

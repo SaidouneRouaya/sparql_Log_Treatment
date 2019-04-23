@@ -7,6 +7,9 @@ import java.util.ArrayList;
 
 public class SyntacticalValidation {
 
+    private static int queriesNumber = 0;
+
+
     public static void main(String[] args) {
 
         Validate("\tSELECT  ?s (count(*))\t" +
@@ -59,6 +62,7 @@ public class SyntacticalValidation {
             }
 
 
+        queriesNumber += validQueryList.size();
         /* System.out.println("Size of validQueryList : "+validQueryList.size());*/
         FileOperation.WriteInFile(destinationFilePath,validQueryList);
         FileOperation.WriteInFile(Declarations.syntaxNonValidFile,nonValidQueryList);

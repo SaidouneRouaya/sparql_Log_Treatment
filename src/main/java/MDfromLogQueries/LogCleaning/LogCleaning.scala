@@ -11,10 +11,12 @@ import org.apache.http.client.utils.URLEncodedUtils
 import scala.collection.JavaConverters
 
 
-object Main extends App {
+object LogCleaning extends App {
 
   /** This class reads the log files and extract queries **/
 
+
+  var queriesNumber = 0
   val t1 = System.currentTimeMillis()
   print("je suis dans log cleaning")
 
@@ -36,7 +38,10 @@ object Main extends App {
     val logs = dir.listFiles().toList.par.flatMap(x => extractQueries(x))
 
     val writer = new PrintWriter(new File(destinationfilePath))
-    logs.foreach(x => if (x != null) writer.write(x.replaceAll("[\n\r]", "\t") + "\n"))
+    logs.foreach(x => if (x != null) {
+      queriesNumber += 1
+      writer.write(x.replaceAll("[\n\r]", "\t") + "\n")
+    })
     writer.close()
   }
 

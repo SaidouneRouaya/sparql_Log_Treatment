@@ -21,6 +21,9 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 
 public class QueriesDeduplicator {
 
+    public static int queriesNumber = 0;
+
+
     public static void main(String[] args) {
         Stopwatch stopwatch = Stopwatch.createStarted();
         DeduplicateQueriesInFile(cleanedQueriesFileCopie);
@@ -47,7 +50,9 @@ public class QueriesDeduplicator {
                 querySet.add(line);
                 /* System.out.println( "ligne \t"+nb_line);*/
             }
-            System.out.println("nombre de ligne dans le set :" + querySet.size() + " " + nb_line);
+            //    System.out.println("nombre de ligne dans le set :" + querySet.size() + " " + nb_line);
+
+            queriesNumber += querySet.size();
             FileOperation.WriteInFile(writingDedupFilePath, querySet);
 
         } catch (Exception e) {
